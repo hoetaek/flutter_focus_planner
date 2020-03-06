@@ -28,7 +28,7 @@ class GoalAdapter extends TypeAdapter<Goal> {
     writer
       ..writeByte(3)
       ..writeByte(0)
-      ..write(obj.diffculty)
+      ..write(obj.difficulty)
       ..writeByte(1)
       ..write(obj.name)
       ..writeByte(2)
