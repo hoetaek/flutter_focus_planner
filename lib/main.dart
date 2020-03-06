@@ -13,13 +13,13 @@ class FocusPlanner extends StatefulWidget {
 }
 
 class _FocusPlannerState extends State<FocusPlanner> {
-  int _page = 1;
+  int _currentPage = 1;
   PageController _pageController;
 
   @override
   void initState() {
     _pageController = PageController(
-      initialPage: _page,
+      initialPage: _currentPage,
     );
     super.initState();
   }
@@ -34,7 +34,7 @@ class _FocusPlannerState extends State<FocusPlanner> {
         controller: _pageController,
         onPageChanged: (newPage) {
           setState(() {
-            _page = newPage;
+            _currentPage = newPage;
           });
         },
         children: <Widget>[
@@ -44,7 +44,7 @@ class _FocusPlannerState extends State<FocusPlanner> {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _page,
+        currentIndex: _currentPage,
         onTap: (index) {
           this._pageController.animateToPage(index,
               duration: const Duration(milliseconds: 500),
