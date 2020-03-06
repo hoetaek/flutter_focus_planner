@@ -17,9 +17,9 @@ class GoalAdapter extends TypeAdapter<Goal> {
       for (var i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Goal(
-      fields[0] as String,
-      fields[1] as String,
-      fields[2] as String,
+      name: fields[0] as String,
+      difficulty: fields[1] as String,
+      status: fields[2] as String,
     );
   }
 
@@ -28,10 +28,10 @@ class GoalAdapter extends TypeAdapter<Goal> {
     writer
       ..writeByte(3)
       ..writeByte(0)
-      ..write(obj.difficulty)
-      ..writeByte(1)
       ..write(obj.name)
+      ..writeByte(1)
+      ..write(obj.difficulty)
       ..writeByte(2)
-      ..write(obj.condition);
+      ..write(obj.status);
   }
 }

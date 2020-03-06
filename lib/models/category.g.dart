@@ -17,8 +17,8 @@ class CategoryAdapter extends TypeAdapter<Category> {
       for (var i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Category(
-      fields[0] as String,
-      (fields[1] as HiveList)?.castHiveList(),
+      name: fields[0] as String,
+      goals: (fields[1] as HiveList)?.castHiveList(),
     );
   }
 
@@ -27,7 +27,7 @@ class CategoryAdapter extends TypeAdapter<Category> {
     writer
       ..writeByte(2)
       ..writeByte(0)
-      ..write(obj.categoryName)
+      ..write(obj.name)
       ..writeByte(1)
       ..write(obj.goals);
   }

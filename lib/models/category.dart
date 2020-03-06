@@ -1,13 +1,15 @@
+import 'package:flutter/cupertino.dart';
+import 'package:focusplanner/models/goal.dart';
 import 'package:hive/hive.dart';
-import 'goal.dart';
+
 part 'category.g.dart';
 
 @HiveType(typeId: 0)
-class Category {
+class Category extends HiveObject {
   @HiveField(0)
-  String categoryName;
+  String name;
   @HiveField(1)
-  HiveList goals;
+  HiveList<Goal> goals;
 
-  Category(this.categoryName, this.goals);
+  Category({@required this.name, @required this.goals});
 }
