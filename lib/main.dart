@@ -5,6 +5,10 @@ import 'package:focusplanner/pages/current_page.dart';
 
 void main() => runApp(MaterialApp(
       home: FocusPlanner(),
+      theme: ThemeData(
+        scaffoldBackgroundColor: Colors.grey[50],
+//        primaryColor: Colors.amber,
+      ),
     ));
 
 class FocusPlanner extends StatefulWidget {
@@ -13,7 +17,7 @@ class FocusPlanner extends StatefulWidget {
 }
 
 class _FocusPlannerState extends State<FocusPlanner> {
-  int _currentPage = 1;
+  int _currentPage = 0;
   PageController _pageController;
 
   @override
