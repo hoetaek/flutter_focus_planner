@@ -2,14 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:focusplanner/pages/archive_page.dart';
 import 'package:focusplanner/pages/complete_page.dart';
 import 'package:focusplanner/pages/current_page.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'models/category.dart';
+import 'models/goal.dart';
 
-void main() => runApp(MaterialApp(
-      home: FocusPlanner(),
-      theme: ThemeData(
-        scaffoldBackgroundColor: Colors.grey[50],
+void main() async {
+  await Hive.initFlutter();
+  Hive.registerAdapter(CategoryAdapter());
+  Hive.registerAdapter(GoalAdapter());
+
+  runApp(MaterialApp(
+    home: FocusPlanner(),
+    theme: ThemeData(
+      scaffoldBackgroundColor: Colors.grey[50],
 //        primaryColor: Colors.amber,
-      ),
-    ));
+    ),
+  ));
+}
 
 class FocusPlanner extends StatefulWidget {
   @override
@@ -61,5 +71,10 @@ class _FocusPlannerState extends State<FocusPlanner> {
         ],
       ),
     );
+  }
+
+  void dispose() {
+    Hive.close();
+    super.dispose();
   }
 }
