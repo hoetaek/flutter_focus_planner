@@ -17,7 +17,6 @@ class GoalAdapter extends TypeAdapter<Goal> {
       for (var i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Goal(
-      category: fields[4] as Category,
       name: fields[0] as String,
       difficulty: fields[1] as int,
       status: fields[2] as String,
@@ -27,7 +26,7 @@ class GoalAdapter extends TypeAdapter<Goal> {
   @override
   void write(BinaryWriter writer, Goal obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -35,8 +34,6 @@ class GoalAdapter extends TypeAdapter<Goal> {
       ..writeByte(2)
       ..write(obj.status)
       ..writeByte(3)
-      ..write(obj.checked)
-      ..writeByte(4)
-      ..write(obj.category);
+      ..write(obj.checked);
   }
 }

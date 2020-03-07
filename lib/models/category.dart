@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:focusplanner/constants.dart';
 import 'package:focusplanner/models/goal.dart';
 import 'package:hive/hive.dart';
 
@@ -12,11 +11,10 @@ class Category extends HiveObject {
   @HiveField(1)
   HiveList<Goal> goals;
 
-  Category({@required this.name}) {
-    this.goals = HiveList(Hive.box(Boxes.goalBox));
-  }
+  Category({@required this.name});
 
   void addGoal(Goal goal) {
     goals.add(goal);
+    save();
   }
 }

@@ -115,30 +115,32 @@ class _CategoryContentState extends State<CategoryContent> {
   int countChecked = 0;
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      shrinkWrap: true,
-      itemCount: widget.category.goals.length,
-      itemBuilder: (context, index) {
-        Goal goal = widget.category.goals[index];
-        return CheckboxListTile(
-          title: Text('${goal.name}'),
-          value: goal.checked,
-          onChanged: (checkChanged) {
-            setState(() {
-              goal.checked = checkChanged;
-              goal.save();
-            });
-            if (checkChanged)
-              countChecked += 1;
-            else
-              countChecked -= 1;
-            if (countChecked > 0)
-              widget.onChecked(true);
-            else
-              widget.onChecked(false);
-          },
-        );
-      },
-    );
+    return widget.category.goals != null
+        ? ListView.builder(
+            shrinkWrap: true,
+            itemCount: widget.category.goals.length,
+            itemBuilder: (context, index) {
+              Goal goal = widget.category.goals[index];
+              return CheckboxListTile(
+                title: Text('${goal.name}'),
+                value: goal.checked,
+                onChanged: (checkChanged) {
+                  setState(() {
+                    goal.checked = checkChanged;
+                    goal.save();
+                  });
+                  if (checkChanged)
+                    countChecked += 1;
+                  else
+                    countChecked -= 1;
+                  if (countChecked > 0)
+                    widget.onChecked(true);
+                  else
+                    widget.onChecked(false);
+                },
+              );
+            },
+          )
+        : Container();
   }
 }

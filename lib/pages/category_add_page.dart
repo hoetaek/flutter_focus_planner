@@ -22,8 +22,9 @@ class CategoryAddPage extends StatelessWidget {
           ),
           CustomButton(
             onPressed: () {
-              Hive.box(Boxes.categoryBox)
-                  .add(Category(name: _textController.text));
+              Category category = Category(name: _textController.text);
+              category.goals = HiveList(Hive.box(Boxes.goalBox));
+              Hive.box(Boxes.categoryBox).add(category);
               Navigator.pop(context);
             },
           ),

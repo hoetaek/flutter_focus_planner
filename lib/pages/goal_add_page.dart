@@ -48,7 +48,6 @@ class _GoalAddPageState extends State<GoalAddPage> {
           CustomButton(
             onPressed: () {
               Goal goal = Goal(
-                  category: widget.category,
                   name: _textController.text,
                   difficulty: _difficulty,
                   status: widget.goalStatus);
