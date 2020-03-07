@@ -8,9 +8,14 @@ class Goal extends HiveObject {
   @HiveField(0)
   String name;
   @HiveField(1)
-  String difficulty;
+  int difficulty;
   @HiveField(2)
   String status;
+  @HiveField(3)
+  bool checked;
 
-  Goal({@required this.name, @required this.difficulty, @required this.status});
+  Goal(
+      {@required this.name, @required this.difficulty, @required this.status}) {
+    this.checked = false;
+  }
 }

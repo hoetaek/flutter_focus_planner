@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:focusplanner/constants.dart';
+import 'package:focusplanner/models/category.dart';
 import 'package:focusplanner/widgets/custom_button.dart';
 import 'package:focusplanner/widgets/custom_text_field.dart';
+import 'package:hive/hive.dart';
 
 class CategoryAddPage extends StatelessWidget {
   final TextEditingController _textController = TextEditingController();
@@ -19,7 +22,10 @@ class CategoryAddPage extends StatelessWidget {
           ),
           CustomButton(
             onPressed: () {
-              print("${_textController.text}");
+              Category category = Category(name: _textController.text);
+              category.goals = HiveList(Hive.box(Boxes.goalBox));
+              Hive.box(Boxes.categoryBox).add(category);
+              Navigator.pop(context);
             },
           ),
         ],

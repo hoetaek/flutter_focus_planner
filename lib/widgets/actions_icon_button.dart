@@ -7,31 +7,20 @@ enum ButtonState {
 
 class ActionsIconButton extends StatelessWidget {
   final buttonState;
-  final Widget addPage;
+  final Widget addWidget;
+  final List<Widget> modifyWidgets;
 
-  ActionsIconButton({@required this.buttonState, @required this.addPage});
+  ActionsIconButton(
+      {@required this.buttonState,
+      @required this.addWidget,
+      @required this.modifyWidgets});
 
   @override
   Widget build(BuildContext context) {
     return buttonState == ButtonState.add
-        ? IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => addPage));
-            },
-          )
+        ? addWidget
         : Row(
-            children: <Widget>[
-              IconButton(
-                icon: Icon(Icons.delete),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: Icon(Icons.work),
-                onPressed: () {},
-              ),
-            ],
+            children: modifyWidgets,
           );
   }
 }

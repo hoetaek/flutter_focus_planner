@@ -11,5 +11,10 @@ class Category extends HiveObject {
   @HiveField(1)
   HiveList<Goal> goals;
 
-  Category({@required this.name, @required this.goals});
+  Category({@required this.name});
+
+  void addGoal(Goal goal) {
+    goals.add(goal);
+    save();
+  }
 }

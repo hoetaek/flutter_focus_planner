@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:focusplanner/constants.dart';
 import 'package:focusplanner/pages/archive_page.dart';
 import 'package:focusplanner/pages/complete_page.dart';
 import 'package:focusplanner/pages/current_page.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+
 import 'models/category.dart';
 import 'models/goal.dart';
 
@@ -11,6 +13,12 @@ void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(CategoryAdapter());
   Hive.registerAdapter(GoalAdapter());
+  await Hive.openBox(Boxes.categoryBox);
+  await Hive.openBox(Boxes.goalBox);
+  Box categoryBox = Hive.box(Boxes.categoryBox);
+  Category category = Category(name: 'routine');
+  category.goals = HiveList(Hive.box(Boxes.goalBox));
+  if (categoryBox.isEmpty) categoryBox.add(category);
 
   runApp(MaterialApp(
     home: FocusPlanner(),
@@ -35,6 +43,7 @@ class _FocusPlannerState extends State<FocusPlanner> {
     _pageController = PageController(
       initialPage: _currentPage,
     );
+
     super.initState();
   }
 
