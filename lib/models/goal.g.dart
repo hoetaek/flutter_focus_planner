@@ -17,21 +17,26 @@ class GoalAdapter extends TypeAdapter<Goal> {
       for (var i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Goal(
+      category: fields[4] as Category,
       name: fields[0] as String,
-      difficulty: fields[1] as String,
+      difficulty: fields[1] as int,
       status: fields[2] as String,
-    );
+    )..checked = fields[3] as bool;
   }
 
   @override
   void write(BinaryWriter writer, Goal obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
       ..write(obj.difficulty)
       ..writeByte(2)
-      ..write(obj.status);
+      ..write(obj.status)
+      ..writeByte(3)
+      ..write(obj.checked)
+      ..writeByte(4)
+      ..write(obj.category);
   }
 }

@@ -18,8 +18,7 @@ class CategoryAdapter extends TypeAdapter<Category> {
     };
     return Category(
       name: fields[0] as String,
-      goals: (fields[1] as HiveList)?.castHiveList(),
-    );
+    )..goals = (fields[1] as HiveList)?.castHiveList();
   }
 
   @override
