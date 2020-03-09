@@ -5,7 +5,15 @@ import 'package:focusplanner/screens/category_card.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-class ArchivePage extends StatelessWidget {
+class ArchivePage extends StatefulWidget {
+  @override
+  _ArchivePageState createState() => _ArchivePageState();
+}
+
+class _ArchivePageState extends State<ArchivePage> {
+  double _scale = 1.0;
+  double _initScale = 1.0;
+
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
@@ -13,23 +21,35 @@ class ArchivePage extends StatelessWidget {
       builder: (context, Box box, widget) {
         return Padding(
           padding: EdgeInsets.all(20.0),
-          child: GridView.builder(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 15.0,
-              mainAxisSpacing: 15.0,
-              childAspectRatio: 2 / 3,
-            ),
-            itemCount: box.length + 1,
-            itemBuilder: (context, index) {
-              if (index != box.length) {
-                return CategoryCard(
-                  category: box.getAt(index),
-                );
-              } else {
-                return AddCategoryCard();
-              }
+          child: GestureDetector(
+            onScaleUpdate: (ScaleUpdateDetails scaleDetails) {
+              print(scaleDetails.scale);
+              setState(() {
+                _scale = _initScale + _initScale * 1 / scaleDetails.scale / 2;
+                if (_scale < 1)
+                  _scale = 1.0;
+                else if (_scale > 4) _scale = 4.0;
+              });
+              print(_scale);
             },
+            child: GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: _scale.toInt(),
+                crossAxisSpacing: 15.0,
+                mainAxisSpacing: 15.0,
+                childAspectRatio: 2 / 3,
+              ),
+              itemCount: box.length + 1,
+              itemBuilder: (context, index) {
+                if (index != box.length) {
+                  return CategoryCard(
+                    category: box.getAt(index),
+                  );
+                } else {
+                  return AddCategoryCard();
+                }
+              },
+            ),
           ),
         );
       },
