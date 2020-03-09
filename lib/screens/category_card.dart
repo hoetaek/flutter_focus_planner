@@ -152,6 +152,8 @@ class CategoryContent extends StatefulWidget {
 }
 
 class _CategoryContentState extends State<CategoryContent> {
+  //todo 난이도 표시하는 방법
+  //todo 난이도 순서대로 표시하기
   @override
   Widget build(BuildContext context) {
     List<Goal> archivedGoals = widget.category.goals
@@ -163,6 +165,7 @@ class _CategoryContentState extends State<CategoryContent> {
             itemCount: archivedGoals.length,
             itemBuilder: (context, index) {
               Goal goal = archivedGoals[index];
+              //todo 길게 눌렀을 때 정보 수정하기
               return CheckboxListTile(
                 title: Text('${goal.name}'),
                 value: goal.checked,

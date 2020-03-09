@@ -1,27 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:focusplanner/models/category.dart';
 import 'package:focusplanner/models/goal.dart';
-import 'package:focusplanner/pages/goal_add_page.dart';
-import 'package:focusplanner/widgets/actions_icon_button.dart';
-import 'package:hive/hive.dart';
 
 import '../constants.dart';
 
-class ShowCurrent extends StatefulWidget {
+class CurrentListView extends StatefulWidget {
   final Category category;
 
-  ShowCurrent({this.category});
+  CurrentListView({this.category});
   @override
-  _ShowCurrentState createState() => _ShowCurrentState();
+  _CurrentListViewState createState() => _CurrentListViewState();
 }
 
-class _ShowCurrentState extends State<ShowCurrent> {
+class _CurrentListViewState extends State<CurrentListView> {
   @override
   Widget build(BuildContext context) {
     return Container(
       child: Column(
         children: <Widget>[
           Container(),
+          //todo 난이도 순서대로 표시하기
           CategoryElement(
             category: widget.category,
           )

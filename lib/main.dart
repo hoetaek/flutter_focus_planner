@@ -63,6 +63,7 @@ class _FocusPlannerState extends State<FocusPlanner> {
         },
         children: <Widget>[
           ArchivePage(),
+          //todo FocusPage
           CurrentPage(),
           CompletePage(),
         ],
@@ -76,8 +77,11 @@ class _FocusPlannerState extends State<FocusPlanner> {
         },
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.archive), title: Text("목록")),
+          //todo list
           BottomNavigationBarItem(icon: Icon(Icons.work), title: Text("작업")),
+          //todo focus
           BottomNavigationBarItem(icon: Icon(Icons.check), title: Text("완료")),
+          //todo done
         ],
       ),
     );

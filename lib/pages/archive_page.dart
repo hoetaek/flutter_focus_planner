@@ -13,7 +13,7 @@ class ArchivePage extends StatefulWidget {
 class _ArchivePageState extends State<ArchivePage> {
   double _scale = 1.0;
   double _initScale = 1.0;
-
+  //todo 보기 모드 난이도별 / 카테고리별
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
@@ -41,6 +41,7 @@ class _ArchivePageState extends State<ArchivePage> {
               ),
               itemCount: box.length + 1,
               itemBuilder: (context, index) {
+                //todo 루틴의 경우 매일 초기화되는 'goal'로 만들 것
                 if (index != box.length) {
                   return CategoryCard(
                     category: box.getAt(index),

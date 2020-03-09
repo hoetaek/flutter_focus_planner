@@ -12,6 +12,10 @@ class GoalStatus {
   static String complete = "Complete";
 }
 
+class Settings {
+  static String currentCategory = "currentCategory";
+}
+
 const Radius kCardRadius = Radius.circular(15.0);
 const BoxDecoration kCardDecoration = BoxDecoration(
     color: Colors.white, borderRadius: BorderRadius.all(kCardRadius));
