@@ -15,6 +15,7 @@ void main() async {
   Hive.registerAdapter(GoalAdapter());
   await Hive.openBox(Boxes.categoryBox);
   await Hive.openBox(Boxes.goalBox);
+  await Hive.openBox(Boxes.settingBox);
   Box categoryBox = Hive.box(Boxes.categoryBox);
   Category category = Category(name: 'routine');
   category.goals = HiveList(Hive.box(Boxes.goalBox));
