@@ -3,6 +3,7 @@ import 'package:focusplanner/models/category.dart';
 import 'package:focusplanner/models/goal.dart';
 import 'package:focusplanner/pages/goal_add_page.dart';
 import 'package:focusplanner/widgets/actions_icon_button.dart';
+import 'package:hive/hive.dart';
 
 import '../constants.dart';
 
@@ -121,7 +122,14 @@ class CategoryHeader extends StatelessWidget {
                 IconButton(
                   icon: Icon(Icons.work),
                   onPressed: () {
+                    category.goals.forEach((Goal goal) {
+                      goal.status = GoalStatus.current;
+                      goal.checked = false;
+                      goal.save();
+                    });
                     actionDone();
+                    Box settingBox = Hive.box(Boxes.settingBox);
+                    settingBox.put('currentCategory', category);
                   },
                 )
               ],
@@ -146,12 +154,15 @@ class CategoryContent extends StatefulWidget {
 class _CategoryContentState extends State<CategoryContent> {
   @override
   Widget build(BuildContext context) {
+    List<Goal> archivedGoals = widget.category.goals
+        .where((Goal goal) => goal.status == GoalStatus.archive)
+        .toList();
     return widget.category.goals != null
         ? ListView.builder(
             shrinkWrap: true,
-            itemCount: widget.category.goals.length,
+            itemCount: archivedGoals.length,
             itemBuilder: (context, index) {
-              Goal goal = widget.category.goals[index];
+              Goal goal = archivedGoals[index];
               return CheckboxListTile(
                 title: Text('${goal.name}'),
                 value: goal.checked,

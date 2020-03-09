@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class Boxes {
   static String categoryBox = "CategoryBox";
   static String goalBox = "GoalBox";
+  static String settingBox = "SettingBox";
 }
 
 class GoalStatus {
