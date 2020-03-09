@@ -16,7 +16,20 @@ class CategoryCard extends StatefulWidget {
 }
 
 class _CategoryCardState extends State<CategoryCard> {
-  ButtonState _buttonState = ButtonState.add;
+  ButtonState _buttonState;
+
+  bool goalIsChecked() {
+    return widget.category.goals.where((Goal goal) => goal.checked).isNotEmpty;
+  }
+
+  @override
+  void initState() {
+    if (goalIsChecked())
+      _buttonState = ButtonState.modify;
+    else
+      _buttonState = ButtonState.add;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,19 +43,22 @@ class _CategoryCardState extends State<CategoryCard> {
       child: Column(
         children: <Widget>[
           CategoryHeader(
-            category: widget.category,
-            buttonState: _buttonState,
-          ),
+              category: widget.category,
+              buttonState: _buttonState,
+              actionDone: () {
+                setState(() {
+                  _buttonState = ButtonState.add;
+                });
+              }),
           CategoryContent(
               category: widget.category,
-              onChecked: (checked) {
+              onChecked: () {
                 setState(() {
-                  if (checked)
+                  if (goalIsChecked())
                     _buttonState = ButtonState.modify;
                   else
                     _buttonState = ButtonState.add;
                 });
-                print(checked);
               }),
         ],
       ),
@@ -53,8 +69,10 @@ class _CategoryCardState extends State<CategoryCard> {
 class CategoryHeader extends StatelessWidget {
   final Category category;
   final ButtonState buttonState;
+  final Function actionDone;
 
-  const CategoryHeader({@required this.category, @required this.buttonState});
+  const CategoryHeader(
+      {@required this.category, @required this.buttonState, this.actionDone});
 
   @override
   Widget build(BuildContext context) {
@@ -66,34 +84,48 @@ class CategoryHeader extends StatelessWidget {
       child: Row(
         children: <Widget>[
           SizedBox(width: 10.0),
-          Text('${category.name}'),
+          FittedBox(child: Text('${category.name}')),
           Expanded(
             child: Container(),
           ),
-          ActionsIconButton(
-            buttonState: buttonState,
-            addWidget: IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => GoalAddPage(
-                              category: category,
-                              goalStatus: GoalStatus.archive,
-                            )));
-              },
-            ),
-            modifyWidgets: <Widget>[
-              IconButton(
-                icon: Icon(Icons.delete),
-                onPressed: () {},
+          FittedBox(
+            child: ActionsIconButton(
+              buttonState: buttonState,
+              addWidget: IconButton(
+                icon: Icon(Icons.add),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => GoalAddPage(
+                                category: category,
+                                goalStatus: GoalStatus.archive,
+                              )));
+                },
               ),
-              IconButton(
-                icon: Icon(Icons.work),
-                onPressed: () {},
-              )
-            ],
+              modifyWidgets: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: () {
+                    List<Goal> goalCheckedList = category.goals.where((goal) {
+                      return goal.checked;
+                    }).toList();
+                    goalCheckedList.forEach((Goal goal) {
+                      category.goals.remove(goal);
+                      category.save();
+                      goal.delete();
+                    });
+                    actionDone();
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.work),
+                  onPressed: () {
+                    actionDone();
+                  },
+                )
+              ],
+            ),
           ),
         ],
       ),
@@ -103,7 +135,7 @@ class CategoryHeader extends StatelessWidget {
 
 class CategoryContent extends StatefulWidget {
   final Category category;
-  final ValueChanged<bool> onChecked;
+  final Function onChecked;
 
   const CategoryContent({@required this.category, @required this.onChecked});
 
@@ -112,7 +144,6 @@ class CategoryContent extends StatefulWidget {
 }
 
 class _CategoryContentState extends State<CategoryContent> {
-  int countChecked = 0;
   @override
   Widget build(BuildContext context) {
     return widget.category.goals != null
@@ -129,14 +160,7 @@ class _CategoryContentState extends State<CategoryContent> {
                     goal.checked = checkChanged;
                     goal.save();
                   });
-                  if (checkChanged)
-                    countChecked += 1;
-                  else
-                    countChecked -= 1;
-                  if (countChecked > 0)
-                    widget.onChecked(true);
-                  else
-                    widget.onChecked(false);
+                  widget.onChecked();
                 },
               );
             },
