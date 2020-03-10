@@ -122,6 +122,24 @@ class CategoryHeader extends StatelessWidget {
                 IconButton(
                   icon: Icon(Icons.work),
                   onPressed: () {
+                    // set the already current status goals to archived
+                    Box settingBox = Hive.box(Boxes.settingBox);
+                    int currentCategoryKey =
+                        settingBox.get(Settings.currentCategory);
+                    Category currentCategory =
+                        Hive.box(Boxes.categoryBox).get(currentCategoryKey);
+                    if (currentCategory != null &&
+                        currentCategory != category) {
+                      currentCategory.goals
+                          .where(
+                              (Goal goal) => goal.status == GoalStatus.current)
+                          .forEach((Goal goal) {
+                        goal.checked = false;
+                        goal.status = GoalStatus.archive;
+                      });
+                    }
+
+                    // set the checked goals to current status
                     List<Goal> goalCheckedList = category.goals.where((goal) {
                       return goal.checked;
                     }).toList();
@@ -131,7 +149,9 @@ class CategoryHeader extends StatelessWidget {
                       goal.save();
                     });
                     actionDone();
-                    Box settingBox = Hive.box(Boxes.settingBox);
+                    //todo checkbox checks off a little bit late. should fix
+
+                    //set to current category
                     settingBox.put(Settings.currentCategory, category.key);
                   },
                 )

@@ -22,11 +22,13 @@ class _CurrentListViewState extends State<CurrentListView> {
     return widget.category.goals.where((Goal goal) => goal.checked).isNotEmpty;
   }
 
+  @override
   void initState() {
     if (goalIsChecked())
       _buttonState = ButtonState.modify;
     else
       _buttonState = ButtonState.add;
+    super.initState();
   }
 
   @override
@@ -134,6 +136,7 @@ class CurrentHeader extends StatelessWidget {
                 ),
                 IconButton(
                   icon: Icon(Icons.done),
+                  onPressed: () {},
                   //todo 완료 했을 때 comeplete page로 넘어 가게 한다.
                 ),
               ],
