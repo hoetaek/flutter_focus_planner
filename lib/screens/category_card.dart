@@ -122,14 +122,17 @@ class CategoryHeader extends StatelessWidget {
                 IconButton(
                   icon: Icon(Icons.work),
                   onPressed: () {
-                    category.goals.forEach((Goal goal) {
+                    List<Goal> goalCheckedList = category.goals.where((goal) {
+                      return goal.checked;
+                    }).toList();
+                    goalCheckedList.forEach((Goal goal) {
                       goal.status = GoalStatus.current;
                       goal.checked = false;
                       goal.save();
                     });
                     actionDone();
                     Box settingBox = Hive.box(Boxes.settingBox);
-                    settingBox.put('currentCategory', category.key);
+                    settingBox.put(Boxes.currentCategory, category.key);
                   },
                 )
               ],

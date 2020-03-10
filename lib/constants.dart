@@ -4,6 +4,8 @@ class Boxes {
   static String categoryBox = "CategoryBox";
   static String goalBox = "GoalBox";
   static String settingBox = "SettingBox";
+  static String currentCategory = "currentCagegory";
+  static String archiveCategory = "archiveCategory";
 }
 
 class GoalStatus {

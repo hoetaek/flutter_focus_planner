@@ -43,9 +43,7 @@ class _ArchivePageState extends State<ArchivePage> {
               itemBuilder: (context, index) {
                 //todo 루틴의 경우 매일 초기화되는 'goal'로 만들 것
                 if (index != box.length) {
-                  return CategoryCard(
-                    category: box.getAt(index),
-                  );
+                  return CategoryCard(category: box.getAt(index));
                 } else {
                   return AddCategoryCard();
                 }
