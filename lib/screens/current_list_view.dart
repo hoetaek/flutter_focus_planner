@@ -34,7 +34,7 @@ class _CurrentListViewState extends State<CurrentListView> {
     return Container(
       child: Column(
         children: <Widget>[
-          CategorySubject(
+          CurrentHeader(
             category: widget.category,
             buttonState: _buttonState,
             actionDone: () {
@@ -46,7 +46,7 @@ class _CurrentListViewState extends State<CurrentListView> {
           ),
           Container(),
           //todo 난이도 순서대로 표시하기
-          CategoryElement(
+          CurrentContent(
             category: widget.category,
             onChecked: () {
               setState(() {
@@ -64,12 +64,12 @@ class _CurrentListViewState extends State<CurrentListView> {
   }
 }
 
-class CategorySubject extends StatelessWidget {
+class CurrentHeader extends StatelessWidget {
   final Category category;
   final ButtonState buttonState;
   final Function actionDone;
 
-  const CategorySubject({this.category, this.buttonState, this.actionDone});
+  const CurrentHeader({this.category, this.buttonState, this.actionDone});
 
   @override
   Widget build(BuildContext context) {
@@ -143,16 +143,16 @@ class CategorySubject extends StatelessWidget {
   }
 }
 
-class CategoryElement extends StatefulWidget {
+class CurrentContent extends StatefulWidget {
   final Category category;
   final Function onChecked;
 
-  CategoryElement({this.category, this.onChecked});
+  CurrentContent({this.category, this.onChecked});
   @override
-  _CategoryElementState createState() => _CategoryElementState();
+  _CurrentContentState createState() => _CurrentContentState();
 }
 
-class _CategoryElementState extends State<CategoryElement> {
+class _CurrentContentState extends State<CurrentContent> {
   @override
   Widget build(BuildContext context) {
     List<Goal> currentGoals = widget.category.goals

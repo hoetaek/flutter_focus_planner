@@ -15,21 +15,21 @@ class CurrentPage extends StatelessWidget {
     return ValueListenableBuilder(
         valueListenable: Hive.box(Boxes.settingBox).listenable(),
         builder: (context, Box box, widget) {
-          if (category.key != box.get(Boxes.currentCategory) &&
-              box.get(Boxes.currentCategory) != null) {
+          if (category.key != box.get(Settings.currentCategory) &&
+              box.get(Settings.currentCategory) != null) {
             category.goals.forEach((Goal goal) {
               goal.status = GoalStatus.archive;
               goal.save();
             });
           }
-          category = categoryBox.get(box.get(Boxes.currentCategory));
-          return box.get(Boxes.currentCategory) != null
+          category = categoryBox.get(box.get(Settings.currentCategory));
+          return box.get(Settings.currentCategory) != null
               ? Padding(
                   padding: EdgeInsets.all((20.0)),
                   child: CurrentListView(
                       //box의 id를 받아와서 그 id의 status가 current이면 보여 줌.
                       category:
-                          categoryBox.get(box.get(Boxes.currentCategory))),
+                          categoryBox.get(box.get(Settings.currentCategory))),
                 )
               : Container();
         });

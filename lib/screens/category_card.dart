@@ -132,7 +132,7 @@ class CategoryHeader extends StatelessWidget {
                     });
                     actionDone();
                     Box settingBox = Hive.box(Boxes.settingBox);
-                    settingBox.put(Boxes.currentCategory, category.key);
+                    settingBox.put(Settings.currentCategory, category.key);
                   },
                 )
               ],
