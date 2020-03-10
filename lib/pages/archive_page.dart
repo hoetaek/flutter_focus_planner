@@ -12,7 +12,7 @@ class ArchivePage extends StatefulWidget {
 
 class _ArchivePageState extends State<ArchivePage> {
   double _scale = 1.0;
-  double _initScale = 1.0;
+  double _previousScale;
   //todo 보기 모드 난이도별 / 카테고리별
   @override
   Widget build(BuildContext context) {
@@ -22,15 +22,27 @@ class _ArchivePageState extends State<ArchivePage> {
         return Padding(
           padding: EdgeInsets.all(20.0),
           child: GestureDetector(
+            onScaleStart: (ScaleStartDetails details) {
+              print(details);
+              // Does this need to go into setState, too?
+              // We are only saving the scale from before the zooming started
+              // for later - this does not affect the rendering...
+              _previousScale = _scale;
+            },
             onScaleUpdate: (ScaleUpdateDetails scaleDetails) {
               print(scaleDetails.scale);
               setState(() {
-                _scale = _initScale + _initScale * 1 / scaleDetails.scale / 2;
+                _scale = _previousScale * 1 / scaleDetails.scale;
                 if (_scale < 1)
                   _scale = 1.0;
                 else if (_scale > 4) _scale = 4.0;
               });
               print(_scale);
+            },
+            onScaleEnd: (ScaleEndDetails details) {
+              print(details);
+              // See comment above
+              _previousScale = null;
             },
             child: GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
