@@ -13,9 +13,25 @@ class Goal extends HiveObject {
   String status;
   @HiveField(3)
   bool checked;
+  @HiveField(4)
+  DateTime date;
 
   Goal(
       {@required this.name, @required this.difficulty, @required this.status}) {
     this.checked = false;
+  }
+
+  void setDate(DateTime today) {
+    date = today;
+    save();
+  }
+
+  DateTime getDay() {
+    return date;
+  }
+
+  bool isOnDate(DateTime compareDate) {
+    if (compareDate == date) return true;
+    return false;
   }
 }
