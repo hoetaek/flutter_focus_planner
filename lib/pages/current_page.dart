@@ -11,12 +11,13 @@ class CurrentPage extends StatelessWidget {
     return ValueListenableBuilder(
         valueListenable: Hive.box(Boxes.settingBox).listenable(),
         builder: (context, Box box, widget) {
-          //todo 카테고리 이름을 보여주기
-          return box.get('currentCategory') != null
+          return box.get(Settings.currentCategory) != null
               ? Padding(
                   padding: EdgeInsets.all((20.0)),
                   child: CurrentListView(
-                      category: categoryBox.get(box.get('currentCategory'))),
+                      //box의 id를 받아와서 그 id의 status가 current이면 보여 줌.
+                      category:
+                          categoryBox.get(box.get(Settings.currentCategory))),
                 )
               : Container();
         });
