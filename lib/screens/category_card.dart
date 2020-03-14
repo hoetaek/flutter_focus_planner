@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:focusplanner/models/category.dart';
 import 'package:focusplanner/models/goal.dart';
 import 'package:focusplanner/pages/goal_add_page.dart';
+import 'package:focusplanner/utils/page_controller_provider.dart';
 import 'package:focusplanner/widgets/actions_icon_button.dart';
 import 'package:hive/hive.dart';
 
@@ -153,6 +154,11 @@ class CategoryHeader extends StatelessWidget {
 
                     //set to current category
                     settingBox.put(Settings.currentCategory, category.key);
+                    PageControllerProvider.of(context)
+                        .pageController
+                        .animateToPage(1,
+                            duration: Duration(milliseconds: 500),
+                            curve: Curves.easeIn);
                   },
                 )
               ],

@@ -136,7 +136,19 @@ class CurrentHeader extends StatelessWidget {
                 ),
                 IconButton(
                   icon: Icon(Icons.done),
-                  onPressed: () {},
+                  onPressed: () {
+                    List<Goal> goalCheckedList = category.goals.where((goal) {
+                      //checked가 된 골만 return 한다.
+                      return goal.checked;
+                    }).toList();
+                    goalCheckedList.forEach((Goal goal) {
+                      goal.status = GoalStatus.complete;
+                      goal.checked = false;
+                      goal.setDate(DateTime.now());
+                      goal.save();
+                    });
+                    actionDone();
+                  },
                   //todo 완료 했을 때 comeplete page로 넘어 가게 한다.
                 ),
               ],

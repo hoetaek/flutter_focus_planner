@@ -20,13 +20,15 @@ class GoalAdapter extends TypeAdapter<Goal> {
       name: fields[0] as String,
       difficulty: fields[1] as int,
       status: fields[2] as String,
-    )..checked = fields[3] as bool;
+    )
+      ..checked = fields[3] as bool
+      ..date = fields[4] as DateTime;
   }
 
   @override
   void write(BinaryWriter writer, Goal obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -34,6 +36,8 @@ class GoalAdapter extends TypeAdapter<Goal> {
       ..writeByte(2)
       ..write(obj.status)
       ..writeByte(3)
-      ..write(obj.checked);
+      ..write(obj.checked)
+      ..writeByte(4)
+      ..write(obj.date);
   }
 }
