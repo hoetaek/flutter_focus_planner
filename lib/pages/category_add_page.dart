@@ -24,7 +24,7 @@ class CategoryAddPage extends StatelessWidget {
             onPressed: () {
               Category category = Category(name: _textController.text);
               category.goals = HiveList(Hive.box(Boxes.goalBox));
-              category.priority = Hive.box(Boxes.goalBox).length;
+              category.priority = Hive.box(Boxes.categoryBox).length;
               Hive.box(Boxes.categoryBox).add(category);
               Navigator.pop(context);
             },

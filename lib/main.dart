@@ -3,7 +3,6 @@ import 'package:focusplanner/constants.dart';
 import 'package:focusplanner/pages/archive_page.dart';
 import 'package:focusplanner/pages/complete_page.dart';
 import 'package:focusplanner/pages/current_page.dart';
-import 'package:focusplanner/utils/page_controller_provider.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -18,9 +17,9 @@ void main() async {
   await Hive.openBox(Boxes.goalBox);
   await Hive.openBox(Boxes.settingBox);
   Box categoryBox = Hive.box(Boxes.categoryBox);
-  Category category = Category(name: 'routine');
-  category.goals = HiveList(Hive.box(Boxes.goalBox));
-  if (categoryBox.isEmpty) categoryBox.add(category);
+//  Category category = Category(name: 'routine');
+//  category.goals = HiveList(Hive.box(Boxes.goalBox));
+//  if (categoryBox.isEmpty) categoryBox.add(category);
 
   runApp(MaterialApp(
     home: FocusPlanner(),
@@ -45,29 +44,28 @@ class _FocusPlannerState extends State<FocusPlanner> {
     _pageController = PageController(
       initialPage: _currentPage,
     );
-
+    Hive.box(Boxes.categoryBox).values.forEach((category) {
+      print(category);
+    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageControllerProvider(
-        pageController: _pageController,
-        child: PageView(
-          controller: _pageController,
-          onPageChanged: (newPage) {
-            setState(() {
-              _currentPage = newPage;
-            });
-          },
-          children: <Widget>[
-            ArchivePage(),
-            //todo FocusPage
-            CurrentPage(),
-            CompletePage(),
-          ],
-        ),
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (newPage) {
+          setState(() {
+            _currentPage = newPage;
+          });
+        },
+        children: <Widget>[
+          ArchivePage(),
+          //todo FocusPage
+          CurrentPage(),
+          CompletePage(),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentPage,

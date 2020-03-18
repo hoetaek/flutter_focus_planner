@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:focusplanner/models/category.dart';
 import 'package:focusplanner/models/goal.dart';
 import 'package:focusplanner/pages/goal_add_page.dart';
+import 'package:focusplanner/utils/work_list.dart';
 import 'package:focusplanner/widgets/actions_icon_button.dart';
 import 'package:hive/hive.dart';
 
@@ -17,14 +18,18 @@ class CurrentListView extends StatefulWidget {
 
 class _CurrentListViewState extends State<CurrentListView> {
   ButtonState _buttonState;
+  WorkList workList;
 
-  bool goalIsChecked() {
-    return widget.category.goals.where((Goal goal) => goal.checked).isNotEmpty;
+  bool goalIsChecked(List<Goal> goalList) {
+    return goalList.where((Goal goal) => goal.checked).isNotEmpty;
   }
 
   @override
   void initState() {
-    if (goalIsChecked())
+    workList = WorkList();
+    workList.generateWorkOrder();
+    Work focusWork = workList.workOrder.first;
+    if (goalIsChecked(focusWork.goalList))
       _buttonState = ButtonState.modify;
     else
       _buttonState = ButtonState.add;
@@ -33,10 +38,12 @@ class _CurrentListViewState extends State<CurrentListView> {
 
   @override
   Widget build(BuildContext context) {
+    workList.generateWorkOrder();
+    Work focusWork = workList.workOrder.first;
     return CustomScrollView(
       slivers: <Widget>[
         CurrentSliverAppBar(
-          category: widget.category,
+          category: focusWork.category,
           buttonState: _buttonState,
           actionDone: () {
             setState(() {
@@ -48,10 +55,10 @@ class _CurrentListViewState extends State<CurrentListView> {
 //        Container(),
         //todo 난이도 순서대로 표시하기
         CurrentContent(
-          category: widget.category,
+          focusGoals: focusWork.goalList,
           onChecked: () {
             setState(() {
-              if (goalIsChecked()) {
+              if (goalIsChecked(focusWork.goalList)) {
                 _buttonState = ButtonState.modify;
               } else {
                 _buttonState = ButtonState.add;
@@ -152,10 +159,10 @@ class CurrentSliverAppBar extends StatelessWidget {
 
  */
 class CurrentContent extends StatefulWidget {
-  final Category category;
+  final List<Goal> focusGoals;
   final Function onChecked;
 
-  CurrentContent({this.category, this.onChecked});
+  CurrentContent({this.focusGoals, this.onChecked});
   @override
   _CurrentContentState createState() => _CurrentContentState();
 }
@@ -163,14 +170,11 @@ class CurrentContent extends StatefulWidget {
 class _CurrentContentState extends State<CurrentContent> {
   @override
   Widget build(BuildContext context) {
-    List<Goal> currentGoals = widget.category.goals
-        .where((Goal goal) => goal.status == GoalStatus.current)
-        .toList();
-    return widget.category.goals != null
+    return widget.focusGoals != null
         ? SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                Goal goal = currentGoals[index];
+                Goal goal = widget.focusGoals[index];
                 return CheckboxListTile(
                   title: Text('${goal.name}'),
                   value: goal.checked,
@@ -183,7 +187,7 @@ class _CurrentContentState extends State<CurrentContent> {
                   },
                 );
               },
-              childCount: currentGoals.length,
+              childCount: widget.focusGoals.length,
             ),
           )
         : Container();
