@@ -3,6 +3,7 @@ import 'package:focusplanner/constants.dart';
 import 'package:focusplanner/pages/archive_page.dart';
 import 'package:focusplanner/pages/complete_page.dart';
 import 'package:focusplanner/pages/current_page.dart';
+import 'package:focusplanner/utils/page_controller_provider.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -53,19 +54,22 @@ class _FocusPlannerState extends State<FocusPlanner> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: (newPage) {
-          setState(() {
-            _currentPage = newPage;
-          });
-        },
-        children: <Widget>[
-          ArchivePage(),
-          //todo FocusPage
-          CurrentPage(),
-          CompletePage(),
-        ],
+      body: PageControllerProvider(
+        pageController: _pageController,
+        child: PageView(
+          controller: _pageController,
+          onPageChanged: (newPage) {
+            setState(() {
+              _currentPage = newPage;
+            });
+          },
+          children: <Widget>[
+            ArchivePage(),
+            //todo FocusPage
+            CurrentPage(),
+            CompletePage(),
+          ],
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentPage,

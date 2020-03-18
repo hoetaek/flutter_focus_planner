@@ -4,19 +4,18 @@ import 'package:focusplanner/models/goal.dart';
 import 'package:focusplanner/pages/goal_add_page.dart';
 import 'package:focusplanner/utils/work_list.dart';
 import 'package:focusplanner/widgets/actions_icon_button.dart';
-import 'package:hive/hive.dart';
 
 import '../constants.dart';
 
-class CurrentListView extends StatefulWidget {
+class CurrentView extends StatefulWidget {
   final Category category;
 
-  CurrentListView({this.category});
+  CurrentView({this.category});
   @override
-  _CurrentListViewState createState() => _CurrentListViewState();
+  _CurrentViewState createState() => _CurrentViewState();
 }
 
-class _CurrentListViewState extends State<CurrentListView> {
+class _CurrentViewState extends State<CurrentView> {
   ButtonState _buttonState;
   WorkList workList;
 
@@ -44,6 +43,7 @@ class _CurrentListViewState extends State<CurrentListView> {
       slivers: <Widget>[
         CurrentSliverAppBar(
           category: focusWork.category,
+          difficulty: focusWork.difficulty,
           buttonState: _buttonState,
           actionDone: () {
             setState(() {
@@ -75,13 +75,15 @@ class CurrentSliverAppBar extends StatelessWidget {
   final Category category;
   final ButtonState buttonState;
   final Function actionDone;
+  final int difficulty;
 
-  const CurrentSliverAppBar({this.category, this.buttonState, this.actionDone});
+  const CurrentSliverAppBar(
+      {this.category, this.buttonState, this.actionDone, this.difficulty});
 
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
-      title: Text('${category.name}'),
+      title: Text('${category.name} - Lv.$difficulty'),
       actions: <Widget>[
         ActionsIconButton(
           buttonState: buttonState,
@@ -94,26 +96,10 @@ class CurrentSliverAppBar extends StatelessWidget {
                         builder: (context) => GoalAddPage(
                               category: category,
                               goalStatus: GoalStatus.current,
+                              difficulty: difficulty,
                             )));
               }),
           modifyWidgets: <Widget>[
-            IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                List<Goal> goalCheckedList = category.goals.where((goal) {
-                  //checked가 된 골만 return 한다.
-                  return goal.checked;
-                }).toList();
-                goalCheckedList.forEach((Goal goal) {
-                  goal.status = GoalStatus.archive;
-                  goal.checked = false;
-                  goal.save();
-                });
-                actionDone();
-                Box settingBox = Hive.box(Boxes.settingBox);
-                settingBox.put('archiveCategory', category.key);
-              },
-            ),
             IconButton(
               icon: Icon(Icons.delete),
               onPressed: () {
