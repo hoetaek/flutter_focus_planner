@@ -17,10 +17,6 @@ void main() async {
   await Hive.openBox(Boxes.categoryBox);
   await Hive.openBox(Boxes.goalBox);
   await Hive.openBox(Boxes.settingBox);
-  Box categoryBox = Hive.box(Boxes.categoryBox);
-  Category category = Category(name: 'routine');
-  category.goals = HiveList(Hive.box(Boxes.goalBox));
-  if (categoryBox.isEmpty) categoryBox.add(category);
 
   runApp(MaterialApp(
     home: FocusPlanner(),

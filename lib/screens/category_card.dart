@@ -35,34 +35,37 @@ class _CategoryCardState extends State<CategoryCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: kCardDecoration.copyWith(
-        border: Border.all(
-          width: 1.0,
-          color: Theme.of(context).primaryColor,
+    return AspectRatio(
+      aspectRatio: 2 / 3,
+      child: Container(
+        decoration: kCardDecoration.copyWith(
+          border: Border.all(
+            width: 1.0,
+            color: Theme.of(context).primaryColor,
+          ),
         ),
-      ),
-      child: Column(
-        children: <Widget>[
-          CategoryHeader(
-              category: widget.category,
-              buttonState: _buttonState,
-              actionDone: () {
-                setState(() {
-                  _buttonState = ButtonState.add;
-                });
-              }),
-          CategoryContent(
-              category: widget.category,
-              onChecked: () {
-                setState(() {
-                  if (goalIsChecked())
-                    _buttonState = ButtonState.modify;
-                  else
+        child: Column(
+          children: <Widget>[
+            CategoryHeader(
+                category: widget.category,
+                buttonState: _buttonState,
+                actionDone: () {
+                  setState(() {
                     _buttonState = ButtonState.add;
-                });
-              }),
-        ],
+                  });
+                }),
+            CategoryContent(
+                category: widget.category,
+                onChecked: () {
+                  setState(() {
+                    if (goalIsChecked())
+                      _buttonState = ButtonState.modify;
+                    else
+                      _buttonState = ButtonState.add;
+                  });
+                }),
+          ],
+        ),
       ),
     );
   }
