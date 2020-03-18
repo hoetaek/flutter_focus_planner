@@ -10,6 +10,8 @@ class Category extends HiveObject {
   String name;
   @HiveField(1)
   HiveList<Goal> goals;
+  @HiveField(2)
+  int priority;
 
   Category({@required this.name});
 

@@ -52,9 +52,6 @@ class _FocusPlannerState extends State<FocusPlanner> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Focus Planner'),
-      ),
       body: PageControllerProvider(
         pageController: _pageController,
         child: PageView(

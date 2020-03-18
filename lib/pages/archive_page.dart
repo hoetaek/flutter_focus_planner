@@ -49,7 +49,7 @@ class _ArchivePageState extends State<ArchivePage> {
                 crossAxisCount: _scale.toInt(),
                 crossAxisSpacing: 15.0,
                 mainAxisSpacing: 15.0,
-                childAspectRatio: 2 / 3,
+//                childAspectRatio: 2 / 3,
               ),
               itemCount: box.length + 1,
               itemBuilder: (context, index) {
