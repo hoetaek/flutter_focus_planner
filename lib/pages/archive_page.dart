@@ -19,13 +19,11 @@ class _ArchivePageState extends State<ArchivePage> {
 
   List<Category> sortCategory(Box box) {
     List<Category> result;
-    for (int i = 0; i < box.length; i++) {
-      for (int j = 0; j < box.length; j++) {
-        if (i == box.getAt(j).priority) {
-          result[i] = box.getAt(j);
-        }
-      }
-    }
+    result = box.values.map((category) => (category as Category)).toList();
+    result.sort(
+        (a, b) => (a as Category).priority.compareTo((b as Category).priority));
+
+    return result;
   }
 
   @override
