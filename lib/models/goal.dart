@@ -34,4 +34,9 @@ class Goal extends HiveObject {
     if (compareDate == date) return true;
     return false;
   }
+
+  @override
+  String toString() {
+    return name;
+  }
 }

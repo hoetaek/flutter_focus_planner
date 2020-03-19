@@ -18,16 +18,20 @@ class CategoryAdapter extends TypeAdapter<Category> {
     };
     return Category(
       name: fields[0] as String,
-    )..goals = (fields[1] as HiveList)?.castHiveList();
+    )
+      ..goals = (fields[1] as HiveList)?.castHiveList()
+      ..priority = fields[2] as int;
   }
 
   @override
   void write(BinaryWriter writer, Category obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
-      ..write(obj.goals);
+      ..write(obj.goals)
+      ..writeByte(2)
+      ..write(obj.priority);
   }
 }
