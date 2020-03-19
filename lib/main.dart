@@ -41,7 +41,9 @@ class _FocusPlannerState extends State<FocusPlanner> {
     _pageController = PageController(
       initialPage: _currentPage,
     );
-
+    Hive.box(Boxes.categoryBox).values.forEach((category) {
+      print(category);
+    });
     super.initState();
   }
 

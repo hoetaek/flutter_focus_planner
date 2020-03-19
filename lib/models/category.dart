@@ -19,4 +19,10 @@ class Category extends HiveObject {
     goals.add(goal);
     save();
   }
+
+  @override
+  String toString() {
+    // TODO: implement toString
+    return name + ": " + priority.toString();
+  }
 }
