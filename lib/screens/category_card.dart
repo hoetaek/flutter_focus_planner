@@ -35,7 +35,7 @@ class _CategoryCardState extends State<CategoryCard> {
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
-      aspectRatio: 2 / 3,
+      aspectRatio: 4 / 2,
       child: Container(
         decoration: kCardDecoration.copyWith(
           border: Border.all(
@@ -190,25 +190,28 @@ class _CategoryContentState extends State<CategoryContent> {
     List<Goal> archivedGoals = widget.category.goals
         .where((Goal goal) => goal.status == GoalStatus.archive)
         .toList();
+    archivedGoals.sort((a, b) => a.difficulty.compareTo(b.difficulty));
     return widget.category.goals != null
-        ? ListView.builder(
-            shrinkWrap: true,
-            itemCount: archivedGoals.length,
-            itemBuilder: (context, index) {
-              Goal goal = archivedGoals[index];
-              //todo 길게 눌렀을 때 정보 수정하기
-              return CheckboxListTile(
-                title: Text('${goal.name}'),
-                value: goal.checked,
-                onChanged: (checkChanged) {
-                  setState(() {
-                    goal.checked = checkChanged;
-                    goal.save();
-                  });
-                  widget.onChecked();
-                },
-              );
-            },
+        ? Expanded(
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: archivedGoals.length,
+              itemBuilder: (context, index) {
+                Goal goal = archivedGoals[index];
+                //todo 길게 눌렀을 때 정보 수정하기
+                return CheckboxListTile(
+                  title: Text('${goal.name}'),
+                  value: goal.checked,
+                  onChanged: (checkChanged) {
+                    setState(() {
+                      goal.checked = checkChanged;
+                      goal.save();
+                    });
+                    widget.onChecked();
+                  },
+                );
+              },
+            ),
           )
         : Container();
   }
