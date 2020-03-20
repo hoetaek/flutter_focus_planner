@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:focusplanner/constants.dart';
 import 'package:focusplanner/models/category.dart';
 import 'package:focusplanner/pages/category_add_page.dart';
-import 'package:focusplanner/screens/add_category_card.dart';
 import 'package:focusplanner/screens/category_card.dart';
 import 'package:focusplanner/widgets/column_builder.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:reorderables/reorderables.dart';
 
 class ArchivePage extends StatefulWidget {
   @override
@@ -16,40 +14,51 @@ class ArchivePage extends StatefulWidget {
 
 class _ArchivePageState extends State<ArchivePage> {
   //todo 보기 모드 난이도별 / 카테고리별
+  List<Category> categoryReorderedList;
 
-  List<Category> sortCategory(Box box) {
-    List<Category> result;
-    result = box.values.map((category) => (category as Category)).toList();
-    result.sort(
-        (a, b) => (a as Category).priority.compareTo((b as Category).priority));
-
-    return result;
+  sortCategory(Box categoryBox) {
+    categoryReorderedList = categoryBox.values.cast<Category>().toList();
+    categoryReorderedList.sort((a, b) => a.priority.compareTo(b.priority));
   }
 
   @override
   Widget build(BuildContext context) {
-    ArchiveAppBar();
-    return ValueListenableBuilder(
-      valueListenable: Hive.box(Boxes.categoryBox).listenable(),
-      builder: (context, Box box, widget) {
-        return Padding(
-          padding: EdgeInsets.all(2.0),
-          child: SingleChildScrollView(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Archive Page"),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => CategoryAddPage()));
+            },
+          )
+        ],
+      ),
+      body: ValueListenableBuilder(
+        valueListenable: Hive.box(Boxes.categoryBox).listenable(),
+        builder: (context, Box categoryBox, widget) {
+          print('reorder');
+          return SingleChildScrollView(
             child: Column(
               children: <Widget>[
-                ArchiveAppBar(),
                 Container(
                   height: 30,
-                  child: categoryNameList(box: box),
+                  child: CategoryNameList(categoryBox: categoryBox),
                 ),
                 SizedBox(height: 10),
                 ColumnBuilder(
-                  itemCount: box.length + 1,
+                  itemCount: categoryBox.length + 1,
                   itemBuilder: (context, index) {
                     //todo 루틴의 경우 매일 초기화되는 'goal'로 만들 것
-                    if (index != box.length) {
-                      List<Category> list = sortCategory(box);
-                      return CategoryCard(category: list[index]);
+                    if (index != categoryBox.length) {
+                      sortCategory(categoryBox);
+                      return Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: CategoryCard(
+                            category: categoryReorderedList[index]),
+                      );
                     } else {
                       return Container();
                     }
@@ -57,78 +66,80 @@ class _ArchivePageState extends State<ArchivePage> {
                 ),
               ],
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
 
-class ArchiveAppBar extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      title: Text("Archive Page"),
-      actions: <Widget>[
-        IconButton(
-          icon: Icon(Icons.add),
-          onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => CategoryAddPage()));
-          },
-        )
-      ],
-    );
-  }
-}
-
-class categoryNameList extends StatefulWidget {
-  final Box box;
-  categoryNameList({this.box});
+class CategoryNameList extends StatefulWidget {
+  final Box categoryBox;
+  CategoryNameList({this.categoryBox});
 
   @override
-  _categoryNameListState createState() => _categoryNameListState();
+  _CategoryNameListState createState() => _CategoryNameListState();
 }
 
-class _categoryNameListState extends State<categoryNameList> {
-  List<Widget> _rows;
-  void initState() {
-    super.initState();
-    if (widget.box.length == 0)
-      _rows =
-          List<Widget>.generate(1, (int index) => Text('', key: UniqueKey()));
-    else {
-      _rows = List<Widget>.generate(
-          widget.box.length,
-          (int index) => Text(
-                ' ${widget.box.getAt(index).name} ',
-                key: UniqueKey(),
-              ));
-    }
+class _CategoryNameListState extends State<CategoryNameList> {
+  List<Category> categoryList;
+
+  setCategoryPriority() {
+    int index = 0;
+    categoryList.forEach((category) {
+      category.priority = index;
+      category.save();
+      index++;
+    });
   }
 
   void _onReorder(int oldIndex, int newIndex) {
-    setState(() {
-      Widget row = _rows.removeAt(oldIndex);
+    if (newIndex > oldIndex) {
+      newIndex -= 1;
+    }
 
-      if (newIndex > _rows.length) {
-        widget.box.getAt(_rows.length).priority = oldIndex;
-        widget.box.getAt(oldIndex).priority = _rows.length;
-        _rows.insert(_rows.length, row);
-      } else {
-        widget.box.getAt(newIndex).priority = oldIndex;
-        widget.box.getAt(oldIndex).priority = newIndex;
-        _rows.insert(newIndex, row);
-      }
+    Future.delayed(Duration(milliseconds: 20), () {
+      setState(() {
+        final Category category = categoryList.removeAt(oldIndex);
+        categoryList.insert(newIndex, category);
+      });
+      setCategoryPriority();
+      categoryList = widget.categoryBox.values.cast<Category>().toList();
+      categoryList.sort((a, b) => a.priority.compareTo(b.priority));
     });
+  }
+
+  void initState() {
+    super.initState();
+    categoryList = widget.categoryBox.values.cast<Category>().toList();
+    categoryList.sort((a, b) => a.priority.compareTo(b.priority));
   }
 
   @override
   Widget build(BuildContext context) {
     return ReorderableListView(
-      children: _rows,
+      children: categoryList
+          .map((category) => CategoryName(
+                category: category,
+                key: UniqueKey(),
+              ))
+          .toList(),
       onReorder: _onReorder,
       scrollDirection: Axis.horizontal,
+    );
+  }
+}
+
+class CategoryName extends StatelessWidget {
+  final Category category;
+  const CategoryName({Key key, this.category}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.0), color: Colors.tealAccent),
+      child: Text(category.name),
     );
   }
 }
