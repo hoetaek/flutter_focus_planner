@@ -43,10 +43,7 @@ class _ArchivePageState extends State<ArchivePage> {
           return SingleChildScrollView(
             child: Column(
               children: <Widget>[
-                Container(
-                  height: 30,
-                  child: CategoryNameList(categoryBox: categoryBox),
-                ),
+                CategoryNameList(categoryBox: categoryBox),
                 SizedBox(height: 10),
                 ColumnBuilder(
                   itemCount: categoryBox.length + 1,
@@ -55,7 +52,8 @@ class _ArchivePageState extends State<ArchivePage> {
                     if (index != categoryBox.length) {
                       sortCategory(categoryBox);
                       return Padding(
-                        padding: const EdgeInsets.all(15.0),
+                        padding: const EdgeInsets.only(
+                            right: 15.0, left: 15.0, bottom: 15.0),
                         child: CategoryCard(
                             category: categoryReorderedList[index]),
                       );
@@ -104,8 +102,6 @@ class _CategoryNameListState extends State<CategoryNameList> {
         categoryList.insert(newIndex, category);
       });
       setCategoryPriority();
-      categoryList = widget.categoryBox.values.cast<Category>().toList();
-      categoryList.sort((a, b) => a.priority.compareTo(b.priority));
     });
   }
 
@@ -117,15 +113,20 @@ class _CategoryNameListState extends State<CategoryNameList> {
 
   @override
   Widget build(BuildContext context) {
-    return ReorderableListView(
-      children: categoryList
-          .map((category) => CategoryName(
-                category: category,
-                key: UniqueKey(),
-              ))
-          .toList(),
-      onReorder: _onReorder,
-      scrollDirection: Axis.horizontal,
+    categoryList = widget.categoryBox.values.cast<Category>().toList();
+    categoryList.sort((a, b) => a.priority.compareTo(b.priority));
+    return Container(
+      height: 50.0,
+      child: ReorderableListView(
+        children: categoryList
+            .map((category) => CategoryName(
+                  category: category,
+                  key: UniqueKey(),
+                ))
+            .toList(),
+        onReorder: _onReorder,
+        scrollDirection: Axis.horizontal,
+      ),
     );
   }
 }
@@ -137,6 +138,8 @@ class CategoryName extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: EdgeInsets.symmetric(horizontal: 8),
+      padding: EdgeInsets.all(8),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10.0), color: Colors.tealAccent),
       child: Text(category.name),
