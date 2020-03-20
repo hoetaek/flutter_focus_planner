@@ -22,12 +22,6 @@ class _ArchivePageState extends State<ArchivePage> {
   }
 
   @override
-  void initState() {
-    sortCategoryList(Hive.box(Boxes.categoryBox));
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
