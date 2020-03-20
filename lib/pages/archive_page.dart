@@ -16,9 +16,15 @@ class _ArchivePageState extends State<ArchivePage> {
   //todo 보기 모드 난이도별 / 카테고리별
   List<Category> categoryReorderedList;
 
-  sortCategory(Box categoryBox) {
+  sortCategoryList(Box categoryBox) {
     categoryReorderedList = categoryBox.values.cast<Category>().toList();
     categoryReorderedList.sort((a, b) => a.priority.compareTo(b.priority));
+  }
+
+  @override
+  void initState() {
+    sortCategoryList(Hive.box(Boxes.categoryBox));
+    super.initState();
   }
 
   @override
@@ -39,27 +45,22 @@ class _ArchivePageState extends State<ArchivePage> {
       body: ValueListenableBuilder(
         valueListenable: Hive.box(Boxes.categoryBox).listenable(),
         builder: (context, Box categoryBox, widget) {
-          print('reorder');
+          sortCategoryList(categoryBox);
+
           return SingleChildScrollView(
             child: Column(
               children: <Widget>[
-                CategoryNameList(categoryBox: categoryBox),
+                CategoryNameList(categoryList: categoryReorderedList),
                 SizedBox(height: 10),
                 ColumnBuilder(
-                  itemCount: categoryBox.length + 1,
+                  itemCount: categoryBox.length,
                   itemBuilder: (context, index) {
-                    //todo 루틴의 경우 매일 초기화되는 'goal'로 만들 것
-                    if (index != categoryBox.length) {
-                      sortCategory(categoryBox);
-                      return Padding(
-                        padding: const EdgeInsets.only(
-                            right: 15.0, left: 15.0, bottom: 15.0),
-                        child: CategoryCard(
-                            category: categoryReorderedList[index]),
-                      );
-                    } else {
-                      return Container();
-                    }
+                    return Padding(
+                      padding: const EdgeInsets.only(
+                          right: 15.0, left: 15.0, bottom: 15.0),
+                      child:
+                          CategoryCard(category: categoryReorderedList[index]),
+                    );
                   },
                 ),
               ],
@@ -72,19 +73,17 @@ class _ArchivePageState extends State<ArchivePage> {
 }
 
 class CategoryNameList extends StatefulWidget {
-  final Box categoryBox;
-  CategoryNameList({this.categoryBox});
+  final List categoryList;
+  CategoryNameList({this.categoryList});
 
   @override
   _CategoryNameListState createState() => _CategoryNameListState();
 }
 
 class _CategoryNameListState extends State<CategoryNameList> {
-  List<Category> categoryList;
-
   setCategoryPriority() {
     int index = 0;
-    categoryList.forEach((category) {
+    widget.categoryList.forEach((category) {
       category.priority = index;
       category.save();
       index++;
@@ -98,27 +97,19 @@ class _CategoryNameListState extends State<CategoryNameList> {
 
     Future.delayed(Duration(milliseconds: 20), () {
       setState(() {
-        final Category category = categoryList.removeAt(oldIndex);
-        categoryList.insert(newIndex, category);
+        final Category category = widget.categoryList.removeAt(oldIndex);
+        widget.categoryList.insert(newIndex, category);
       });
       setCategoryPriority();
     });
   }
 
-  void initState() {
-    super.initState();
-    categoryList = widget.categoryBox.values.cast<Category>().toList();
-    categoryList.sort((a, b) => a.priority.compareTo(b.priority));
-  }
-
   @override
   Widget build(BuildContext context) {
-    categoryList = widget.categoryBox.values.cast<Category>().toList();
-    categoryList.sort((a, b) => a.priority.compareTo(b.priority));
     return Container(
       height: 50.0,
       child: ReorderableListView(
-        children: categoryList
+        children: widget.categoryList
             .map((category) => CategoryName(
                   category: category,
                   key: UniqueKey(),
