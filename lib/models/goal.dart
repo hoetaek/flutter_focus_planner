@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+
+import '../constants.dart';
 
 part 'goal.g.dart';
 
@@ -19,6 +22,56 @@ class Goal extends HiveObject {
   Goal(
       {@required this.name, @required this.difficulty, @required this.status}) {
     this.checked = false;
+  }
+
+  static IconData getIconData(difficulty) {
+    switch (difficulty) {
+      case 1:
+        {
+          return Icons.looks_one;
+        }
+        break;
+
+      case 2:
+        {
+          return Icons.looks_two;
+        }
+        break;
+      case 3:
+        {
+          return Icons.looks_3;
+        }
+        break;
+      case 4:
+        {
+          return Icons.looks_4;
+        }
+        break;
+      case 5:
+        {
+          return Icons.looks_5;
+        }
+        break;
+      default:
+        {
+          return Icons.looks_one;
+        }
+        break;
+    }
+  }
+
+  Color getColor() {
+    return kPrimaryColor.withGreen(difficulty * 50);
+  }
+
+  void levelUp() {
+    difficulty += 1;
+    save();
+  }
+
+  void levelDown() {
+    difficulty -= 1;
+    save();
   }
 
   void setDate(DateTime today) {

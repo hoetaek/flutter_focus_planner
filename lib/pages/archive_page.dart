@@ -3,9 +3,13 @@ import 'package:focusplanner/constants.dart';
 import 'package:focusplanner/models/category.dart';
 import 'package:focusplanner/pages/category_add_page.dart';
 import 'package:focusplanner/screens/category_card.dart';
+import 'package:focusplanner/screens/category_name_list.dart';
+import 'package:focusplanner/utils/work_list.dart';
+import 'package:focusplanner/widgets/actions_icon_button.dart';
 import 'package:focusplanner/widgets/column_builder.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart';
 
 class ArchivePage extends StatefulWidget {
   @override
@@ -15,24 +19,100 @@ class ArchivePage extends StatefulWidget {
 class _ArchivePageState extends State<ArchivePage> {
   //todo 보기 모드 난이도별 / 카테고리별
   List<Category> categoryReorderedList;
+  List<Category> selectedCategories = List();
+  ButtonState _buttonState = ButtonState.add;
+  List<DropdownMenuItem<String>> _dropDownMenuItems;
+  String _currentMode;
+  List _modes = ["카테고리", "작업순서"];
 
   sortCategoryList(Box categoryBox) {
     categoryReorderedList = categoryBox.values.cast<Category>().toList();
     categoryReorderedList.sort((a, b) => a.priority.compareTo(b.priority));
   }
 
+  void actionDone() {
+    setState(() {
+      _buttonState = ButtonState.add;
+    });
+  }
+
+  List<DropdownMenuItem<String>> getDropDownMenuItems() {
+    List<DropdownMenuItem<String>> items = List();
+    for (String mode in _modes) {
+      items.add(DropdownMenuItem(
+        value: mode,
+        child: Text(
+          mode,
+        ),
+      ));
+    }
+    return items;
+  }
+
+  void changeDropDownItem(String selectedMode) {
+    setState(() {
+      _currentMode = selectedMode;
+    });
+  }
+
+  @override
+  void initState() {
+    _dropDownMenuItems = getDropDownMenuItems();
+    _currentMode = _dropDownMenuItems[0].value;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Archive Page"),
+        title: DropdownButton(
+          value: _currentMode,
+          items: _dropDownMenuItems,
+          style: TextStyle(
+              fontSize: 23.0, letterSpacing: 1.2, color: Colors.black),
+          selectedItemBuilder: (context) {
+            return _modes.map((mode) {
+              return Container(
+                margin: EdgeInsets.only(top: 8.0),
+                child: Text(
+                  _currentMode,
+                  style: TextStyle(
+                      fontSize: 25.0,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.2,
+                      color: Colors.white),
+                ),
+              );
+            }).toList();
+          },
+          onChanged: changeDropDownItem,
+          iconEnabledColor: Colors.white,
+          icon: null,
+        ),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => CategoryAddPage()));
-            },
+          ActionsIconButton(
+            buttonState: _buttonState,
+            addWidget: IconButton(
+                icon: Icon(Icons.add),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CategoryAddPage()));
+                }),
+            modifyWidgets: <Widget>[
+              IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () {
+                  selectedCategories.forEach((Category category) {
+                    category.delete();
+                  });
+                  selectedCategories.clear();
+                  actionDone();
+                },
+              ),
+            ],
           )
         ],
       ),
@@ -40,18 +120,26 @@ class _ArchivePageState extends State<ArchivePage> {
         valueListenable: Hive.box(Boxes.categoryBox).listenable(),
         builder: (context, Box categoryBox, widget) {
           sortCategoryList(categoryBox);
-
+          Provider.of<WorkList>(context).generateWorkOrder();
           return SingleChildScrollView(
             child: Column(
               children: <Widget>[
-                CategoryNameList(categoryList: categoryReorderedList),
+                CategoryNameList(
+                    categoryList: categoryReorderedList,
+                    selectedCategories: selectedCategories,
+                    onSelectChanged: () {
+                      setState(() {
+                        _buttonState = selectedCategories.isNotEmpty
+                            ? ButtonState.modify
+                            : ButtonState.add;
+                      });
+                    }),
                 SizedBox(height: 10),
                 ColumnBuilder(
                   itemCount: categoryBox.length,
                   itemBuilder: (context, index) {
                     return Padding(
-                      padding: const EdgeInsets.only(
-                          right: 15.0, left: 15.0, bottom: 15.0),
+                      padding: const EdgeInsets.only(bottom: 15.0),
                       child:
                           CategoryCard(category: categoryReorderedList[index]),
                     );
@@ -62,72 +150,6 @@ class _ArchivePageState extends State<ArchivePage> {
           );
         },
       ),
-    );
-  }
-}
-
-class CategoryNameList extends StatefulWidget {
-  final List categoryList;
-  CategoryNameList({this.categoryList});
-
-  @override
-  _CategoryNameListState createState() => _CategoryNameListState();
-}
-
-class _CategoryNameListState extends State<CategoryNameList> {
-  setCategoryPriority() {
-    int index = 0;
-    widget.categoryList.forEach((category) {
-      category.priority = index;
-      category.save();
-      index++;
-    });
-  }
-
-  void _onReorder(int oldIndex, int newIndex) {
-    if (newIndex > oldIndex) {
-      newIndex -= 1;
-    }
-
-    Future.delayed(Duration(milliseconds: 20), () {
-      setState(() {
-        final Category category = widget.categoryList.removeAt(oldIndex);
-        widget.categoryList.insert(newIndex, category);
-      });
-      setCategoryPriority();
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 50.0,
-      child: ReorderableListView(
-        children: widget.categoryList
-            .map((category) => CategoryName(
-                  category: category,
-                  key: UniqueKey(),
-                ))
-            .toList(),
-        onReorder: _onReorder,
-        scrollDirection: Axis.horizontal,
-      ),
-    );
-  }
-}
-
-class CategoryName extends StatelessWidget {
-  final Category category;
-  const CategoryName({Key key, this.category}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 8),
-      padding: EdgeInsets.all(8),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10.0), color: Colors.tealAccent),
-      child: Text(category.name),
     );
   }
 }

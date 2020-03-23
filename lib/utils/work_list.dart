@@ -1,11 +1,12 @@
 import 'dart:collection';
 
+import 'package:flutter/material.dart';
 import 'package:focusplanner/constants.dart';
 import 'package:focusplanner/models/category.dart';
 import 'package:focusplanner/models/goal.dart';
 import 'package:hive/hive.dart';
 
-class WorkList {
+class WorkList extends ChangeNotifier {
   List<Work> _workOrder = [];
   List<Category> _categoryList;
 
@@ -14,12 +15,14 @@ class WorkList {
   WorkList() {
     _categoryList = categoryBox.values.cast<Category>().toList();
     _categoryList.sort((a, b) => a.priority.compareTo(b.priority));
+    generateWorkOrder();
   }
 
   List<Work> get workOrder => UnmodifiableListView(_workOrder);
 
   generateWorkOrder() {
     _workOrder.clear();
+    _categoryList.sort((a, b) => a.priority.compareTo(b.priority));
     for (int i in List<int>.generate(5, (i) => i + 1)) {
       for (var category in _categoryList) {
         _workOrder.add(Work(category, i));
@@ -46,9 +49,17 @@ class Work {
   Category get category => _category;
   int get difficulty => _difficulty;
 
+  bool isWorkGoal(Goal goal) {
+    return !goalList.contains(goal) && goal.status != GoalStatus.complete;
+  }
+
   @override
   String toString() {
     // TODO: implement toString
-    return goalList.toString();
+    return _category.toString() +
+        '   ' +
+        _difficulty.toString() +
+        '    ' +
+        goalList.toString();
   }
 }

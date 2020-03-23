@@ -1,23 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:focusplanner/models/category.dart';
 import 'package:focusplanner/models/goal.dart';
 import 'package:focusplanner/pages/goal_add_page.dart';
+import 'package:focusplanner/pages/goal_edit_page.dart';
 import 'package:focusplanner/utils/work_list.dart';
 import 'package:focusplanner/widgets/actions_icon_button.dart';
+import 'package:provider/provider.dart';
 
 import '../constants.dart';
 
-class CurrentView extends StatefulWidget {
+class FocusView extends StatefulWidget {
   final Category category;
 
-  CurrentView({this.category});
+  FocusView({this.category});
   @override
-  _CurrentViewState createState() => _CurrentViewState();
+  _FocusViewState createState() => _FocusViewState();
 }
 
-class _CurrentViewState extends State<CurrentView> {
+class _FocusViewState extends State<FocusView> {
   ButtonState _buttonState;
   WorkList workList;
+  Work focusWork;
 
   bool goalIsChecked(List<Goal> goalList) {
     return goalList.where((Goal goal) => goal.checked).isNotEmpty;
@@ -26,8 +30,7 @@ class _CurrentViewState extends State<CurrentView> {
   @override
   void initState() {
     workList = WorkList();
-    workList.generateWorkOrder();
-    Work focusWork = workList.workOrder.first;
+    focusWork = workList.workOrder.first;
     if (goalIsChecked(focusWork.goalList))
       _buttonState = ButtonState.modify;
     else
@@ -38,10 +41,10 @@ class _CurrentViewState extends State<CurrentView> {
   @override
   Widget build(BuildContext context) {
     workList.generateWorkOrder();
-    Work focusWork = workList.workOrder.first;
+    focusWork = workList.workOrder.first;
     return CustomScrollView(
       slivers: <Widget>[
-        CurrentSliverAppBar(
+        FocusSliverAppBar(
           category: focusWork.category,
           difficulty: focusWork.difficulty,
           buttonState: _buttonState,
@@ -52,9 +55,7 @@ class _CurrentViewState extends State<CurrentView> {
             });
           },
         ),
-//        Container(),
-        //todo 난이도 순서대로 표시하기
-        CurrentContent(
+        FocusContent(
           focusGoals: focusWork.goalList,
           onChecked: () {
             setState(() {
@@ -71,19 +72,28 @@ class _CurrentViewState extends State<CurrentView> {
   }
 }
 
-class CurrentSliverAppBar extends StatelessWidget {
+class FocusSliverAppBar extends StatelessWidget {
   final Category category;
   final ButtonState buttonState;
   final Function actionDone;
   final int difficulty;
 
-  const CurrentSliverAppBar(
+  const FocusSliverAppBar(
       {this.category, this.buttonState, this.actionDone, this.difficulty});
 
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
-      title: Text('${category.name} - Lv.$difficulty'),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Text(
+            '${category.name} - Lv.',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          Icon(Goal.getIconData(difficulty)),
+        ],
+      ),
       actions: <Widget>[
         ActionsIconButton(
           buttonState: buttonState,
@@ -95,7 +105,7 @@ class CurrentSliverAppBar extends StatelessWidget {
                     MaterialPageRoute(
                         builder: (context) => GoalAddPage(
                               category: category,
-                              goalStatus: GoalStatus.current,
+                              goalStatus: GoalStatus.onWork,
                               difficulty: difficulty,
                             )));
               }),
@@ -130,7 +140,6 @@ class CurrentSliverAppBar extends StatelessWidget {
                 });
                 actionDone();
               },
-              //todo 완료 했을 때 comeplete page로 넘어 가게 한다.
             ),
           ],
         )
@@ -139,21 +148,16 @@ class CurrentSliverAppBar extends StatelessWidget {
   }
 }
 
-/*
-            FittedBox(
-                child: )
-
- */
-class CurrentContent extends StatefulWidget {
+class FocusContent extends StatefulWidget {
   final List<Goal> focusGoals;
   final Function onChecked;
 
-  CurrentContent({this.focusGoals, this.onChecked});
+  FocusContent({this.focusGoals, this.onChecked});
   @override
-  _CurrentContentState createState() => _CurrentContentState();
+  _FocusContentState createState() => _FocusContentState();
 }
 
-class _CurrentContentState extends State<CurrentContent> {
+class _FocusContentState extends State<FocusContent> {
   @override
   Widget build(BuildContext context) {
     return widget.focusGoals != null
@@ -161,16 +165,59 @@ class _CurrentContentState extends State<CurrentContent> {
             delegate: SliverChildBuilderDelegate(
               (context, index) {
                 Goal goal = widget.focusGoals[index];
-                return CheckboxListTile(
-                  title: Text('${goal.name}'),
-                  value: goal.checked,
-                  onChanged: (change) {
-                    setState(() {
-                      goal.checked = change;
-                      goal.save();
-                    });
-                    widget.onChecked();
-                  },
+                return Slidable(
+                  actionPane: SlidableDrawerActionPane(),
+                  actionExtentRatio: 0.15,
+                  actions: <Widget>[
+                    if (goal.difficulty != 5)
+                      IconSlideAction(
+                        caption: 'Level',
+                        color: Colors.blue,
+                        icon: Icons.arrow_upward,
+                        onTap: () {
+                          setState(() {
+                            goal.levelUp();
+                            Provider.of<WorkList>(context, listen: false)
+                                .generateWorkOrder();
+                          });
+                        },
+                      ),
+                    if (goal.difficulty != 1)
+                      IconSlideAction(
+                        caption: 'Level',
+                        color: Colors.redAccent,
+                        icon: Icons.arrow_downward,
+                        onTap: () {
+                          setState(() {
+                            goal.levelDown();
+                            Provider.of<WorkList>(context, listen: false)
+                                .generateWorkOrder();
+                          });
+                        },
+                      ),
+                  ],
+                  child: GestureDetector(
+                    onLongPress: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => GoalEditPage(
+                                    goal: goal,
+                                    goalStatus: GoalStatus.onWork,
+                                  )));
+                    },
+                    child: CheckboxListTile(
+                      title: Text('${goal.name}'),
+                      value: goal.checked,
+                      onChanged: (change) {
+                        setState(() {
+                          goal.checked = change;
+                          goal.save();
+                        });
+                        widget.onChecked();
+                      },
+                    ),
+                  ),
                 );
               },
               childCount: widget.focusGoals.length,

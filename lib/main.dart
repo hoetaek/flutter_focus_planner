@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:focusplanner/constants.dart';
 import 'package:focusplanner/pages/archive_page.dart';
 import 'package:focusplanner/pages/complete_page.dart';
-import 'package:focusplanner/pages/current_page.dart';
-import 'package:focusplanner/utils/page_controller_provider.dart';
+import 'package:focusplanner/pages/focus_page.dart';
+import 'package:focusplanner/utils/work_list.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart';
 
 import 'models/category.dart';
 import 'models/goal.dart';
@@ -18,13 +20,17 @@ void main() async {
   await Hive.openBox(Boxes.goalBox);
   await Hive.openBox(Boxes.settingBox);
 
-  runApp(MaterialApp(
-    home: FocusPlanner(),
-    theme: ThemeData(
-      scaffoldBackgroundColor: Colors.grey[50],
+  runApp(
+    MaterialApp(
+      home: FocusPlanner(),
+      theme: ThemeData(
+        primaryColor: kPrimaryColor.withGreen(150),
+        scaffoldBackgroundColor: Colors.grey[50],
+        textTheme: GoogleFonts.nanumGothicTextTheme(),
 //        primaryColor: Colors.amber,
+      ),
     ),
-  ));
+  );
 }
 
 class FocusPlanner extends StatefulWidget {
@@ -50,8 +56,8 @@ class _FocusPlannerState extends State<FocusPlanner> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageControllerProvider(
-        pageController: _pageController,
+      body: ChangeNotifierProvider(
+        create: (_) => WorkList(),
         child: PageView(
           controller: _pageController,
           onPageChanged: (newPage) {
@@ -61,8 +67,7 @@ class _FocusPlannerState extends State<FocusPlanner> {
           },
           children: <Widget>[
             ArchivePage(),
-            //todo FocusPage
-            CurrentPage(),
+            FocusPage(),
             CompletePage(),
           ],
         ),
@@ -75,12 +80,10 @@ class _FocusPlannerState extends State<FocusPlanner> {
               curve: Curves.easeInOut);
         },
         items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.archive), title: Text("목록")),
-          //todo list
-          BottomNavigationBarItem(icon: Icon(Icons.work), title: Text("작업")),
-          //todo focus
+          BottomNavigationBarItem(icon: Icon(Icons.list), title: Text("목록")),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.center_focus_strong), title: Text("몰입")),
           BottomNavigationBarItem(icon: Icon(Icons.check), title: Text("완료")),
-          //todo done
         ],
       ),
     );

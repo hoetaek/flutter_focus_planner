@@ -1,25 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:focusplanner/constants.dart';
 import 'package:focusplanner/models/category.dart';
 import 'package:focusplanner/widgets/color_picker.dart';
 import 'package:focusplanner/widgets/custom_button.dart';
 import 'package:focusplanner/widgets/custom_text_field.dart';
-import 'package:hive/hive.dart';
 
-class CategoryAddPage extends StatefulWidget {
+import '../constants.dart';
+
+class CategoryEditPage extends StatefulWidget {
+  final Category category;
+
+  CategoryEditPage({Key key, this.category}) : super(key: key);
+
   @override
-  _CategoryAddPageState createState() => _CategoryAddPageState();
+  _CategoryEditPageState createState() => _CategoryEditPageState();
 }
 
-class _CategoryAddPageState extends State<CategoryAddPage> {
+class _CategoryEditPageState extends State<CategoryEditPage> {
   final TextEditingController _textController = TextEditingController();
-  int _currentColorIndex = 0;
+  int _currentColorIndex;
+
+  @override
+  void initState() {
+    _currentColorIndex = widget.category.colorIndex ?? 0;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Category 추가'),
+        title: Text('Category 수정'),
       ),
       body: Column(
         children: <Widget>[
@@ -27,7 +37,7 @@ class _CategoryAddPageState extends State<CategoryAddPage> {
             borderColor: kColors[_currentColorIndex],
             textController: _textController,
             iconData: Icons.add,
-            title: "카테고리",
+            hintText: widget.category.name,
           ),
           ColorPicker(
             colorIndex: _currentColorIndex,
@@ -39,11 +49,11 @@ class _CategoryAddPageState extends State<CategoryAddPage> {
           ),
           CustomButton(
             onPressed: () {
-              Category category = Category(name: _textController.text);
-              category.goals = HiveList(Hive.box(Boxes.goalBox));
-              category.priority = Hive.box(Boxes.categoryBox).length;
-              category.colorIndex = _currentColorIndex;
-              Hive.box(Boxes.categoryBox).add(category);
+              //todo need validation
+              if (_textController.text.isNotEmpty)
+                widget.category.name = _textController.text;
+              widget.category.colorIndex = _currentColorIndex;
+              widget.category.save();
               Navigator.pop(context);
             },
           ),
