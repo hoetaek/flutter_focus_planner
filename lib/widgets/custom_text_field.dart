@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:focusplanner/constants.dart';
 
 class CustomTextField extends StatelessWidget {
   final String title;
   final IconData iconData;
   final TextEditingController textController;
+  final String hintText;
+
+  final Color borderColor;
   CustomTextField(
-      {@required this.title,
+      {this.title,
       @required this.iconData,
-      @required this.textController});
+      @required this.textController,
+      this.borderColor = kPrimaryColor,
+      this.hintText});
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -19,14 +25,15 @@ class CustomTextField extends StatelessWidget {
           fillColor: Colors.white,
           filled: true,
           labelText: title,
+          hintText: hintText,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.0),
             borderSide: BorderSide(width: 0.8),
           ),
           enabledBorder: OutlineInputBorder(
+            //todo enabled to category color
             borderRadius: BorderRadius.circular(30.0),
-            borderSide:
-                BorderSide(width: 0.8, color: Theme.of(context).primaryColor),
+            borderSide: BorderSide(width: 0.8, color: borderColor),
           ),
           prefixIcon: Icon(
             iconData,

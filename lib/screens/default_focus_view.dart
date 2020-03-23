@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:focusplanner/utils/page_controller_provider.dart';
 
-class DefaultCurrentView extends StatelessWidget {
+class DefaultFocusView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

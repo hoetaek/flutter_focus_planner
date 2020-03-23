@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:focusplanner/constants.dart';
 import 'package:focusplanner/models/goal.dart';
-import 'package:focusplanner/screens/current_view.dart';
-import 'package:focusplanner/screens/default_current_view.dart';
+import 'package:focusplanner/screens/default_focus_view.dart';
+import 'package:focusplanner/screens/focus_view.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-class CurrentPage extends StatelessWidget {
+class FocusPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
@@ -15,8 +15,8 @@ class CurrentPage extends StatelessWidget {
           return box.values
                   .where((goal) => (goal as Goal).status != GoalStatus.complete)
                   .isEmpty
-              ? DefaultCurrentView()
-              : CurrentView();
+              ? DefaultFocusView()
+              : FocusView();
         });
   }
 }
