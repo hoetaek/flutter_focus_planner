@@ -29,13 +29,13 @@ class CategoryHeader extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
             borderRadius: category.goals.where((goal) {
-              Work focustWork = Provider.of<WorkList>(context).workOrder.isEmpty
+              Work focusWork = Provider.of<WorkList>(context).workOrder.isEmpty
                   ? null
                   : Provider.of<WorkList>(context).workOrder.first;
 
-              return focustWork == null
+              return focusWork == null
                   ? goal.status != GoalStatus.complete
-                  : focustWork.isWorkGoal(goal);
+                  : focusWork.isWorkGoal(goal);
             }).isNotEmpty
                 ? BorderRadius.only(topLeft: kCardRadius, topRight: kCardRadius)
                 : BorderRadius.only(
@@ -76,7 +76,10 @@ class CategoryHeader extends StatelessWidget {
                 ),
                 modifyWidgets: <Widget>[
                   IconButton(
-                    icon: Icon(Icons.delete),
+                    icon: Icon(
+                      Icons.delete,
+                      color: category.getTextColor(),
+                    ),
                     onPressed: () {
                       List<Goal> goalCheckedList = category.goals.where((goal) {
                         return goal.checked;

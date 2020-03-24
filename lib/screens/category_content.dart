@@ -28,7 +28,7 @@ class _CategoryContentState extends State<CategoryContent> {
         : Provider.of<WorkList>(context).workOrder.first;
 
     List<Goal> archivedGoals = widget.category.goals.where((Goal goal) {
-      return focusWork?.isWorkGoal(goal) ?? goal.status != GoalStatus.complete;
+      return goal.status != GoalStatus.complete;
     }).toList();
 
     archivedGoals.sort((a, b) => a.difficulty.compareTo(b.difficulty));
@@ -81,21 +81,26 @@ class _CategoryContentState extends State<CategoryContent> {
                                   goal: goal,
                                 )));
                   },
-                  child: CheckboxListTile(
-                    secondary: Icon(
-                      //todo consider if swiping up(page view) is a better idea
-                      Goal.getIconData(goal.difficulty),
-                      color: goal.getColor(),
+                  child: Container(
+                    color: focusWork?.isWorkGoal(goal) ?? false
+                        ? null
+                        : Colors.grey[400],
+                    child: CheckboxListTile(
+                      secondary: Icon(
+                        //todo consider if swiping up(page view) is a better idea
+                        Goal.getIconData(goal.difficulty),
+                        color: goal.getColor(),
+                      ),
+                      title: Text('${goal.name}'),
+                      value: goal.checked,
+                      onChanged: (checkChanged) {
+                        setState(() {
+                          goal.checked = checkChanged;
+                          goal.save();
+                        });
+                        widget.onChecked();
+                      },
                     ),
-                    title: Text('${goal.name}'),
-                    value: goal.checked,
-                    onChanged: (checkChanged) {
-                      setState(() {
-                        goal.checked = checkChanged;
-                        goal.save();
-                      });
-                      widget.onChecked();
-                    },
                   ),
                 ),
               );

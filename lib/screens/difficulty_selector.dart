@@ -54,24 +54,31 @@ class DifficultyLevel extends StatelessWidget {
   final int level;
   final bool isActive;
   final Function onTap;
+  Color color;
   DifficultyLevel(
       {@required this.level, @required this.isActive, @required this.onTap});
   @override
   Widget build(BuildContext context) {
+    color = isActive ? Theme.of(context).primaryColor : Colors.white;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: EdgeInsets.all(10.0),
         padding: EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: isActive ? Theme.of(context).primaryColor : Colors.white,
+          color: color,
           borderRadius: BorderRadius.circular(8.0),
           border: Border.all(
             width: 1.0,
             color: Colors.grey[200],
           ),
         ),
-        child: Text('$level'),
+        child: Text(
+          '$level',
+          style: TextStyle(
+              color:
+                  color.computeLuminance() > 0.5 ? Colors.black : Colors.white),
+        ),
       ),
     );
   }
