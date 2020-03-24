@@ -121,34 +121,38 @@ class _ArchivePageState extends State<ArchivePage> {
         valueListenable: Hive.box(Boxes.categoryBox).listenable(),
         builder: (context, Box categoryBox, widget) {
           sortCategoryList(categoryBox);
-          Provider.of<WorkList>(context).generateWorkOrder();
-          return SingleChildScrollView(
-            child: Column(
-              children: <Widget>[
-                CategoryNameList(
-                    categoryList: categoryReorderedList,
-                    selectedCategories: selectedCategories,
-                    onSelectChanged: () {
-                      setState(() {
-                        _buttonState = selectedCategories.isNotEmpty
-                            ? ButtonState.modify
-                            : ButtonState.add;
-                      });
-                    }),
-                SizedBox(height: 10),
-                ColumnBuilder(
-                  itemCount: categoryBox.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 15.0),
-                      child:
-                          CategoryCard(category: categoryReorderedList[index]),
-                    );
-                  },
-                ),
-              ],
-            ),
-          );
+          return ValueListenableBuilder(
+              valueListenable: Hive.box(Boxes.goalBox).listenable(),
+              builder: (context, Box goalBox, widget) {
+                Provider.of<WorkList>(context).generateWorkOrder();
+                return SingleChildScrollView(
+                  child: Column(
+                    children: <Widget>[
+                      CategoryNameList(
+                          categoryList: categoryReorderedList,
+                          selectedCategories: selectedCategories,
+                          onSelectChanged: () {
+                            setState(() {
+                              _buttonState = selectedCategories.isNotEmpty
+                                  ? ButtonState.modify
+                                  : ButtonState.add;
+                            });
+                          }),
+                      SizedBox(height: 10),
+                      ColumnBuilder(
+                        itemCount: categoryBox.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 15.0),
+                            child: CategoryCard(
+                                category: categoryReorderedList[index]),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              });
         },
       ),
     );

@@ -23,7 +23,6 @@ class _CategoryContentState extends State<CategoryContent> {
 
   @override
   Widget build(BuildContext context) {
-    print("hello");
     focusWork = Provider.of<WorkList>(context).workOrder.isEmpty
         ? null
         : Provider.of<WorkList>(context).workOrder.first;
