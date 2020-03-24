@@ -28,12 +28,15 @@ class CategoryHeader extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-            borderRadius: category.goals
-                    .where((goal) => Provider.of<WorkList>(context)
-                        .workOrder
-                        .first
-                        .isWorkGoal(goal))
-                    .isNotEmpty
+            borderRadius: category.goals.where((goal) {
+              Work focustWork = Provider.of<WorkList>(context).workOrder.isEmpty
+                  ? null
+                  : Provider.of<WorkList>(context).workOrder.first;
+
+              return focustWork == null
+                  ? goal.status != GoalStatus.complete
+                  : focustWork.isWorkGoal(goal);
+            }).isNotEmpty
                 ? BorderRadius.only(topLeft: kCardRadius, topRight: kCardRadius)
                 : BorderRadius.only(
                     topLeft: kCardRadius,
