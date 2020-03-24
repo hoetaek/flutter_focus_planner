@@ -84,7 +84,7 @@ class _CategoryContentState extends State<CategoryContent> {
                   child: Container(
                     color: focusWork?.isWorkGoal(goal) ?? false
                         ? null
-                        : Colors.grey[400],
+                        : Colors.grey[300],
                     child: CheckboxListTile(
                       secondary: Icon(
                         //todo consider if swiping up(page view) is a better idea
