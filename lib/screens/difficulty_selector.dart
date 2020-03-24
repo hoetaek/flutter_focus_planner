@@ -54,12 +54,11 @@ class DifficultyLevel extends StatelessWidget {
   final int level;
   final bool isActive;
   final Function onTap;
-  Color color;
   DifficultyLevel(
       {@required this.level, @required this.isActive, @required this.onTap});
   @override
   Widget build(BuildContext context) {
-    color = isActive ? Theme.of(context).primaryColor : Colors.white;
+    Color color = isActive ? Theme.of(context).primaryColor : Colors.white;
     return GestureDetector(
       onTap: onTap,
       child: Container(

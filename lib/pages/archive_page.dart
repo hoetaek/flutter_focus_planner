@@ -11,6 +11,27 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
+enum Mode {
+  Category,
+  WorkList,
+  Daily,
+}
+
+extension ModeExtension on Mode {
+  String get name {
+    switch (this) {
+      case Mode.Category:
+        return '카테고리';
+      case Mode.WorkList:
+        return '작업순서';
+      case Mode.Daily:
+        return '반복작업';
+      default:
+        return null;
+    }
+  }
+}
+
 class ArchivePage extends StatefulWidget {
   @override
   _ArchivePageState createState() => _ArchivePageState();
@@ -21,9 +42,7 @@ class _ArchivePageState extends State<ArchivePage> {
   List<Category> categoryReorderedList;
   List<Category> selectedCategories = List();
   ButtonState _buttonState = ButtonState.add;
-  List<DropdownMenuItem<String>> _dropDownMenuItems;
-  String _currentMode;
-  List _modes = ["카테고리", "작업순서"];
+  Mode _currentMode;
 
   sortCategoryList(Box categoryBox) {
     categoryReorderedList = categoryBox.values.cast<Category>().toList();
@@ -36,20 +55,7 @@ class _ArchivePageState extends State<ArchivePage> {
     });
   }
 
-  List<DropdownMenuItem<String>> getDropDownMenuItems() {
-    List<DropdownMenuItem<String>> items = List();
-    for (String mode in _modes) {
-      items.add(DropdownMenuItem(
-        value: mode,
-        child: Text(
-          mode,
-        ),
-      ));
-    }
-    return items;
-  }
-
-  void changeDropDownItem(String selectedMode) {
+  void changeDropDownItem(Mode selectedMode) {
     setState(() {
       _currentMode = selectedMode;
     });
@@ -57,8 +63,7 @@ class _ArchivePageState extends State<ArchivePage> {
 
   @override
   void initState() {
-    _dropDownMenuItems = getDropDownMenuItems();
-    _currentMode = _dropDownMenuItems[0].value;
+    _currentMode = Mode.Category;
     super.initState();
   }
 
@@ -69,15 +74,17 @@ class _ArchivePageState extends State<ArchivePage> {
         centerTitle: true,
         title: DropdownButton(
           value: _currentMode,
-          items: _dropDownMenuItems,
+          items: Mode.values.map((Mode mode) {
+            return DropdownMenuItem<Mode>(value: mode, child: Text(mode.name));
+          }).toList(),
           style: TextStyle(
               fontSize: 18.0, letterSpacing: 1.2, color: Colors.black),
           selectedItemBuilder: (context) {
-            return _modes.map((mode) {
+            return Mode.values.map((mode) {
               return Container(
                 margin: EdgeInsets.only(top: 12.0),
                 child: Text(
-                  _currentMode,
+                  _currentMode.name,
                   style: TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.w800,
@@ -125,35 +132,51 @@ class _ArchivePageState extends State<ArchivePage> {
               valueListenable: Hive.box(Boxes.goalBox).listenable(),
               builder: (context, Box goalBox, widget) {
                 Provider.of<WorkList>(context).generateWorkOrder();
-                return SingleChildScrollView(
-                  child: Column(
-                    children: <Widget>[
-                      CategoryNameList(
-                          categoryList: categoryReorderedList,
-                          selectedCategories: selectedCategories,
-                          onSelectChanged: () {
-                            setState(() {
-                              _buttonState = selectedCategories.isNotEmpty
-                                  ? ButtonState.modify
-                                  : ButtonState.add;
-                            });
-                          }),
-                      SizedBox(height: 10),
-                      ColumnBuilder(
-                        itemCount: categoryBox.length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 15.0),
-                            child: CategoryCard(
-                                category: categoryReorderedList[index]),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                );
+                switch (_currentMode) {
+                  case Mode.Category:
+                    return _buildCategoryView(categoryBox);
+                  case Mode.WorkList:
+                    return Container(
+                      child: Text('text'),
+                    );
+                  case Mode.Daily:
+                    return Container(
+                      child: Text('text'),
+                    );
+                  default:
+                    return null;
+                }
               });
         },
+      ),
+    );
+  }
+
+  SingleChildScrollView _buildCategoryView(Box categoryBox) {
+    return SingleChildScrollView(
+      child: Column(
+        children: <Widget>[
+          CategoryNameList(
+              categoryList: categoryReorderedList,
+              selectedCategories: selectedCategories,
+              onSelectChanged: () {
+                setState(() {
+                  _buttonState = selectedCategories.isNotEmpty
+                      ? ButtonState.modify
+                      : ButtonState.add;
+                });
+              }),
+          SizedBox(height: 10),
+          ColumnBuilder(
+            itemCount: categoryBox.length,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 15.0),
+                child: CategoryCard(category: categoryReorderedList[index]),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
