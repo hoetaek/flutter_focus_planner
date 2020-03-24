@@ -66,19 +66,20 @@ class _ArchivePageState extends State<ArchivePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: DropdownButton(
           value: _currentMode,
           items: _dropDownMenuItems,
           style: TextStyle(
-              fontSize: 23.0, letterSpacing: 1.2, color: Colors.black),
+              fontSize: 18.0, letterSpacing: 1.2, color: Colors.black),
           selectedItemBuilder: (context) {
             return _modes.map((mode) {
               return Container(
-                margin: EdgeInsets.only(top: 8.0),
+                margin: EdgeInsets.only(top: 12.0),
                 child: Text(
                   _currentMode,
                   style: TextStyle(
-                      fontSize: 25.0,
+                      fontSize: 18.0,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 1.2,
                       color: Colors.white),
