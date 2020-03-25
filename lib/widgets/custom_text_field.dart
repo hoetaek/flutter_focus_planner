@@ -6,6 +6,7 @@ class CustomTextField extends StatelessWidget {
   final IconData iconData;
   final TextEditingController textController;
   final String hintText;
+  final String errorText;
 
   final Color borderColor;
   CustomTextField(
@@ -13,7 +14,8 @@ class CustomTextField extends StatelessWidget {
       @required this.iconData,
       @required this.textController,
       this.borderColor = kPrimaryColor,
-      this.hintText});
+      this.hintText,
+      this.errorText});
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -26,13 +28,14 @@ class CustomTextField extends StatelessWidget {
           filled: true,
           labelText: title,
           hintText: hintText,
+          errorText: errorText,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.0),
-            borderSide: BorderSide(width: 0.8),
+            borderRadius: BorderRadius.circular(15.0),
+            borderSide: BorderSide(width: 0.8, color: borderColor),
           ),
           enabledBorder: OutlineInputBorder(
             //todo enabled to category color
-            borderRadius: BorderRadius.circular(30.0),
+            borderRadius: BorderRadius.circular(15.0),
             borderSide: BorderSide(width: 0.8, color: borderColor),
           ),
           prefixIcon: Icon(

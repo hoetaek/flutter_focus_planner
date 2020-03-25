@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:focusplanner/constants.dart';
+import 'package:focusplanner/models/daily_goal.dart';
 import 'package:focusplanner/pages/archive_page.dart';
 import 'package:focusplanner/pages/complete_page.dart';
 import 'package:focusplanner/pages/focus_page.dart';
 import 'package:focusplanner/utils/work_list.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -16,17 +16,22 @@ void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(CategoryAdapter());
   Hive.registerAdapter(GoalAdapter());
+  Hive.registerAdapter(DailyGoalAdapter());
   await Hive.openBox(Boxes.categoryBox);
   await Hive.openBox(Boxes.goalBox);
   await Hive.openBox(Boxes.settingBox);
+  await Hive.openBox(Boxes.dailyGoalBox);
 
+  Hive.box(Boxes.dailyGoalBox).values.cast<DailyGoal>().forEach((dailyGoal) {
+    dailyGoal.makeGoal();
+  });
   runApp(
     MaterialApp(
       home: FocusPlanner(),
       theme: ThemeData(
         primaryColor: kPrimaryColor.withGreen(150),
         scaffoldBackgroundColor: Colors.grey[50],
-        textTheme: GoogleFonts.nanumGothicTextTheme(),
+//        textTheme: GoogleFonts.nanumGothicTextTheme(),
 //        primaryColor: Colors.amber,
       ),
     ),

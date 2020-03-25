@@ -4,12 +4,15 @@ import 'package:focusplanner/models/category.dart';
 import 'package:focusplanner/pages/category_add_page.dart';
 import 'package:focusplanner/screens/category_card.dart';
 import 'package:focusplanner/screens/category_name_list.dart';
+import 'package:focusplanner/screens/daily_goal_view.dart';
 import 'package:focusplanner/utils/work_list.dart';
 import 'package:focusplanner/widgets/actions_icon_button.dart';
 import 'package:focusplanner/widgets/column_builder.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
+
+import 'daily_goal_add_page.dart';
 
 enum Mode {
   Category,
@@ -63,7 +66,7 @@ class _ArchivePageState extends State<ArchivePage> {
 
   @override
   void initState() {
-    _currentMode = Mode.Category;
+    _currentMode = Mode.Daily;
     super.initState();
   }
 
@@ -99,29 +102,39 @@ class _ArchivePageState extends State<ArchivePage> {
           icon: null,
         ),
         actions: <Widget>[
-          ActionsIconButton(
-            buttonState: _buttonState,
-            addWidget: IconButton(
+          if (_currentMode == Mode.Category)
+            ActionsIconButton(
+              buttonState: _buttonState,
+              addWidget: IconButton(
+                  icon: Icon(Icons.add),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => CategoryAddPage()));
+                  }),
+              modifyWidgets: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: () {
+                    selectedCategories.forEach((Category category) {
+                      category.delete();
+                    });
+                    selectedCategories.clear();
+                    actionDone();
+                  },
+                ),
+              ],
+            ),
+          if (_currentMode == Mode.Daily)
+            IconButton(
                 icon: Icon(Icons.add),
                 onPressed: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => CategoryAddPage()));
+                          builder: (context) => DailyGoalAddPage()));
                 }),
-            modifyWidgets: <Widget>[
-              IconButton(
-                icon: Icon(Icons.delete),
-                onPressed: () {
-                  selectedCategories.forEach((Category category) {
-                    category.delete();
-                  });
-                  selectedCategories.clear();
-                  actionDone();
-                },
-              ),
-            ],
-          )
         ],
       ),
       body: ValueListenableBuilder(
@@ -141,7 +154,7 @@ class _ArchivePageState extends State<ArchivePage> {
                     );
                   case Mode.Daily:
                     return Container(
-                      child: Text('text'),
+                      child: DailyGoalView(),
                     );
                   default:
                     return null;

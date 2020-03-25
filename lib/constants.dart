@@ -4,6 +4,7 @@ class Boxes {
   static String categoryBox = "CategoryBox";
   static String goalBox = "GoalBox";
   static String settingBox = "SettingBox";
+  static String dailyGoalBox = "DailyGoalBox";
 }
 
 class GoalStatus {

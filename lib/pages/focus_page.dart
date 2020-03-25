@@ -11,8 +11,8 @@ class FocusPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
         valueListenable: Hive.box(Boxes.goalBox).listenable(),
-        builder: (context, Box box, widget) {
-          return box.values
+        builder: (context, Box goalBox, widget) {
+          return goalBox.values
                   .where((goal) => (goal as Goal).status != GoalStatus.complete)
                   .isEmpty
               ? DefaultFocusView()

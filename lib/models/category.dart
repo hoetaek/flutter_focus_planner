@@ -4,6 +4,7 @@ import 'package:focusplanner/models/goal.dart';
 import 'package:hive/hive.dart';
 
 import '../constants.dart';
+import 'daily_goal.dart';
 
 part 'category.g.dart';
 
@@ -29,12 +30,20 @@ class Category extends HiveObject {
     if (colorIndex != null)
       return kColors[colorIndex];
     else
-      return kPrimaryColor;
+      return kPrimaryColor.withGreen(150);
   }
 
   Color getTextColor() {
     Color color = getColor();
     return color.computeLuminance() > 0.5 ? Colors.black : Colors.white;
+  }
+
+  @override
+  Future<void> delete() {
+    Hive.box(Boxes.dailyGoalBox).values.cast<DailyGoal>().forEach((dailyGoal) {
+      if (this == dailyGoal.category) dailyGoal.delete();
+    });
+    return super.delete();
   }
 
   @override

@@ -4,11 +4,11 @@ class DifficultySelector extends StatelessWidget {
   final ValueChanged<int> onDifficultyChanged;
   final int currentDifficulty;
   final diffSentences = [
-    '굉장히 쉽고 단기간에 해결가능합니다.',
-    '단기간에 해결가능합니다.',
-    '해결하는데 시간이 걸립니다.',
-    '어렵습니다.',
-    '오래 걸리고 어렵습니다.',
+    '지금 바로 할 계획입니다.',
+    '오늘 안에 할 수 있습니다.',
+    '2~3일 안에 할 수 있습니다.',
+    '2~3달 안에 할 수 있습니다.',
+    '장기적으로 생각하고 있습니다.',
   ];
 
   DifficultySelector(
