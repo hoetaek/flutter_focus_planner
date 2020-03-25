@@ -66,7 +66,7 @@ class _ArchivePageState extends State<ArchivePage> {
 
   @override
   void initState() {
-    _currentMode = Mode.Daily;
+    _currentMode = Mode.Category;
     super.initState();
   }
 

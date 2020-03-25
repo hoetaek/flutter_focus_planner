@@ -18,7 +18,7 @@ class DailyGoalEditPage extends StatefulWidget {
 
 class _DailyGoalEditPageState extends State<DailyGoalEditPage> {
   int _difficulty = 1;
-  final TextEditingController _textController = TextEditingController();
+  TextEditingController _textController;
   final Box categoryBox = Hive.box(Boxes.categoryBox);
   Category _currentCategory;
   bool _validate = true;
@@ -27,7 +27,7 @@ class _DailyGoalEditPageState extends State<DailyGoalEditPage> {
   void initState() {
     _currentCategory = widget.dailyGoal.category;
     _difficulty = widget.dailyGoal.difficulty;
-
+    _textController = TextEditingController(text: widget.dailyGoal.name);
     _textController.addListener(() {
       setState(() {
         _validate = true;
@@ -38,7 +38,6 @@ class _DailyGoalEditPageState extends State<DailyGoalEditPage> {
 
   @override
   Widget build(BuildContext context) {
-//    categoryBox.values.cast<Category>().forEach((category) => print(category));
     return Scaffold(
       appBar: AppBar(
         title: Text('반복작업 수정'),

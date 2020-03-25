@@ -44,7 +44,7 @@ class FocusPlanner extends StatefulWidget {
 }
 
 class _FocusPlannerState extends State<FocusPlanner> {
-  int _currentPage = 0;
+  int _currentPage = 1;
   PageController _pageController;
 
   @override
