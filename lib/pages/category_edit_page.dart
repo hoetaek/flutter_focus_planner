@@ -22,7 +22,6 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
   @override
   void initState() {
     _textController = TextEditingController(text: widget.category.name);
-
     _currentColorIndex = widget.category.colorIndex ?? 0;
     super.initState();
   }

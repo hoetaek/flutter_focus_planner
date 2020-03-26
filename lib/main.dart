@@ -21,7 +21,6 @@ void main() async {
   await Hive.openBox(Boxes.goalBox);
   await Hive.openBox(Boxes.settingBox);
   await Hive.openBox(Boxes.dailyGoalBox);
-
   Hive.box(Boxes.dailyGoalBox).values.cast<DailyGoal>().forEach((dailyGoal) {
     dailyGoal.makeGoal();
   });

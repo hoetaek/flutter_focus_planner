@@ -43,6 +43,9 @@ class Category extends HiveObject {
     Hive.box(Boxes.dailyGoalBox).values.cast<DailyGoal>().forEach((dailyGoal) {
       if (this == dailyGoal.category) dailyGoal.delete();
     });
+    goals.forEach((goal) {
+      if (goal.status == GoalStatus.onWork) goal.delete();
+    });
     return super.delete();
   }
 
