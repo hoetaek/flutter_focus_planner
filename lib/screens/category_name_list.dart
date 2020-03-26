@@ -44,8 +44,8 @@ class _CategoryNameListState extends State<CategoryNameList> {
 
   setCategoryPriority() {
     int index = 0;
-    widget.categoryList.forEach((category) {
-      category.priority = index;
+    widget.categoryList.cast<Category>().forEach((category) {
+      category.changePriority(index);
       category.save();
       index++;
     });

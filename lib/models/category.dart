@@ -21,6 +21,13 @@ class Category extends HiveObject {
 
   Category({@required this.name, colorIndex = 0});
 
+  void changePriority(int index) {
+    priority = index;
+    goals.forEach((goal) {
+      // todo change goal's work place
+    });
+  }
+
   void addGoal(Goal goal) {
     goals.add(goal);
     save();
