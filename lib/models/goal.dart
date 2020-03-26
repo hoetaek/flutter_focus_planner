@@ -1,10 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:focusplanner/models/work.dart';
 import 'package:hive/hive.dart';
 
 import '../constants.dart';
-import 'category.dart';
 
 part 'goal.g.dart';
 
@@ -20,10 +18,6 @@ class Goal extends HiveObject {
   bool checked;
   @HiveField(4)
   DateTime date;
-  @HiveField(5)
-  HiveList<Category> categoryList;
-  @HiveField(6)
-  HiveList<Work> workList;
 
   Goal(
       {@required this.name, @required this.difficulty, @required this.status}) {
