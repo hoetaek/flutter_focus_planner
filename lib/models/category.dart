@@ -4,6 +4,7 @@ import 'package:focusplanner/models/goal.dart';
 import 'package:hive/hive.dart';
 
 import '../constants.dart';
+import 'daily_goal.dart';
 
 part 'category.g.dart';
 
@@ -20,6 +21,13 @@ class Category extends HiveObject {
 
   Category({@required this.name, colorIndex = 0});
 
+  void changePriority(int index) {
+    priority = index;
+    goals.forEach((goal) {
+      // todo change goal's work place
+    });
+  }
+
   void addGoal(Goal goal) {
     goals.add(goal);
     save();
@@ -29,12 +37,23 @@ class Category extends HiveObject {
     if (colorIndex != null)
       return kColors[colorIndex];
     else
-      return kPrimaryColor;
+      return kPrimaryColor.withGreen(150);
   }
 
   Color getTextColor() {
     Color color = getColor();
     return color.computeLuminance() > 0.5 ? Colors.black : Colors.white;
+  }
+
+  @override
+  Future<void> delete() {
+    Hive.box(Boxes.dailyGoalBox).values.cast<DailyGoal>().forEach((dailyGoal) {
+      if (this == dailyGoal.category) dailyGoal.delete();
+    });
+    goals.forEach((goal) {
+      if (goal.status == GoalStatus.onWork) goal.delete();
+    });
+    return super.delete();
   }
 
   @override

@@ -14,6 +14,17 @@ class CategoryAddPage extends StatefulWidget {
 class _CategoryAddPageState extends State<CategoryAddPage> {
   final TextEditingController _textController = TextEditingController();
   int _currentColorIndex = 0;
+  bool _validate = true;
+
+  @override
+  void initState() {
+    _textController.addListener(() {
+      setState(() {
+        _validate = true;
+      });
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +38,7 @@ class _CategoryAddPageState extends State<CategoryAddPage> {
             borderColor: kColors[_currentColorIndex],
             textController: _textController,
             iconData: Icons.add,
+            errorText: _validate ? null : "칸이 비어있습니다.",
             title: "카테고리",
           ),
           ColorPicker(
@@ -39,6 +51,12 @@ class _CategoryAddPageState extends State<CategoryAddPage> {
           ),
           CustomButton(
             onPressed: () {
+              if (_textController.text.isEmpty) {
+                setState(() {
+                  _validate = false;
+                });
+                return;
+              }
               Category category = Category(name: _textController.text);
               category.goals = HiveList(Hive.box(Boxes.goalBox));
               category.priority = Hive.box(Boxes.categoryBox).length;

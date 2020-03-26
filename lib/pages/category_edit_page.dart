@@ -16,11 +16,12 @@ class CategoryEditPage extends StatefulWidget {
 }
 
 class _CategoryEditPageState extends State<CategoryEditPage> {
-  final TextEditingController _textController = TextEditingController();
+  TextEditingController _textController;
   int _currentColorIndex;
 
   @override
   void initState() {
+    _textController = TextEditingController(text: widget.category.name);
     _currentColorIndex = widget.category.colorIndex ?? 0;
     super.initState();
   }
@@ -38,6 +39,7 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
             textController: _textController,
             iconData: Icons.add,
             hintText: widget.category.name,
+            title: "카테고리",
           ),
           ColorPicker(
             colorIndex: _currentColorIndex,
@@ -49,7 +51,6 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
           ),
           CustomButton(
             onPressed: () {
-              //todo need validation
               if (_textController.text.isNotEmpty)
                 widget.category.name = _textController.text;
               widget.category.colorIndex = _currentColorIndex;
