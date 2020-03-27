@@ -21,7 +21,6 @@ extension DateTimeExtension on DateTime {
 @HiveType(typeId: 2)
 class DailyGoal extends HiveObject {
   @HiveField(0)
-  //todo check if connecting directly to category is possible
   HiveList<Category> _categoryList;
   @HiveField(1)
   int difficulty;

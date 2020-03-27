@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:focusplanner/models/category.dart';
 import 'package:focusplanner/models/goal.dart';
+import 'package:focusplanner/models/work.dart';
 import 'package:focusplanner/widgets/actions_icon_button.dart';
 
 import '../constants.dart';
@@ -9,8 +10,9 @@ import 'category_header.dart';
 
 class CategoryCard extends StatefulWidget {
   final Category category;
+  final List<Work> workList;
 
-  CategoryCard({this.category});
+  CategoryCard({this.category, this.workList});
 
   @override
   _CategoryCardState createState() => _CategoryCardState();
@@ -52,9 +54,10 @@ class _CategoryCardState extends State<CategoryCard> {
                 });
               }),
           CategoryContent(
+              focusWork:
+                  widget.workList.isNotEmpty ? widget.workList.first : null,
               category: widget.category,
               onChecked: () {
-                //todo archive만 표시하도록 하기
                 setState(() {
                   if (goalIsChecked())
                     _buttonState = ButtonState.modify;

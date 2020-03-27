@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:focusplanner/models/goal.dart';
+import 'package:focusplanner/models/work.dart';
 import 'package:hive/hive.dart';
 
 import '../constants.dart';
@@ -21,11 +22,15 @@ class Category extends HiveObject {
 
   Category({@required this.name, colorIndex = 0});
 
+  init(int selectedColorIndex) {
+    goals = HiveList(Hive.box(Boxes.goalBox));
+    priority = Hive.box(Boxes.categoryBox).length;
+    colorIndex = selectedColorIndex;
+    Hive.box(Boxes.categoryBox).add(this);
+  }
+
   void changePriority(int index) {
     priority = index;
-    goals.forEach((goal) {
-      // todo change goal's work place
-    });
   }
 
   void addGoal(Goal goal) {
@@ -52,6 +57,13 @@ class Category extends HiveObject {
     });
     goals.forEach((goal) {
       if (goal.status == GoalStatus.onWork) goal.delete();
+    });
+    Hive.box(Boxes.workBox)
+        .values
+        .cast<Work>()
+        .where((work) => work.category == this)
+        .forEach((work) {
+      work.delete();
     });
     return super.delete();
   }

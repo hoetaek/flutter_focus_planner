@@ -4,7 +4,6 @@ import 'package:focusplanner/models/category.dart';
 import 'package:focusplanner/widgets/color_picker.dart';
 import 'package:focusplanner/widgets/custom_button.dart';
 import 'package:focusplanner/widgets/custom_text_field.dart';
-import 'package:hive/hive.dart';
 
 class CategoryAddPage extends StatefulWidget {
   @override
@@ -58,10 +57,8 @@ class _CategoryAddPageState extends State<CategoryAddPage> {
                 return;
               }
               Category category = Category(name: _textController.text);
-              category.goals = HiveList(Hive.box(Boxes.goalBox));
-              category.priority = Hive.box(Boxes.categoryBox).length;
-              category.colorIndex = _currentColorIndex;
-              Hive.box(Boxes.categoryBox).add(category);
+              category.init(_currentColorIndex);
+
               Navigator.pop(context);
             },
           ),

@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:focusplanner/models/category.dart';
+import 'package:focusplanner/models/work.dart';
 import 'package:hive/hive.dart';
 
 import '../constants.dart';
@@ -18,10 +20,84 @@ class Goal extends HiveObject {
   bool checked;
   @HiveField(4)
   DateTime date;
+  @HiveField(5)
+  HiveList<Category> _categoryList;
+  @HiveField(6)
+  HiveList<Work> _workList;
 
-  Goal(
-      {@required this.name, @required this.difficulty, @required this.status}) {
+  Goal({
+    @required this.name,
+    @required this.difficulty,
+    @required this.status,
+  }) {
     this.checked = false;
+  }
+
+  init(Category category) {
+    this._categoryList = HiveList(Hive.box(Boxes.categoryBox));
+    this._workList = HiveList(Hive.box(Boxes.workBox));
+    _categoryList.add(category);
+    Hive.box(Boxes.goalBox).add(this);
+    _setWork();
+  }
+
+  Category get category => _categoryList[0];
+  Work get work => _workList[0];
+
+  complete() {
+    status = GoalStatus.complete;
+    checked = false;
+    setDate(DateTime.now());
+    work.goals.remove(this);
+    save();
+  }
+
+  setCategory() {
+    if (_categoryList.isEmpty) {
+      Category category = Hive.box(Boxes.categoryBox)
+          .values
+          .cast<Category>()
+          .firstWhere((category) => category.goals.contains(this));
+      _categoryList.add(category);
+    }
+  }
+
+  _setWork() {
+    setCategory();
+    if (_workExists()) {
+      Work work = Hive.box(Boxes.workBox).values.cast<Work>().firstWhere(
+          (work) => work.difficulty == difficulty && work.category == category);
+      if (!work.goals.contains(this)) {
+        work.addGoal(this);
+      }
+      _workList.add(work);
+    } else {
+      Work work = _makeWork();
+      work.addGoal(this);
+      _workList.add(work);
+    }
+  }
+
+  _changeWork() {
+    print("change work");
+    print("from: $work");
+    work.goals.remove(this);
+    work.save();
+    if (work.goals.isEmpty) work.delete();
+    _workList.clear();
+    _setWork();
+    print("to: $work");
+  }
+
+  bool _workExists() {
+    return Hive.box(Boxes.workBox).values.cast<Work>().any(
+        (work) => work.difficulty == difficulty && work.category == category);
+  }
+
+  Work _makeWork() {
+    Work work = Work();
+    work.init(this, category);
+    return work;
   }
 
   static IconData getIconData(difficulty) {
@@ -66,11 +142,13 @@ class Goal extends HiveObject {
 
   void levelUp() {
     difficulty += 1;
+    _changeWork();
     save();
   }
 
   void levelDown() {
     difficulty -= 1;
+    _changeWork();
     save();
   }
 
@@ -91,5 +169,11 @@ class Goal extends HiveObject {
   @override
   String toString() {
     return name;
+  }
+
+  @override
+  Future<void> delete() {
+    if (work.goals.every((goal) => goal == this)) work.delete();
+    return super.delete();
   }
 }

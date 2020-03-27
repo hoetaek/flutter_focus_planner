@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:focusplanner/constants.dart';
 import 'package:focusplanner/models/category.dart';
 import 'package:focusplanner/models/goal.dart';
 import 'package:focusplanner/screens/difficulty_selector.dart';
 import 'package:focusplanner/widgets/custom_button.dart';
 import 'package:focusplanner/widgets/custom_text_field.dart';
-import 'package:hive/hive.dart';
 
 class GoalAddPage extends StatefulWidget {
   final Category category;
@@ -57,12 +55,13 @@ class _GoalAddPageState extends State<GoalAddPage> {
             height: 10.0,
           ),
           CustomButton(
-            onPressed: () {
+            onPressed: () async {
               Goal goal = Goal(
                   name: _textController.text,
                   difficulty: _difficulty,
                   status: widget.goalStatus);
-              Hive.box(Boxes.goalBox).add(goal);
+              goal.init(widget.category);
+
               widget.category.addGoal(goal);
               Navigator.pop(context);
             },

@@ -2,26 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:focusplanner/models/category.dart';
 import 'package:focusplanner/models/goal.dart';
+import 'package:focusplanner/models/work.dart';
 import 'package:focusplanner/pages/goal_add_page.dart';
 import 'package:focusplanner/pages/goal_edit_page.dart';
-import 'package:focusplanner/utils/work_list.dart';
 import 'package:focusplanner/widgets/actions_icon_button.dart';
-import 'package:provider/provider.dart';
 
 import '../constants.dart';
 
 class FocusView extends StatefulWidget {
-  final Category category;
+  final Work focusWork;
 
-  FocusView({this.category});
+  FocusView({this.focusWork});
   @override
   _FocusViewState createState() => _FocusViewState();
 }
 
 class _FocusViewState extends State<FocusView> {
   ButtonState _buttonState;
-  WorkList workList;
-  Work focusWork;
 
   bool goalIsChecked(List<Goal> goalList) {
     return goalList.where((Goal goal) => goal.checked).isNotEmpty;
@@ -29,9 +26,7 @@ class _FocusViewState extends State<FocusView> {
 
   @override
   void initState() {
-    workList = WorkList();
-    focusWork = workList.workOrder.first;
-    if (goalIsChecked(focusWork.goalList))
+    if (goalIsChecked(widget.focusWork.goals))
       _buttonState = ButtonState.modify;
     else
       _buttonState = ButtonState.add;
@@ -40,13 +35,11 @@ class _FocusViewState extends State<FocusView> {
 
   @override
   Widget build(BuildContext context) {
-    workList.generateWorkOrder();
-    focusWork = workList.workOrder.first;
     return CustomScrollView(
       slivers: <Widget>[
         FocusSliverAppBar(
-          category: focusWork.category,
-          difficulty: focusWork.difficulty,
+          category: widget.focusWork.category,
+          difficulty: widget.focusWork.difficulty,
           buttonState: _buttonState,
           actionDone: () {
             setState(() {
@@ -56,10 +49,10 @@ class _FocusViewState extends State<FocusView> {
           },
         ),
         FocusContent(
-          focusGoals: focusWork.goalList,
+          focusGoals: widget.focusWork.goals,
           onChecked: () {
             setState(() {
-              if (goalIsChecked(focusWork.goalList)) {
+              if (goalIsChecked(widget.focusWork.goals)) {
                 _buttonState = ButtonState.modify;
               } else {
                 _buttonState = ButtonState.add;
@@ -133,10 +126,7 @@ class FocusSliverAppBar extends StatelessWidget {
                   return goal.checked;
                 }).toList();
                 goalCheckedList.forEach((Goal goal) {
-                  goal.status = GoalStatus.complete;
-                  goal.checked = false;
-                  goal.setDate(DateTime.now());
-                  goal.save();
+                  goal.complete();
                 });
                 actionDone();
               },
@@ -177,8 +167,6 @@ class _FocusContentState extends State<FocusContent> {
                         onTap: () {
                           setState(() {
                             goal.levelUp();
-                            Provider.of<WorkList>(context, listen: false)
-                                .generateWorkOrder();
                           });
                         },
                       ),
@@ -190,8 +178,6 @@ class _FocusContentState extends State<FocusContent> {
                         onTap: () {
                           setState(() {
                             goal.levelDown();
-                            Provider.of<WorkList>(context, listen: false)
-                                .generateWorkOrder();
                           });
                         },
                       ),

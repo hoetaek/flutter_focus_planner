@@ -83,7 +83,6 @@ class _DailyGoalEditPageState extends State<DailyGoalEditPage> {
             ),
           ),
           CustomTextField(
-            //todo 미리 작업 이름 채워넣기
             title: "반복작업",
             textController: _textController,
             iconData: Icons.add,

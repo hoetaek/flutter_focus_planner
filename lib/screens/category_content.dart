@@ -2,31 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:focusplanner/models/category.dart';
 import 'package:focusplanner/models/goal.dart';
+import 'package:focusplanner/models/work.dart';
 import 'package:focusplanner/pages/goal_edit_page.dart';
-import 'package:focusplanner/utils/work_list.dart';
-import 'package:provider/provider.dart';
 
 import '../constants.dart';
 
 class CategoryContent extends StatefulWidget {
   final Category category;
   final Function onChecked;
+  final Work focusWork;
 
-  const CategoryContent({@required this.category, @required this.onChecked});
+  const CategoryContent(
+      {@required this.category, @required this.onChecked, this.focusWork});
 
   @override
   _CategoryContentState createState() => _CategoryContentState();
 }
 
 class _CategoryContentState extends State<CategoryContent> {
-  Work focusWork;
-
   @override
   Widget build(BuildContext context) {
-    focusWork = Provider.of<WorkList>(context).workOrder.isEmpty
-        ? null
-        : Provider.of<WorkList>(context).workOrder.first;
-
     List<Goal> archivedGoals = widget.category.goals.where((Goal goal) {
       return goal.status != GoalStatus.complete;
     }).toList();
@@ -39,7 +34,7 @@ class _CategoryContentState extends State<CategoryContent> {
             itemCount: archivedGoals.length,
             itemBuilder: (context, index) {
               Goal goal = archivedGoals[index];
-              //todo 길게 눌렀을 때 정보 수정하기
+
               return Slidable(
                 actionExtentRatio: 0.15,
                 actionPane: SlidableDrawerActionPane(),
@@ -52,8 +47,6 @@ class _CategoryContentState extends State<CategoryContent> {
                       onTap: () {
                         setState(() {
                           goal.levelUp();
-                          Provider.of<WorkList>(context, listen: false)
-                              .generateWorkOrder();
                         });
                       },
                     ),
@@ -65,8 +58,6 @@ class _CategoryContentState extends State<CategoryContent> {
                       onTap: () {
                         setState(() {
                           goal.levelDown();
-                          Provider.of<WorkList>(context, listen: false)
-                              .generateWorkOrder();
                         });
                       },
                     ),
@@ -82,12 +73,19 @@ class _CategoryContentState extends State<CategoryContent> {
                                 )));
                   },
                   child: Container(
-                    color: focusWork?.isWorkGoal(goal) ?? false
-                        ? null
-                        : Colors.grey[300],
+                    decoration: BoxDecoration(
+                      color: widget.focusWork?.isWorkGoal(goal) ?? false
+                          ? Colors.grey[300]
+                          : null,
+                      borderRadius: index + 1 == archivedGoals.length
+                          ? BorderRadius.only(
+                              bottomLeft: kCardRadius,
+                              bottomRight: kCardRadius,
+                            )
+                          : null,
+                    ),
                     child: CheckboxListTile(
                       secondary: Icon(
-                        //todo consider if swiping up(page view) is a better idea
                         Goal.getIconData(goal.difficulty),
                         color: goal.getColor(),
                       ),
