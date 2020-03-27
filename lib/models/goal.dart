@@ -66,7 +66,6 @@ class Goal extends HiveObject {
   }
 
   _setWork() {
-    setCategory();
     if (_workExists()) {
       Work work = Hive.box(Boxes.workBox).values.cast<Work>().firstWhere(
           (work) => work.difficulty == difficulty && work.category == category);
@@ -176,7 +175,7 @@ class Goal extends HiveObject {
 
   @override
   Future<void> delete() {
-    if (work.goals.every((goal) => goal == this)) work.delete();
+    if (work != null && work.goals.every((goal) => goal == this)) work.delete();
     return super.delete();
   }
 }

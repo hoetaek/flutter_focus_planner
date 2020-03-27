@@ -26,9 +26,10 @@ void main() async {
     dailyGoal.makeGoal();
   });
   // for compatibility
-  Hive.box(Boxes.goalBox).values.cast<Goal>().forEach((goal) {
-    if (goal.category == null) goal.init();
-  });
+  bool initiated = Hive.box(Boxes.settingBox)
+      .get('compatibility initiated', defaultValue: false);
+  if (!initiated) initiate();
+
   runApp(
     MaterialApp(
       home: FocusPlanner(),
@@ -99,4 +100,22 @@ class _FocusPlannerState extends State<FocusPlanner> {
     Hive.close();
     super.dispose();
   }
+}
+
+initiate() {
+  Box categoryBox = Hive.box(Boxes.categoryBox);
+  Hive.box(Boxes.goalBox).values.cast<Goal>().forEach((goal) {
+    bool isInsideCategory;
+    for (Category category in categoryBox.values.cast<Category>()) {
+      isInsideCategory =
+          category.goals.any((categoryGoal) => goal == categoryGoal);
+      if (isInsideCategory) break;
+    }
+    if (!isInsideCategory) goal.delete();
+  });
+  Hive.box(Boxes.goalBox).values.cast<Goal>().forEach((goal) {
+    if (goal.category == null && goal.status != GoalStatus.complete)
+      goal.init();
+  });
+  Hive.box(Boxes.settingBox).put('compatibility initiated', true);
 }
