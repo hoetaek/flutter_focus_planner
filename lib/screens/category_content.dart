@@ -22,18 +22,18 @@ class CategoryContent extends StatefulWidget {
 class _CategoryContentState extends State<CategoryContent> {
   @override
   Widget build(BuildContext context) {
-    List<Goal> archivedGoals = widget.category.goals.where((Goal goal) {
-      return goal.status != GoalStatus.complete;
+    List<Goal> onWorkGoals = widget.category.goals.where((Goal goal) {
+      return goal.status == GoalStatus.onWork;
     }).toList();
 
-    archivedGoals.sort((a, b) => a.difficulty.compareTo(b.difficulty));
+    onWorkGoals.sort((a, b) => a.difficulty.compareTo(b.difficulty));
     return widget.category.goals != null
         ? ListView.builder(
             physics: ClampingScrollPhysics(),
             shrinkWrap: true,
-            itemCount: archivedGoals.length,
+            itemCount: onWorkGoals.length,
             itemBuilder: (context, index) {
-              Goal goal = archivedGoals[index];
+              Goal goal = onWorkGoals[index];
 
               return Slidable(
                 actionExtentRatio: 0.15,
@@ -77,7 +77,7 @@ class _CategoryContentState extends State<CategoryContent> {
                       color: widget.focusWork?.isWorkGoal(goal) ?? false
                           ? Colors.grey[300]
                           : null,
-                      borderRadius: index + 1 == archivedGoals.length
+                      borderRadius: index + 1 == onWorkGoals.length
                           ? BorderRadius.only(
                               bottomLeft: kCardRadius,
                               bottomRight: kCardRadius,

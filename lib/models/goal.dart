@@ -33,16 +33,19 @@ class Goal extends HiveObject {
     this.checked = false;
   }
 
-  init(Category category) {
+  init({Category categoryToBeAdded}) {
     this._categoryList = HiveList(Hive.box(Boxes.categoryBox));
     this._workList = HiveList(Hive.box(Boxes.workBox));
+    if (categoryToBeAdded == null) setCategory();
     _categoryList.add(category);
-    Hive.box(Boxes.goalBox).add(this);
+    // for compatibility
+    if (!isInBox) Hive.box(Boxes.goalBox).add(this);
     _setWork();
   }
 
-  Category get category => _categoryList[0];
-  Work get work => _workList[0];
+  // get 0 index or null
+  Category get category => _categoryList?.elementAt(0);
+  Work get work => _workList?.elementAt(0);
 
   complete() {
     status = GoalStatus.complete;

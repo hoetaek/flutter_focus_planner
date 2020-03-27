@@ -25,6 +25,10 @@ void main() async {
   Hive.box(Boxes.dailyGoalBox).values.cast<DailyGoal>().forEach((dailyGoal) {
     dailyGoal.makeGoal();
   });
+  // for compatibility
+  Hive.box(Boxes.goalBox).values.cast<Goal>().forEach((goal) {
+    if (goal.category == null) goal.init();
+  });
   runApp(
     MaterialApp(
       home: FocusPlanner(),

@@ -60,7 +60,7 @@ class _GoalAddPageState extends State<GoalAddPage> {
                   name: _textController.text,
                   difficulty: _difficulty,
                   status: widget.goalStatus);
-              goal.init(widget.category);
+              goal.init(categoryToBeAdded: widget.category);
 
               widget.category.addGoal(goal);
               Navigator.pop(context);
