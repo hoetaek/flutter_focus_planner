@@ -77,9 +77,23 @@ class CategoryHeader extends StatelessWidget {
                         return goal.checked;
                       }).toList();
                       goalCheckedList.forEach((Goal goal) {
-                        category.goals.remove(goal);
-                        category.save();
                         goal.delete();
+                      });
+                      onActionDone();
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.done,
+                      color: category.getTextColor(),
+                    ),
+                    onPressed: () {
+                      List<Goal> goalCheckedList = category.goals.where((goal) {
+                        //checked가 된 골만 return 한다.
+                        return goal.checked;
+                      }).toList();
+                      goalCheckedList.forEach((Goal goal) {
+                        goal.complete();
                       });
                       onActionDone();
                     },
