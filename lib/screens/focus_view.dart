@@ -34,45 +34,49 @@ class _FocusViewState extends State<FocusView> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: <Widget>[
-        FocusSliverAppBar(
-          focusWork: widget.focusWork,
-          buttonState: _buttonState,
-          actionDone: () {
-            setState(() {
-              //바뀌었던 상태를 다시 add할 수 있는 상태로 변경 해 준다.
+    return Scaffold(
+      appBar: FocusAppBar(
+        focusWork: widget.focusWork,
+        buttonState: _buttonState,
+        actionDone: () {
+          setState(() {
+            //바뀌었던 상태를 다시 add할 수 있는 상태로 변경 해 준다.
+            _buttonState = ButtonState.add;
+          });
+        },
+      ),
+      body: FocusContent(
+        focusGoals: widget.focusWork.goals,
+        onChecked: () {
+          setState(() {
+            if (goalIsChecked(widget.focusWork.goals)) {
+              _buttonState = ButtonState.modify;
+            } else {
               _buttonState = ButtonState.add;
-            });
-          },
-        ),
-        FocusContent(
-          focusGoals: widget.focusWork.goals,
-          onChecked: () {
-            setState(() {
-              if (goalIsChecked(widget.focusWork.goals)) {
-                _buttonState = ButtonState.modify;
-              } else {
-                _buttonState = ButtonState.add;
-              }
-            });
-          },
-        ),
-      ],
+            }
+          });
+        },
+      ),
     );
   }
 }
 
-class FocusSliverAppBar extends StatelessWidget {
+class FocusAppBar extends StatelessWidget implements PreferredSize {
   final ButtonState buttonState;
   final Function actionDone;
   final Work focusWork;
 
-  const FocusSliverAppBar({this.focusWork, this.buttonState, this.actionDone});
+  FocusAppBar(
+      {Key key,
+      @required this.focusWork,
+      @required this.buttonState,
+      @required this.actionDone})
+      : preferredSize = Size.fromHeight(kToolbarHeight),
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return SliverAppBar(
+    return AppBar(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
@@ -130,6 +134,13 @@ class FocusSliverAppBar extends StatelessWidget {
       ],
     );
   }
+
+  @override
+  // TODO: implement child
+  Widget get child => null;
+
+  @override
+  final Size preferredSize;
 }
 
 class FocusContent extends StatefulWidget {
@@ -145,63 +156,61 @@ class _FocusContentState extends State<FocusContent> {
   @override
   Widget build(BuildContext context) {
     return widget.focusGoals != null
-        ? SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                Goal goal = widget.focusGoals[index];
-                return Slidable(
-                  actionPane: SlidableDrawerActionPane(),
-                  actionExtentRatio: 0.15,
-                  actions: <Widget>[
-                    if (goal.difficulty != 5)
-                      IconSlideAction(
-                        caption: 'Level',
-                        color: Colors.blue,
-                        icon: Icons.arrow_upward,
-                        onTap: () {
-                          setState(() {
-                            goal.levelUp();
-                          });
-                        },
-                      ),
-                    if (goal.difficulty != 1)
-                      IconSlideAction(
-                        caption: 'Level',
-                        color: Colors.redAccent,
-                        icon: Icons.arrow_downward,
-                        onTap: () {
-                          setState(() {
-                            goal.levelDown();
-                          });
-                        },
-                      ),
-                  ],
-                  child: GestureDetector(
-                    onLongPress: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => GoalEditPage(
-                                    goal: goal,
-                                    goalStatus: GoalStatus.onWork,
-                                  )));
-                    },
-                    child: CheckboxListTile(
-                      title: Text('${goal.name}'),
-                      value: goal.checked,
-                      onChanged: (change) {
+        ? ListView.builder(
+            itemCount: widget.focusGoals.length,
+            itemBuilder: (context, index) {
+              Goal goal = widget.focusGoals[index];
+              return Slidable(
+                actionPane: SlidableDrawerActionPane(),
+                actionExtentRatio: 0.15,
+                actions: <Widget>[
+                  if (goal.difficulty != 5)
+                    IconSlideAction(
+                      caption: 'Level',
+                      color: Colors.blue,
+                      icon: Icons.arrow_upward,
+                      onTap: () {
                         setState(() {
-                          goal.checked = change;
-                          goal.save();
+                          goal.levelUp();
                         });
-                        widget.onChecked();
                       },
                     ),
+                  if (goal.difficulty != 1)
+                    IconSlideAction(
+                      caption: 'Level',
+                      color: Colors.redAccent,
+                      icon: Icons.arrow_downward,
+                      onTap: () {
+                        setState(() {
+                          goal.levelDown();
+                        });
+                      },
+                    ),
+                ],
+                child: GestureDetector(
+                  onLongPress: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => GoalEditPage(
+                                  goal: goal,
+                                  goalStatus: GoalStatus.onWork,
+                                )));
+                  },
+                  child: CheckboxListTile(
+                    title: Text('${goal.name}'),
+                    value: goal.checked,
+                    onChanged: (change) {
+                      setState(() {
+                        goal.checked = change;
+                        goal.save();
+                      });
+                      widget.onChecked();
+                    },
                   ),
-                );
-              },
-              childCount: widget.focusGoals.length,
-            ),
+                ),
+              );
+            },
           )
         : Container();
   }
