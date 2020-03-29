@@ -8,13 +8,13 @@ import 'goal.dart';
 part 'daily_goal.g.dart';
 
 extension DateTimeExtension on DateTime {
-  static DateTime getDateDay(DateTime day) {
-    return DateTime(day.year, day.month, day.day);
+  DateTime getDateDay() {
+    return DateTime(this.year, this.month, this.day);
   }
 
   static DateTime getTodayDay() {
     DateTime now = DateTime.now();
-    return getDateDay(now);
+    return now.getDateDay();
   }
 }
 
@@ -27,17 +27,19 @@ class DailyGoal extends HiveObject {
   @HiveField(2)
   String name;
   @HiveField(3)
-  HiveList<Goal> goals;
+  HiveList<Goal> _goals;
   @HiveField(4)
   List<DateTime> generatedDates;
   DailyGoal({
     @required this.name,
     @required this.difficulty,
   })  : this._categoryList = HiveList(Hive.box(Boxes.categoryBox)),
-        this.goals = HiveList(Hive.box(Boxes.goalBox)),
+        this._goals = HiveList(Hive.box(Boxes.goalBox)),
         this.generatedDates = List<DateTime>();
 
   Category get category => _categoryList[0];
+  List<Goal> get goals => List.unmodifiable(_goals);
+
   set category(Category category) {
     _categoryList[0] = category;
   }
@@ -47,18 +49,18 @@ class DailyGoal extends HiveObject {
   }
 
   int countComplete() {
-    return goals.where((goal) => goal.status == GoalStatus.complete).length;
+    return _goals.where((goal) => goal.status == GoalStatus.complete).length;
   }
 
   makeGoal() {
-    if (goals.length != countComplete() || _checkTodayDate()) return;
+    if (_goals.length != countComplete() || _checkTodayDate()) return;
     _generateTodayDate();
     Goal goal =
         Goal(name: name, difficulty: difficulty, status: GoalStatus.onWork);
-    Hive.box(Boxes.goalBox).add(goal);
-    goals.add(goal);
 
-    category.goals.add(goal);
+    goal.init(categoryToBeAdded: category);
+    category.addGoal(goal);
+    _goals.add(goal);
     save();
   }
 

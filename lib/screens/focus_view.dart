@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:focusplanner/models/category.dart';
 import 'package:focusplanner/models/goal.dart';
 import 'package:focusplanner/models/work.dart';
 import 'package:focusplanner/pages/goal_add_page.dart';
@@ -38,8 +37,7 @@ class _FocusViewState extends State<FocusView> {
     return CustomScrollView(
       slivers: <Widget>[
         FocusSliverAppBar(
-          category: widget.focusWork.category,
-          difficulty: widget.focusWork.difficulty,
+          focusWork: widget.focusWork,
           buttonState: _buttonState,
           actionDone: () {
             setState(() {
@@ -66,13 +64,11 @@ class _FocusViewState extends State<FocusView> {
 }
 
 class FocusSliverAppBar extends StatelessWidget {
-  final Category category;
   final ButtonState buttonState;
   final Function actionDone;
-  final int difficulty;
+  final Work focusWork;
 
-  const FocusSliverAppBar(
-      {this.category, this.buttonState, this.actionDone, this.difficulty});
+  const FocusSliverAppBar({this.focusWork, this.buttonState, this.actionDone});
 
   @override
   Widget build(BuildContext context) {
@@ -81,10 +77,10 @@ class FocusSliverAppBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Text(
-            '${category.name} - Lv.',
+            '${focusWork.category.name} - Lv.',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          Icon(Goal.getIconData(difficulty)),
+          Icon(Goal.getIconData(focusWork.difficulty)),
         ],
       ),
       actions: <Widget>[
@@ -97,22 +93,20 @@ class FocusSliverAppBar extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                         builder: (context) => GoalAddPage(
-                              category: category,
+                              category: focusWork.category,
                               goalStatus: GoalStatus.onWork,
-                              difficulty: difficulty,
+                              difficulty: focusWork.difficulty,
                             )));
               }),
           modifyWidgets: <Widget>[
             IconButton(
               icon: Icon(Icons.delete),
               onPressed: () {
-                List<Goal> goalCheckedList = category.goals.where((goal) {
+                List<Goal> goalCheckedList = focusWork.goals.where((goal) {
                   //checked가 된 골만 return 한다.
                   return goal.checked;
                 }).toList();
                 goalCheckedList.forEach((Goal goal) {
-                  category.goals.remove(goal);
-                  category.save();
                   goal.delete();
                 });
                 actionDone();
@@ -121,7 +115,7 @@ class FocusSliverAppBar extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.done),
               onPressed: () {
-                List<Goal> goalCheckedList = category.goals.where((goal) {
+                List<Goal> goalCheckedList = focusWork.goals.where((goal) {
                   //checked가 된 골만 return 한다.
                   return goal.checked;
                 }).toList();

@@ -17,10 +17,11 @@ class GoalEditPage extends StatefulWidget {
 
 class _GoalEditPageState extends State<GoalEditPage> {
   int _difficulty;
-  final TextEditingController _textController = TextEditingController();
+  TextEditingController _textController;
 
   @override
   void initState() {
+    _textController = TextEditingController(text: widget.goal.name);
     _difficulty = widget.goal.difficulty;
     super.initState();
   }

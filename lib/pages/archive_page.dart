@@ -149,13 +149,9 @@ class _ArchivePageState extends State<ArchivePage> {
                   case Mode.Category:
                     return _buildCategoryView(categoryBox, workList);
                   case Mode.WorkList:
-                    return Container(
-                      child: Text('text'),
-                    );
+                    return Container();
                   case Mode.Daily:
-                    return Container(
-                      child: DailyGoalView(),
-                    );
+                    return DailyGoalView();
                   default:
                     return null;
                 }

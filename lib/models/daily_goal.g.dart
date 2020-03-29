@@ -21,7 +21,7 @@ class DailyGoalAdapter extends TypeAdapter<DailyGoal> {
       difficulty: fields[1] as int,
     )
       .._categoryList = (fields[0] as HiveList)?.castHiveList()
-      ..goals = (fields[3] as HiveList)?.castHiveList()
+      .._goals = (fields[3] as HiveList)?.castHiveList()
       ..generatedDates = (fields[4] as List)?.cast<DateTime>();
   }
 
@@ -36,7 +36,7 @@ class DailyGoalAdapter extends TypeAdapter<DailyGoal> {
       ..writeByte(2)
       ..write(obj.name)
       ..writeByte(3)
-      ..write(obj.goals)
+      ..write(obj._goals)
       ..writeByte(4)
       ..write(obj.generatedDates);
   }

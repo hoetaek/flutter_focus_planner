@@ -14,7 +14,7 @@ class Category extends HiveObject {
   @HiveField(0)
   String name;
   @HiveField(1)
-  HiveList<Goal> goals;
+  HiveList<Goal> _goals;
   @HiveField(2)
   int priority;
   @HiveField(3)
@@ -22,8 +22,10 @@ class Category extends HiveObject {
 
   Category({@required this.name, colorIndex = 0});
 
+  List<Goal> get goals => List.unmodifiable(_goals);
+
   init(int selectedColorIndex) {
-    goals = HiveList(Hive.box(Boxes.goalBox));
+    _goals = HiveList(Hive.box(Boxes.goalBox));
     priority = Hive.box(Boxes.categoryBox).length;
     colorIndex = selectedColorIndex;
     Hive.box(Boxes.categoryBox).add(this);
@@ -34,7 +36,7 @@ class Category extends HiveObject {
   }
 
   void addGoal(Goal goal) {
-    goals.add(goal);
+    _goals.add(goal);
     save();
   }
 
@@ -55,7 +57,7 @@ class Category extends HiveObject {
     Hive.box(Boxes.dailyGoalBox).values.cast<DailyGoal>().forEach((dailyGoal) {
       if (this == dailyGoal.category) dailyGoal.delete();
     });
-    goals.forEach((goal) {
+    _goals.forEach((goal) {
       if (goal.status == GoalStatus.onWork) goal.delete();
     });
     Hive.box(Boxes.workBox)

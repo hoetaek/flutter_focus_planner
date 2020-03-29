@@ -5,6 +5,7 @@ import 'package:focusplanner/models/work.dart';
 import 'package:hive/hive.dart';
 
 import '../constants.dart';
+import 'daily_goal.dart';
 
 part 'goal.g.dart';
 
@@ -37,7 +38,7 @@ class Goal extends HiveObject {
     this._categoryList = HiveList(Hive.box(Boxes.categoryBox));
     this._workList = HiveList(Hive.box(Boxes.workBox));
     if (categoryToBeAdded == null) setCategory();
-    _categoryList.add(category);
+    _categoryList.add(categoryToBeAdded ?? category);
     // for compatibility
     if (!isInBox) Hive.box(Boxes.goalBox).add(this);
     _setWork();
@@ -48,10 +49,12 @@ class Goal extends HiveObject {
   Work get work => _workList?.elementAt(0);
 
   complete() {
+    print('complete pressed');
     status = GoalStatus.complete;
     checked = false;
     setDate(DateTime.now());
     work.goals.remove(this);
+    if (work != null && work.goals.every((goal) => goal == this)) work.delete();
     save();
   }
 
@@ -160,11 +163,11 @@ class Goal extends HiveObject {
   }
 
   DateTime getDay() {
-    return date;
+    return date?.getDateDay();
   }
 
   bool isOnDate(DateTime compareDate) {
-    if (compareDate == date) return true;
+    if (compareDate == getDay()) return true;
     return false;
   }
 

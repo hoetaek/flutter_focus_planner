@@ -9,15 +9,20 @@ import 'package:hive_flutter/hive_flutter.dart';
 class CompletePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-        valueListenable: Hive.box(Boxes.goalBox).listenable(),
-        builder: (context, Box box, widget) {
-          return SingleChildScrollView(
-            child: Column(
-              children: getDateGoalsColumn(box),
-            ),
-          );
-        });
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('완료', style: TextStyle(fontWeight: FontWeight.bold)),
+      ),
+      body: ValueListenableBuilder(
+          valueListenable: Hive.box(Boxes.goalBox).listenable(),
+          builder: (context, Box box, widget) {
+            return SingleChildScrollView(
+              child: Column(
+                children: getDateGoalsColumn(box),
+              ),
+            );
+          }),
+    );
   }
 
   List<Widget> getDateGoalsColumn(Box goalBox) {
