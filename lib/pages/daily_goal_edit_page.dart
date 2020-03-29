@@ -21,18 +21,13 @@ class _DailyGoalEditPageState extends State<DailyGoalEditPage> {
   TextEditingController _textController;
   final Box categoryBox = Hive.box(Boxes.categoryBox);
   Category _currentCategory;
-  bool _validate = true;
 
   @override
   void initState() {
     _currentCategory = widget.dailyGoal.category;
     _difficulty = widget.dailyGoal.difficulty;
     _textController = TextEditingController(text: widget.dailyGoal.name);
-    _textController.addListener(() {
-      setState(() {
-        _validate = true;
-      });
-    });
+
     super.initState();
   }
 
@@ -87,7 +82,6 @@ class _DailyGoalEditPageState extends State<DailyGoalEditPage> {
             textController: _textController,
             iconData: Icons.add,
             borderColor: kPrimaryColor.withGreen(150),
-            errorText: _validate ? null : "칸이 비어있습니다.",
           ),
           DifficultySelector(
             currentDifficulty: _difficulty,

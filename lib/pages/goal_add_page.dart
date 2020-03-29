@@ -22,11 +22,17 @@ class GoalAddPage extends StatefulWidget {
 
 class _GoalAddPageState extends State<GoalAddPage> {
   int _difficulty;
+  bool _validate = true;
   final TextEditingController _textController = TextEditingController();
 
   @override
   void initState() {
     _difficulty = widget.difficulty;
+    _textController.addListener(() {
+      setState(() {
+        _validate = true;
+      });
+    });
     super.initState();
   }
 
@@ -42,6 +48,7 @@ class _GoalAddPageState extends State<GoalAddPage> {
             title: "할 일",
             textController: _textController,
             iconData: Icons.add,
+            errorText: _validate ? null : "칸이 비어있습니다.",
           ),
           DifficultySelector(
             currentDifficulty: _difficulty,
@@ -56,6 +63,12 @@ class _GoalAddPageState extends State<GoalAddPage> {
           ),
           CustomButton(
             onPressed: () {
+              if (_textController.text.isEmpty) {
+                setState(() {
+                  _validate = false;
+                });
+                return;
+              }
               //todo verify empty space
               Goal goal = Goal(
                   name: _textController.text,
