@@ -3,8 +3,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:focusplanner/models/goal.dart';
 import 'package:focusplanner/pages/goal_edit_page.dart';
 
-import '../constants.dart';
-
 class FocusWorkContent extends StatefulWidget {
   final List<Goal> focusGoals;
   final Function onChecked;
@@ -56,7 +54,6 @@ class _FocusWorkContentState extends State<FocusWorkContent> {
                         MaterialPageRoute(
                             builder: (context) => GoalEditPage(
                                   goal: goal,
-                                  goalStatus: GoalStatus.onWork,
                                 )));
                   },
                   child: CheckboxListTile(

@@ -41,18 +41,20 @@ class FocusAppBar extends StatelessWidget implements PreferredSize {
       actions: <Widget>[
         ActionsIconButton(
           buttonState: buttonState,
-          addWidget: IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => GoalAddPage(
-                              category: focusWork.category,
-                              goalStatus: GoalStatus.onWork,
-                              difficulty: focusWork.difficulty,
-                            )));
-              }),
+          addWidget: focusMode == FocusMode.Work
+              ? IconButton(
+                  icon: Icon(Icons.add),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => GoalAddPage(
+                                  category: focusWork.category,
+                                  goalStatus: GoalStatus.onWork,
+                                  difficulty: focusWork.difficulty,
+                                )));
+                  })
+              : Container(),
           modifyWidgets: <Widget>[
             IconButton(
               icon: Icon(Icons.delete),

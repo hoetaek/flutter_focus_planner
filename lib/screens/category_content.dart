@@ -68,7 +68,6 @@ class _CategoryContentState extends State<CategoryContent> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => GoalEditPage(
-                                  goalStatus: GoalStatus.onWork,
                                   goal: goal,
                                 )));
                   },

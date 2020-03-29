@@ -6,10 +6,8 @@ import 'package:focusplanner/widgets/custom_text_field.dart';
 
 class GoalEditPage extends StatefulWidget {
   final Goal goal;
-  final String goalStatus;
 
-  const GoalEditPage({Key key, @required this.goalStatus, this.goal})
-      : super(key: key);
+  const GoalEditPage({Key key, this.goal}) : super(key: key);
 
   @override
   _GoalEditPageState createState() => _GoalEditPageState();

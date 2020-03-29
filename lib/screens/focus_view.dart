@@ -4,6 +4,7 @@ import 'package:focusplanner/models/work.dart';
 import 'package:focusplanner/widgets/actions_icon_button.dart';
 
 import 'focus_app_bar.dart';
+import 'focus_difficulty_content.dart';
 import 'focus_work_content.dart';
 
 class FocusView extends StatefulWidget {
@@ -87,38 +88,5 @@ class _FocusViewState extends State<FocusView> {
         },
       ),
     );
-  }
-}
-
-class FocusDifficultyContent extends StatefulWidget {
-  final List<Goal> focusDifficultyGoals;
-  final Function onChecked;
-
-  const FocusDifficultyContent(
-      {Key key, this.focusDifficultyGoals, this.onChecked})
-      : super(key: key);
-
-  @override
-  _FocusDifficultyContentState createState() => _FocusDifficultyContentState();
-}
-
-class _FocusDifficultyContentState extends State<FocusDifficultyContent> {
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-        itemCount: widget.focusDifficultyGoals.length,
-        itemBuilder: (context, index) {
-          Goal goal = widget.focusDifficultyGoals[index];
-          return CheckboxListTile(
-            title: Text(goal.name),
-            value: goal.checked,
-            onChanged: (value) {
-              setState(() {
-                goal.check(value);
-              });
-              widget.onChecked();
-            },
-          );
-        });
   }
 }
