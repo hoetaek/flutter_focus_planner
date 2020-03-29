@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:focusplanner/models/goal.dart';
 import 'package:focusplanner/models/work.dart';
-import 'package:focusplanner/pages/goal_add_page.dart';
-import 'package:focusplanner/pages/goal_edit_page.dart';
 import 'package:focusplanner/widgets/actions_icon_button.dart';
 
-import '../constants.dart';
+import 'focus_app_bar.dart';
+import 'focus_work_content.dart';
 
 class FocusView extends StatefulWidget {
   final Work focusWork;
@@ -16,8 +14,14 @@ class FocusView extends StatefulWidget {
   _FocusViewState createState() => _FocusViewState();
 }
 
+enum FocusMode {
+  Work,
+  Difficulty,
+}
+
 class _FocusViewState extends State<FocusView> {
   ButtonState _buttonState;
+  FocusMode _focusMode;
 
   bool goalIsChecked(List<Goal> goalList) {
     return goalList.where((Goal goal) => goal.checked).isNotEmpty;
@@ -25,6 +29,7 @@ class _FocusViewState extends State<FocusView> {
 
   @override
   void initState() {
+    _focusMode = FocusMode.Work;
     if (goalIsChecked(widget.focusWork.goals))
       _buttonState = ButtonState.modify;
     else
@@ -36,6 +41,7 @@ class _FocusViewState extends State<FocusView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: FocusAppBar(
+        focusMode: _focusMode,
         focusWork: widget.focusWork,
         buttonState: _buttonState,
         actionDone: () {
@@ -45,15 +51,38 @@ class _FocusViewState extends State<FocusView> {
           });
         },
       ),
-      body: FocusContent(
-        focusGoals: widget.focusWork.goals,
-        onChecked: () {
+      body: _focusMode == FocusMode.Work
+          ? FocusWorkContent(
+              focusGoals: widget.focusWork.goals,
+              onChecked: () {
+                setState(() {
+                  if (goalIsChecked(widget.focusWork.goals)) {
+                    _buttonState = ButtonState.modify;
+                  } else {
+                    _buttonState = ButtonState.add;
+                  }
+                });
+              },
+            )
+          : FocusDifficultyContent(
+              focusDifficultyGoals: widget.focusWork.difficultyGoals,
+              onChecked: () {
+                setState(() {
+                  if (goalIsChecked(widget.focusWork.difficultyGoals)) {
+                    _buttonState = ButtonState.modify;
+                  } else {
+                    _buttonState = ButtonState.add;
+                  }
+                });
+              },
+            ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.swap_horiz),
+        onPressed: () {
           setState(() {
-            if (goalIsChecked(widget.focusWork.goals)) {
-              _buttonState = ButtonState.modify;
-            } else {
-              _buttonState = ButtonState.add;
-            }
+            _focusMode = _focusMode == FocusMode.Difficulty
+                ? FocusMode.Work
+                : FocusMode.Difficulty;
           });
         },
       ),
@@ -61,157 +90,35 @@ class _FocusViewState extends State<FocusView> {
   }
 }
 
-class FocusAppBar extends StatelessWidget implements PreferredSize {
-  final ButtonState buttonState;
-  final Function actionDone;
-  final Work focusWork;
-
-  FocusAppBar(
-      {Key key,
-      @required this.focusWork,
-      @required this.buttonState,
-      @required this.actionDone})
-      : preferredSize = Size.fromHeight(kToolbarHeight),
-        super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(
-            '${focusWork.category.name} - Lv.',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          Icon(Goal.getIconData(focusWork.difficulty)),
-        ],
-      ),
-      actions: <Widget>[
-        ActionsIconButton(
-          buttonState: buttonState,
-          addWidget: IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => GoalAddPage(
-                              category: focusWork.category,
-                              goalStatus: GoalStatus.onWork,
-                              difficulty: focusWork.difficulty,
-                            )));
-              }),
-          modifyWidgets: <Widget>[
-            IconButton(
-              icon: Icon(Icons.delete),
-              onPressed: () {
-                List<Goal> goalCheckedList = focusWork.goals.where((goal) {
-                  //checked가 된 골만 return 한다.
-                  return goal.checked;
-                }).toList();
-                goalCheckedList.forEach((Goal goal) {
-                  goal.delete();
-                });
-                actionDone();
-              },
-            ),
-            IconButton(
-              icon: Icon(Icons.done),
-              onPressed: () {
-                List<Goal> goalCheckedList = focusWork.goals.where((goal) {
-                  //checked가 된 골만 return 한다.
-                  return goal.checked;
-                }).toList();
-                goalCheckedList.forEach((Goal goal) {
-                  goal.complete();
-                });
-                actionDone();
-              },
-            ),
-          ],
-        )
-      ],
-    );
-  }
-
-  @override
-  // TODO: implement child
-  Widget get child => null;
-
-  @override
-  final Size preferredSize;
-}
-
-class FocusContent extends StatefulWidget {
-  final List<Goal> focusGoals;
+class FocusDifficultyContent extends StatefulWidget {
+  final List<Goal> focusDifficultyGoals;
   final Function onChecked;
 
-  FocusContent({this.focusGoals, this.onChecked});
+  const FocusDifficultyContent(
+      {Key key, this.focusDifficultyGoals, this.onChecked})
+      : super(key: key);
+
   @override
-  _FocusContentState createState() => _FocusContentState();
+  _FocusDifficultyContentState createState() => _FocusDifficultyContentState();
 }
 
-class _FocusContentState extends State<FocusContent> {
+class _FocusDifficultyContentState extends State<FocusDifficultyContent> {
   @override
   Widget build(BuildContext context) {
-    return widget.focusGoals != null
-        ? ListView.builder(
-            itemCount: widget.focusGoals.length,
-            itemBuilder: (context, index) {
-              Goal goal = widget.focusGoals[index];
-              return Slidable(
-                actionPane: SlidableDrawerActionPane(),
-                actionExtentRatio: 0.15,
-                actions: <Widget>[
-                  if (goal.difficulty != 5)
-                    IconSlideAction(
-                      caption: 'Level',
-                      color: Colors.blue,
-                      icon: Icons.arrow_upward,
-                      onTap: () {
-                        setState(() {
-                          goal.levelUp();
-                        });
-                      },
-                    ),
-                  if (goal.difficulty != 1)
-                    IconSlideAction(
-                      caption: 'Level',
-                      color: Colors.redAccent,
-                      icon: Icons.arrow_downward,
-                      onTap: () {
-                        setState(() {
-                          goal.levelDown();
-                        });
-                      },
-                    ),
-                ],
-                child: GestureDetector(
-                  onLongPress: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => GoalEditPage(
-                                  goal: goal,
-                                  goalStatus: GoalStatus.onWork,
-                                )));
-                  },
-                  child: CheckboxListTile(
-                    title: Text('${goal.name}'),
-                    value: goal.checked,
-                    onChanged: (change) {
-                      setState(() {
-                        goal.checked = change;
-                        goal.save();
-                      });
-                      widget.onChecked();
-                    },
-                  ),
-                ),
-              );
+    return ListView.builder(
+        itemCount: widget.focusDifficultyGoals.length,
+        itemBuilder: (context, index) {
+          Goal goal = widget.focusDifficultyGoals[index];
+          return CheckboxListTile(
+            title: Text(goal.name),
+            value: goal.checked,
+            onChanged: (value) {
+              setState(() {
+                goal.check(value);
+              });
+              widget.onChecked();
             },
-          )
-        : Container();
+          );
+        });
   }
 }

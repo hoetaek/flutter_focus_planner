@@ -141,6 +141,11 @@ class Goal extends HiveObject {
     }
   }
 
+  check(bool value) {
+    checked = value;
+    save();
+  }
+
   Color getColor() {
     return kPrimaryColor.withGreen(difficulty * 50);
   }

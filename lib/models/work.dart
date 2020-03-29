@@ -19,6 +19,13 @@ class Work extends HiveObject {
       : this._categoryList = HiveList(Hive.box(Boxes.categoryBox)),
         this.goals = HiveList(Hive.box(Boxes.goalBox));
 
+  List<Goal> get difficultyGoals => Hive.box(Boxes.goalBox)
+      .values
+      .cast<Goal>()
+      .where((goal) =>
+          goal.difficulty == difficulty && goal.status == GoalStatus.onWork)
+      .toList();
+
   init(Goal goal, Category category) {
     goals = HiveList(Hive.box(Boxes.goalBox));
     difficulty = goal.difficulty;

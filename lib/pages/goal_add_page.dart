@@ -55,7 +55,8 @@ class _GoalAddPageState extends State<GoalAddPage> {
             height: 10.0,
           ),
           CustomButton(
-            onPressed: () async {
+            onPressed: () {
+              //todo verify empty space
               Goal goal = Goal(
                   name: _textController.text,
                   difficulty: _difficulty,
