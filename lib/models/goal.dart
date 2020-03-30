@@ -53,7 +53,7 @@ class Goal extends HiveObject {
     status = GoalStatus.complete;
     checked = false;
     setDate(DateTime.now());
-    work.goals.remove(this);
+    work.removeGoal(this);
     if (work != null && work.goals.every((goal) => goal == this)) work.delete();
     save();
   }
@@ -86,7 +86,7 @@ class Goal extends HiveObject {
   _changeWork() {
     print("change work");
     print("from: $work");
-    work.goals.remove(this);
+    work.removeGoal(this);
     work.save();
     if (work.goals.isEmpty) work.delete();
     _workList.clear();

@@ -20,7 +20,7 @@ class WorkAdapter extends TypeAdapter<Work> {
       difficulty: fields[2] as int,
     )
       .._categoryList = (fields[0] as HiveList)?.castHiveList()
-      ..goals = (fields[1] as HiveList)?.castHiveList();
+      .._goals = (fields[1] as HiveList)?.castHiveList();
   }
 
   @override
@@ -30,7 +30,7 @@ class WorkAdapter extends TypeAdapter<Work> {
       ..writeByte(0)
       ..write(obj._categoryList)
       ..writeByte(1)
-      ..write(obj.goals)
+      ..write(obj._goals)
       ..writeByte(2)
       ..write(obj.difficulty);
   }

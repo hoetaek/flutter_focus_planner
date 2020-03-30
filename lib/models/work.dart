@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:focusplanner/constants.dart';
 import 'package:focusplanner/models/goal.dart';
 import 'package:hive/hive.dart';
@@ -11,14 +13,15 @@ class Work extends HiveObject {
   @HiveField(0)
   HiveList<Category> _categoryList;
   @HiveField(1)
-  HiveList<Goal> goals;
+  HiveList<Goal> _goals;
   @HiveField(2)
   int difficulty;
 
   Work({this.difficulty})
       : this._categoryList = HiveList(Hive.box(Boxes.categoryBox)),
-        this.goals = HiveList(Hive.box(Boxes.goalBox));
+        this._goals = HiveList(Hive.box(Boxes.goalBox));
 
+  List<Goal> get goals => List.unmodifiable(_goals);
   List<Goal> get difficultyGoals => Hive.box(Boxes.goalBox)
       .values
       .cast<Goal>()
@@ -27,7 +30,7 @@ class Work extends HiveObject {
       .toList();
 
   init(Goal goal, Category category) {
-    goals = HiveList(Hive.box(Boxes.goalBox));
+    _goals = HiveList(Hive.box(Boxes.goalBox));
     difficulty = goal.difficulty;
     _categoryList = HiveList(Hive.box(Boxes.categoryBox));
     _categoryList.add(category);
@@ -38,16 +41,21 @@ class Work extends HiveObject {
   int get compareId => difficulty * 100 + category.priority;
 
   bool isWorkGoal(Goal goal) {
-    return goals.contains(goal);
+    return _goals.contains(goal);
   }
 
   addGoal(Goal goal) {
-    goals.add(goal);
+    _goals.add(goal);
+    save();
+  }
+
+  removeGoal(Goal goal) {
+    _goals.remove(goal);
     save();
   }
 
   @override
   String toString() {
-    return "work: categoryInfo $category difficultyInfo $difficulty goalListInfo ${goals.toString()}";
+    return "work: categoryInfo $category difficultyInfo $difficulty goalListInfo ${_goals.toString()}";
   }
 }
