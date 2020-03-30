@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:focusplanner/constants.dart';
 import 'package:focusplanner/models/goal.dart';
 import 'package:hive/hive.dart';

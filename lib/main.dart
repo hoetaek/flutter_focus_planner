@@ -17,6 +17,7 @@ void main() async {
   Hive.registerAdapter(GoalAdapter());
   Hive.registerAdapter(DailyGoalAdapter());
   Hive.registerAdapter(WorkAdapter());
+  Hive.registerAdapter(ModeAdapter());
   await Hive.openBox(Boxes.categoryBox);
   await Hive.openBox(Boxes.goalBox);
   await Hive.openBox(Boxes.settingBox);
@@ -49,11 +50,12 @@ class FocusPlanner extends StatefulWidget {
 }
 
 class _FocusPlannerState extends State<FocusPlanner> {
-  int _currentPage = 1;
+  int _currentPage;
   PageController _pageController;
 
   @override
   void initState() {
+    _currentPage = Hive.box(Boxes.settingBox).get(Settings.currentPage) ?? 1;
     _pageController = PageController(
       initialPage: _currentPage,
     );
@@ -71,6 +73,7 @@ class _FocusPlannerState extends State<FocusPlanner> {
         onPageChanged: (newPage) {
           setState(() {
             _currentPage = newPage;
+            Hive.box(Boxes.settingBox).put(Settings.currentPage, newPage);
           });
         },
         children: <Widget>[

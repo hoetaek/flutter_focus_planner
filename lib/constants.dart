@@ -14,7 +14,8 @@ class GoalStatus {
 }
 
 class Settings {
-  static String currentCategory = "currentCategory";
+  static String currentPage = "currentPage";
+  static String archiveMode = "archiveMode";
 }
 
 const Radius kCardRadius = Radius.circular(10.0);
