@@ -1,26 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:focusplanner/constants.dart';
 import 'package:focusplanner/models/goal.dart';
 import 'package:focusplanner/pages/goal_edit_page.dart';
 
-class FocusWorkContent extends StatefulWidget {
-  final List<Goal> focusGoals;
-  final Function onChecked;
+import 'focus_view.dart';
 
-  FocusWorkContent({this.focusGoals, this.onChecked});
+class FocusContent extends StatefulWidget {
+  final List<Goal> goals;
+  final Function onChecked;
+  final FocusMode focusMode;
+
+  FocusContent({this.goals, this.onChecked, this.focusMode});
   @override
-  _FocusWorkContentState createState() => _FocusWorkContentState();
+  _FocusContentState createState() => _FocusContentState();
 }
 
-class _FocusWorkContentState extends State<FocusWorkContent> {
+class _FocusContentState extends State<FocusContent> {
   @override
   Widget build(BuildContext context) {
-    return widget.focusGoals != null
+    return widget.goals != null
         ? ListView.builder(
-            itemCount: widget.focusGoals.length,
+            itemCount: widget.goals.length,
             itemBuilder: (context, index) {
-              Goal goal = widget.focusGoals[index];
+              Goal goal = widget.goals[index];
               return Slidable(
+                key: UniqueKey(),
                 actionPane: SlidableDrawerActionPane(),
                 actionExtentRatio: 0.15,
                 actions: <Widget>[
@@ -47,6 +52,35 @@ class _FocusWorkContentState extends State<FocusWorkContent> {
                       },
                     ),
                 ],
+                secondaryActions: <Widget>[
+                  IconSlideAction(
+                    caption:
+                        widget.focusMode == FocusMode.Work ? '대기작업' : '몰입작업',
+                    color: widget.focusMode == FocusMode.Work
+                        ? Colors.indigo
+                        : kPrimaryColor.withGreen(150),
+                    foregroundColor: Colors.white,
+                    icon: Icons.watch_later,
+                    onTap: () {
+                      setState(() {
+                        goal.toggleInProgress();
+                      });
+                    },
+                  ),
+                ],
+                dismissal: SlidableDismissal(
+                  child: SlidableDrawerDismissal(),
+                  onDismissed: (actionType) {
+                    if (actionType == SlideActionType.secondary) {
+                      setState(() {
+                        goal.toggleInProgress();
+                      });
+                    }
+                  },
+                  dismissThresholds: <SlideActionType, double>{
+                    SlideActionType.primary: 1.0
+                  },
+                ),
                 child: GestureDetector(
                   onLongPress: () {
                     Navigator.push(

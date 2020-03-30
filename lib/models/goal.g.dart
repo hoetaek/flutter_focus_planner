@@ -24,13 +24,14 @@ class GoalAdapter extends TypeAdapter<Goal> {
       ..checked = fields[3] as bool
       ..date = fields[4] as DateTime
       .._categoryList = (fields[5] as HiveList)?.castHiveList()
-      .._workList = (fields[6] as HiveList)?.castHiveList();
+      .._workList = (fields[6] as HiveList)?.castHiveList()
+      .._inProgress = fields[7] as bool;
   }
 
   @override
   void write(BinaryWriter writer, Goal obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -44,6 +45,8 @@ class GoalAdapter extends TypeAdapter<Goal> {
       ..writeByte(5)
       ..write(obj._categoryList)
       ..writeByte(6)
-      ..write(obj._workList);
+      ..write(obj._workList)
+      ..writeByte(7)
+      ..write(obj._inProgress);
   }
 }
