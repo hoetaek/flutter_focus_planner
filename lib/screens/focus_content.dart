@@ -60,7 +60,9 @@ class _FocusContentState extends State<FocusContent> {
                         ? Colors.indigo
                         : kPrimaryColor.withGreen(150),
                     foregroundColor: Colors.white,
-                    icon: Icons.watch_later,
+                    icon: widget.focusMode == FocusMode.Work
+                        ? Icons.watch_later
+                        : Icons.center_focus_strong,
                     onTap: () {
                       setState(() {
                         goal.toggleInProgress();
