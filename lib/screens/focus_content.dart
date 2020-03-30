@@ -9,9 +9,10 @@ import 'focus_view.dart';
 class FocusContent extends StatefulWidget {
   final List<Goal> goals;
   final Function onChecked;
+  final Function toggleAll;
   final FocusMode focusMode;
 
-  FocusContent({this.goals, this.onChecked, this.focusMode});
+  FocusContent({this.goals, this.onChecked, this.focusMode, this.toggleAll});
   @override
   _FocusContentState createState() => _FocusContentState();
 }
@@ -66,6 +67,9 @@ class _FocusContentState extends State<FocusContent> {
                     onTap: () {
                       setState(() {
                         goal.toggleInProgress();
+                        bool inProgressExists = widget.goals
+                            .any((goal) => goal.inProgress != false);
+                        if (!inProgressExists) widget.toggleAll();
                       });
                     },
                   ),
@@ -76,6 +80,9 @@ class _FocusContentState extends State<FocusContent> {
                     if (actionType == SlideActionType.secondary) {
                       setState(() {
                         goal.toggleInProgress();
+                        bool inProgressExists = widget.goals
+                            .any((goal) => goal.inProgress != false);
+                        if (!inProgressExists) widget.toggleAll();
                       });
                     }
                   },

@@ -81,6 +81,13 @@ class FocusAppBar extends StatelessWidget implements PreferredSize {
                 goalCheckedList.forEach((Goal goal) {
                   goal.complete();
                 });
+
+                bool progressExists =
+                    focusWork.goals.any((goal) => goal.inProgress != false);
+                if (!progressExists)
+                  focusWork.goals.forEach((goal) {
+                    goal.toggleInProgress();
+                  });
                 actionDone();
               },
             ),

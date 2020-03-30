@@ -72,7 +72,12 @@ class _FocusViewState extends State<FocusView> {
                         }
                       });
                     },
-                  )
+                    toggleAll: () {
+                      setState(() {
+                        widget.focusWork.goals
+                            .forEach((goal) => goal.toggleInProgress());
+                      });
+                    })
                 : FocusContent(
                     focusMode: _focusMode,
                     goals: widget.focusWork.goals
