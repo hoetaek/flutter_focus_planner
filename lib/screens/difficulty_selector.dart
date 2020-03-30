@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 class DifficultySelector extends StatelessWidget {
   final ValueChanged<int> onDifficultyChanged;
   final int currentDifficulty;
-  final diffSentences = [
-    '지금 바로 할 계획입니다.',
-    '오늘 안에 할 수 있습니다.',
-    '2~3일 안에 할 수 있습니다.',
-    '2~3달 안에 할 수 있습니다.',
+  static const diffSentences = [
+    '하루 안에 할 계획입니다.',
+    '2~3일 안에 할 계획니다.',
+    '2~3주 안에 할 계획니다.',
+    '2~3달 안에 할 계획니다.',
     '장기적으로 생각하고 있습니다.',
   ];
 

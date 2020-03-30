@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:focusplanner/constants.dart';
 import 'package:focusplanner/models/daily_goal.dart';
+import 'package:focusplanner/models/work.dart';
 import 'package:focusplanner/pages/archive_page.dart';
 import 'package:focusplanner/pages/complete_page.dart';
 import 'package:focusplanner/pages/focus_page.dart';
-import 'package:focusplanner/utils/work_list.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:provider/provider.dart';
 
 import 'models/category.dart';
 import 'models/goal.dart';
@@ -17,13 +16,20 @@ void main() async {
   Hive.registerAdapter(CategoryAdapter());
   Hive.registerAdapter(GoalAdapter());
   Hive.registerAdapter(DailyGoalAdapter());
+  Hive.registerAdapter(WorkAdapter());
   await Hive.openBox(Boxes.categoryBox);
   await Hive.openBox(Boxes.goalBox);
   await Hive.openBox(Boxes.settingBox);
   await Hive.openBox(Boxes.dailyGoalBox);
+  await Hive.openBox(Boxes.workBox);
   Hive.box(Boxes.dailyGoalBox).values.cast<DailyGoal>().forEach((dailyGoal) {
     dailyGoal.makeGoal();
   });
+  // for compatibility
+  bool initiated = Hive.box(Boxes.settingBox)
+      .get('compatibility initiated', defaultValue: false);
+  if (!initiated) initiate();
+
   runApp(
     MaterialApp(
       home: FocusPlanner(),
@@ -60,21 +66,18 @@ class _FocusPlannerState extends State<FocusPlanner> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ChangeNotifierProvider(
-        create: (_) => WorkList(),
-        child: PageView(
-          controller: _pageController,
-          onPageChanged: (newPage) {
-            setState(() {
-              _currentPage = newPage;
-            });
-          },
-          children: <Widget>[
-            ArchivePage(),
-            FocusPage(),
-            CompletePage(),
-          ],
-        ),
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (newPage) {
+          setState(() {
+            _currentPage = newPage;
+          });
+        },
+        children: <Widget>[
+          ArchivePage(),
+          FocusPage(),
+          CompletePage(),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentPage,
@@ -97,4 +100,22 @@ class _FocusPlannerState extends State<FocusPlanner> {
     Hive.close();
     super.dispose();
   }
+}
+
+initiate() {
+  Box categoryBox = Hive.box(Boxes.categoryBox);
+  Hive.box(Boxes.goalBox).values.cast<Goal>().forEach((goal) {
+    bool isInsideCategory;
+    for (Category category in categoryBox.values.cast<Category>()) {
+      isInsideCategory =
+          category.goals.any((categoryGoal) => goal == categoryGoal);
+      if (isInsideCategory) break;
+    }
+    if (!isInsideCategory) goal.delete();
+  });
+  Hive.box(Boxes.goalBox).values.cast<Goal>().forEach((goal) {
+    if (goal.category == null && goal.status != GoalStatus.complete)
+      goal.init();
+  });
+  Hive.box(Boxes.settingBox).put('compatibility initiated', true);
 }

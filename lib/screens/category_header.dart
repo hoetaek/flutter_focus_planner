@@ -3,9 +3,7 @@ import 'package:focusplanner/models/category.dart';
 import 'package:focusplanner/models/goal.dart';
 import 'package:focusplanner/pages/category_edit_page.dart';
 import 'package:focusplanner/pages/goal_add_page.dart';
-import 'package:focusplanner/utils/work_list.dart';
 import 'package:focusplanner/widgets/actions_icon_button.dart';
-import 'package:provider/provider.dart';
 
 import '../constants.dart';
 
@@ -28,15 +26,9 @@ class CategoryHeader extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-            borderRadius: category.goals.where((goal) {
-              Work focusWork = Provider.of<WorkList>(context).workOrder.isEmpty
-                  ? null
-                  : Provider.of<WorkList>(context).workOrder.first;
-
-              return focusWork == null
-                  ? goal.status != GoalStatus.complete
-                  : focusWork.isWorkGoal(goal);
-            }).isNotEmpty
+            borderRadius: category.goals
+                    .where((goal) => goal.status == GoalStatus.onWork)
+                    .isNotEmpty
                 ? BorderRadius.only(topLeft: kCardRadius, topRight: kCardRadius)
                 : BorderRadius.only(
                     topLeft: kCardRadius,
@@ -85,9 +77,23 @@ class CategoryHeader extends StatelessWidget {
                         return goal.checked;
                       }).toList();
                       goalCheckedList.forEach((Goal goal) {
-                        category.goals.remove(goal);
-                        category.save();
                         goal.delete();
+                      });
+                      onActionDone();
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.done,
+                      color: category.getTextColor(),
+                    ),
+                    onPressed: () {
+                      List<Goal> goalCheckedList = category.goals.where((goal) {
+                        //checked가 된 골만 return 한다.
+                        return goal.checked;
+                      }).toList();
+                      goalCheckedList.forEach((Goal goal) {
+                        goal.complete();
                       });
                       onActionDone();
                     },

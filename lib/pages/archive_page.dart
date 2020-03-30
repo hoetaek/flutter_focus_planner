@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:focusplanner/constants.dart';
 import 'package:focusplanner/models/category.dart';
+import 'package:focusplanner/models/work.dart';
 import 'package:focusplanner/pages/category_add_page.dart';
 import 'package:focusplanner/screens/category_card.dart';
 import 'package:focusplanner/screens/category_name_list.dart';
 import 'package:focusplanner/screens/daily_goal_view.dart';
-import 'package:focusplanner/utils/work_list.dart';
 import 'package:focusplanner/widgets/actions_icon_button.dart';
 import 'package:focusplanner/widgets/column_builder.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:provider/provider.dart';
 
 import 'daily_goal_add_page.dart';
 
@@ -41,7 +40,6 @@ class ArchivePage extends StatefulWidget {
 }
 
 class _ArchivePageState extends State<ArchivePage> {
-  //todo 보기 모드 난이도별 / 카테고리별
   List<Category> categoryReorderedList;
   List<Category> selectedCategories = List();
   ButtonState _buttonState = ButtonState.add;
@@ -141,21 +139,19 @@ class _ArchivePageState extends State<ArchivePage> {
         valueListenable: Hive.box(Boxes.categoryBox).listenable(),
         builder: (context, Box categoryBox, widget) {
           sortCategoryList(categoryBox);
+
           return ValueListenableBuilder(
-              valueListenable: Hive.box(Boxes.goalBox).listenable(),
-              builder: (context, Box goalBox, widget) {
-                Provider.of<WorkList>(context).generateWorkOrder();
+              valueListenable: Hive.box(Boxes.workBox).listenable(),
+              builder: (context, Box workBox, widget) {
+                List<Work> workList = workBox.values.cast<Work>().toList();
+                workList.sort((a, b) => a.compareId.compareTo(b.compareId));
                 switch (_currentMode) {
                   case Mode.Category:
-                    return _buildCategoryView(categoryBox);
+                    return _buildCategoryView(categoryBox, workList);
                   case Mode.WorkList:
-                    return Container(
-                      child: Text('text'),
-                    );
+                    return Container();
                   case Mode.Daily:
-                    return Container(
-                      child: DailyGoalView(),
-                    );
+                    return DailyGoalView();
                   default:
                     return null;
                 }
@@ -165,7 +161,8 @@ class _ArchivePageState extends State<ArchivePage> {
     );
   }
 
-  SingleChildScrollView _buildCategoryView(Box categoryBox) {
+  SingleChildScrollView _buildCategoryView(
+      Box categoryBox, List<Work> workList) {
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
@@ -185,7 +182,8 @@ class _ArchivePageState extends State<ArchivePage> {
             itemBuilder: (context, index) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 15.0),
-                child: CategoryCard(category: categoryReorderedList[index]),
+                child: CategoryCard(
+                    category: categoryReorderedList[index], workList: workList),
               );
             },
           ),

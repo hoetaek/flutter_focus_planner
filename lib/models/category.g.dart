@@ -19,7 +19,7 @@ class CategoryAdapter extends TypeAdapter<Category> {
     return Category(
       name: fields[0] as String,
     )
-      ..goals = (fields[1] as HiveList)?.castHiveList()
+      .._goals = (fields[1] as HiveList)?.castHiveList()
       ..priority = fields[2] as int
       ..colorIndex = fields[3] as int;
   }
@@ -31,7 +31,7 @@ class CategoryAdapter extends TypeAdapter<Category> {
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
-      ..write(obj.goals)
+      ..write(obj._goals)
       ..writeByte(2)
       ..write(obj.priority)
       ..writeByte(3)

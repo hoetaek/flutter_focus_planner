@@ -6,10 +6,8 @@ import 'package:focusplanner/widgets/custom_text_field.dart';
 
 class GoalEditPage extends StatefulWidget {
   final Goal goal;
-  final String goalStatus;
 
-  const GoalEditPage({Key key, @required this.goalStatus, this.goal})
-      : super(key: key);
+  const GoalEditPage({Key key, this.goal}) : super(key: key);
 
   @override
   _GoalEditPageState createState() => _GoalEditPageState();
@@ -17,10 +15,11 @@ class GoalEditPage extends StatefulWidget {
 
 class _GoalEditPageState extends State<GoalEditPage> {
   int _difficulty;
-  final TextEditingController _textController = TextEditingController();
+  TextEditingController _textController;
 
   @override
   void initState() {
+    _textController = TextEditingController(text: widget.goal.name);
     _difficulty = widget.goal.difficulty;
     super.initState();
   }
