@@ -11,7 +11,7 @@ class CompletePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('완료', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text('완료', style: TextFont.titleFont()),
       ),
       body: ValueListenableBuilder(
           valueListenable: Hive.box(Boxes.goalBox).listenable(),
