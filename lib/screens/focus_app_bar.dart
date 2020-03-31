@@ -30,10 +30,19 @@ class FocusAppBar extends StatelessWidget implements PreferredSize {
         children: <Widget>[
           Text(
             '${focusWork.category.name}',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: TextFont.titleFont(),
           ),
           Icon(Goal.getIconData(focusWork.difficulty)),
-          if (focusMode == FocusMode.Work) Text(' - 진행') else Text(' - 대기')
+          if (focusMode == FocusMode.Work)
+            Text(
+              ' - 진행',
+              style: TextFont.titleFont(),
+            )
+          else
+            Text(
+              ' - 대기',
+              style: TextFont.titleFont(),
+            )
         ],
       ),
       actions: <Widget>[

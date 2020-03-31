@@ -86,7 +86,7 @@ class _ArchivePageState extends State<ArchivePage> {
           items: Mode.values.map((Mode mode) {
             return DropdownMenuItem<Mode>(value: mode, child: Text(mode.name));
           }).toList(),
-          style: TextStyle(
+          style: TextFont.titleFont(
               fontSize: 18.0, letterSpacing: 1.2, color: Colors.black),
           selectedItemBuilder: (context) {
             return Mode.values.map((mode) {

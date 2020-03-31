@@ -5,6 +5,7 @@ import 'package:focusplanner/models/work.dart';
 import 'package:focusplanner/pages/archive_page.dart';
 import 'package:focusplanner/pages/complete_page.dart';
 import 'package:focusplanner/pages/focus_page.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -35,10 +36,9 @@ void main() async {
     MaterialApp(
       home: FocusPlanner(),
       theme: ThemeData(
+        textTheme: GoogleFonts.sunflowerTextTheme(),
         primaryColor: kPrimaryColor.withGreen(150),
         scaffoldBackgroundColor: Colors.grey[50],
-//        textTheme: GoogleFonts.nanumGothicTextTheme(),
-//        primaryColor: Colors.amber,
       ),
     ),
   );

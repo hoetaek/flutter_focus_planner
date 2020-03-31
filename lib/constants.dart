@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Boxes {
   static String categoryBox = "CategoryBox";
@@ -43,3 +44,7 @@ final List<Color> kColors = <Color>[
   Color(0xFF607D8B),
 ];
 const kPrimaryColor = Colors.tealAccent;
+
+class TextFont {
+  static var titleFont = GoogleFonts.doHyeon;
+}
