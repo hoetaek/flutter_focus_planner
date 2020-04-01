@@ -7,19 +7,21 @@ class CustomTextField extends StatelessWidget {
   final TextEditingController textController;
   final String hintText;
   final String errorText;
+  final EdgeInsets padding;
 
   final Color borderColor;
   CustomTextField(
       {this.title,
       @required this.iconData,
       @required this.textController,
+      @required this.padding,
       this.borderColor = kPrimaryColor,
       this.hintText,
       this.errorText});
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(20.0),
+      padding: padding,
       child: TextField(
         controller: textController,
         decoration: InputDecoration(

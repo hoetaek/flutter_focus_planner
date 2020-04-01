@@ -34,6 +34,7 @@ class _CategoryAddPageState extends State<CategoryAddPage> {
       body: Column(
         children: <Widget>[
           CustomTextField(
+            padding: EdgeInsets.all(20),
             borderColor: kColors[_currentColorIndex],
             textController: _textController,
             iconData: Icons.add,

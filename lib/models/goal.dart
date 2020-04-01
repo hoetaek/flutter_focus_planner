@@ -155,7 +155,7 @@ class Goal extends HiveObject {
   }
 
   Color getColor() {
-    return kPrimaryColor.withGreen(difficulty * 50);
+    return kPrimaryColor.withRed(difficulty * 40);
   }
 
   void levelUp() {

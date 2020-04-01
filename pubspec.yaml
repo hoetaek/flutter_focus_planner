@@ -32,7 +32,7 @@ dependencies:
   liquid_progress_indicator: ^0.3.2
   font_awesome_flutter: ^8.8.1
   table_calendar: ^2.2.3
-
+  popup_menu: ^1.0.5
 
 dev_dependencies:
   flutter_test:

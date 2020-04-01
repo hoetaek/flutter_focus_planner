@@ -54,7 +54,7 @@ class _DailyGoalEditPageState extends State<DailyGoalEditPage> {
               children: <Widget>[
                 Text(
                   '카테고리 선택',
-                  style: TextStyle(color: kPrimaryColor.withGreen(150)),
+                  style: TextStyle(color: kPrimaryColor),
                 ),
                 DropdownButton(
                   underline: Container(),
@@ -78,10 +78,11 @@ class _DailyGoalEditPageState extends State<DailyGoalEditPage> {
             ),
           ),
           CustomTextField(
+            padding: EdgeInsets.all(20),
             title: "반복작업",
             textController: _textController,
             iconData: Icons.add,
-            borderColor: kPrimaryColor.withGreen(150),
+            borderColor: kPrimaryColor,
           ),
           DifficultySelector(
             currentDifficulty: _difficulty,

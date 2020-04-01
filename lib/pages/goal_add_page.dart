@@ -45,6 +45,7 @@ class _GoalAddPageState extends State<GoalAddPage> {
       body: Column(
         children: <Widget>[
           CustomTextField(
+            padding: EdgeInsets.all(20),
             title: "할 일",
             textController: _textController,
             iconData: Icons.add,
