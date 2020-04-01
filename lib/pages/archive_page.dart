@@ -13,9 +13,15 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'daily_goal_add_page.dart';
 
+part 'archive_page.g.dart';
+
+@HiveType(typeId: 4)
 enum Mode {
+  @HiveField(0)
   Category,
+  @HiveField(1)
   WorkList,
+  @HiveField(2)
   Daily,
 }
 
@@ -59,12 +65,14 @@ class _ArchivePageState extends State<ArchivePage> {
   void changeDropDownItem(Mode selectedMode) {
     setState(() {
       _currentMode = selectedMode;
+      Hive.box(Boxes.settingBox).put(Settings.archiveMode, selectedMode);
     });
   }
 
   @override
   void initState() {
-    _currentMode = Mode.Category;
+    _currentMode =
+        Hive.box(Boxes.settingBox).get(Settings.archiveMode) ?? Mode.Category;
     super.initState();
   }
 
@@ -78,7 +86,7 @@ class _ArchivePageState extends State<ArchivePage> {
           items: Mode.values.map((Mode mode) {
             return DropdownMenuItem<Mode>(value: mode, child: Text(mode.name));
           }).toList(),
-          style: TextStyle(
+          style: TextFont.titleFont(
               fontSize: 18.0, letterSpacing: 1.2, color: Colors.black),
           selectedItemBuilder: (context) {
             return Mode.values.map((mode) {

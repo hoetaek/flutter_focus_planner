@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:focusplanner/constants.dart';
 import 'package:focusplanner/models/goal.dart';
 import 'package:focusplanner/models/work.dart';
 import 'package:focusplanner/widgets/actions_icon_button.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import 'focus_app_bar.dart';
-import 'focus_difficulty_content.dart';
-import 'focus_work_content.dart';
+import 'focus_content.dart';
 
 class FocusView extends StatefulWidget {
   final Work focusWork;
@@ -17,7 +19,7 @@ class FocusView extends StatefulWidget {
 
 enum FocusMode {
   Work,
-  Difficulty,
+  Waiting,
 }
 
 class _FocusViewState extends State<FocusView> {
@@ -52,38 +54,53 @@ class _FocusViewState extends State<FocusView> {
           });
         },
       ),
-      body: _focusMode == FocusMode.Work
-          ? FocusWorkContent(
-              focusGoals: widget.focusWork.goals,
-              onChecked: () {
-                setState(() {
-                  if (goalIsChecked(widget.focusWork.goals)) {
-                    _buttonState = ButtonState.modify;
-                  } else {
-                    _buttonState = ButtonState.add;
-                  }
-                });
-              },
-            )
-          : FocusDifficultyContent(
-              focusDifficultyGoals: widget.focusWork.difficultyGoals,
-              onChecked: () {
-                setState(() {
-                  if (goalIsChecked(widget.focusWork.difficultyGoals)) {
-                    _buttonState = ButtonState.modify;
-                  } else {
-                    _buttonState = ButtonState.add;
-                  }
-                });
-              },
-            ),
+      body: ValueListenableBuilder(
+          valueListenable: Hive.box(Boxes.goalBox).listenable(),
+          builder: (context, Box box, child) {
+            return _focusMode == FocusMode.Work
+                ? FocusContent(
+                    focusMode: _focusMode,
+                    goals: widget.focusWork.goals
+                        .where((goal) => goal.inProgress != false)
+                        .toList(),
+                    onChecked: () {
+                      setState(() {
+                        if (goalIsChecked(widget.focusWork.goals)) {
+                          _buttonState = ButtonState.modify;
+                        } else {
+                          _buttonState = ButtonState.add;
+                        }
+                      });
+                    },
+                    toggleAll: () {
+                      setState(() {
+                        widget.focusWork.goals
+                            .forEach((goal) => goal.toggleInProgress());
+                      });
+                    })
+                : FocusContent(
+                    focusMode: _focusMode,
+                    goals: widget.focusWork.goals
+                        .where((goal) => goal.inProgress == false)
+                        .toList(),
+                    onChecked: () {
+                      setState(() {
+                        if (goalIsChecked(widget.focusWork.difficultyGoals)) {
+                          _buttonState = ButtonState.modify;
+                        } else {
+                          _buttonState = ButtonState.add;
+                        }
+                      });
+                    },
+                  );
+          }),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.swap_horiz),
         onPressed: () {
           setState(() {
-            _focusMode = _focusMode == FocusMode.Difficulty
+            _focusMode = _focusMode == FocusMode.Waiting
                 ? FocusMode.Work
-                : FocusMode.Difficulty;
+                : FocusMode.Waiting;
           });
         },
       ),

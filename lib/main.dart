@@ -5,6 +5,7 @@ import 'package:focusplanner/models/work.dart';
 import 'package:focusplanner/pages/archive_page.dart';
 import 'package:focusplanner/pages/complete_page.dart';
 import 'package:focusplanner/pages/focus_page.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -17,6 +18,7 @@ void main() async {
   Hive.registerAdapter(GoalAdapter());
   Hive.registerAdapter(DailyGoalAdapter());
   Hive.registerAdapter(WorkAdapter());
+  Hive.registerAdapter(ModeAdapter());
   await Hive.openBox(Boxes.categoryBox);
   await Hive.openBox(Boxes.goalBox);
   await Hive.openBox(Boxes.settingBox);
@@ -34,10 +36,9 @@ void main() async {
     MaterialApp(
       home: FocusPlanner(),
       theme: ThemeData(
+        textTheme: GoogleFonts.sunflowerTextTheme(),
         primaryColor: kPrimaryColor.withGreen(150),
         scaffoldBackgroundColor: Colors.grey[50],
-//        textTheme: GoogleFonts.nanumGothicTextTheme(),
-//        primaryColor: Colors.amber,
       ),
     ),
   );
@@ -49,11 +50,12 @@ class FocusPlanner extends StatefulWidget {
 }
 
 class _FocusPlannerState extends State<FocusPlanner> {
-  int _currentPage = 1;
+  int _currentPage;
   PageController _pageController;
 
   @override
   void initState() {
+    _currentPage = Hive.box(Boxes.settingBox).get(Settings.currentPage) ?? 1;
     _pageController = PageController(
       initialPage: _currentPage,
     );
@@ -71,6 +73,7 @@ class _FocusPlannerState extends State<FocusPlanner> {
         onPageChanged: (newPage) {
           setState(() {
             _currentPage = newPage;
+            Hive.box(Boxes.settingBox).put(Settings.currentPage, newPage);
           });
         },
         children: <Widget>[

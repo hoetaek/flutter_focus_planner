@@ -25,6 +25,8 @@ class Goal extends HiveObject {
   HiveList<Category> _categoryList;
   @HiveField(6)
   HiveList<Work> _workList;
+  @HiveField(7)
+  bool _inProgress;
 
   Goal({
     @required this.name,
@@ -47,6 +49,12 @@ class Goal extends HiveObject {
   // get 0 index or null
   Category get category => _categoryList?.elementAt(0);
   Work get work => _workList?.elementAt(0);
+  bool get inProgress => _inProgress;
+
+  toggleInProgress() {
+    _inProgress = !(_inProgress ?? true);
+    save();
+  }
 
   complete() {
     print('complete pressed');

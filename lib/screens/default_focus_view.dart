@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:focusplanner/constants.dart';
 import 'package:focusplanner/utils/page_controller_provider.dart';
 
 class DefaultFocusView extends StatelessWidget {
@@ -6,7 +7,10 @@ class DefaultFocusView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('빈 페이지'),
+        title: Text(
+          '빈 페이지',
+          style: TextFont.titleFont(),
+        ),
       ),
       body: Center(
           child: GestureDetector(

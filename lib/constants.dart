@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Boxes {
   static String categoryBox = "CategoryBox";
@@ -14,7 +15,8 @@ class GoalStatus {
 }
 
 class Settings {
-  static String currentCategory = "currentCategory";
+  static String currentPage = "currentPage";
+  static String archiveMode = "archiveMode";
 }
 
 const Radius kCardRadius = Radius.circular(10.0);
@@ -42,3 +44,7 @@ final List<Color> kColors = <Color>[
   Color(0xFF607D8B),
 ];
 const kPrimaryColor = Colors.tealAccent;
+
+class TextFont {
+  static var titleFont = GoogleFonts.doHyeon;
+}
