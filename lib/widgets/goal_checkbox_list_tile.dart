@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:focusplanner/models/goal.dart';
-import 'package:popup_menu/popup_menu.dart';
+import 'package:focusplanner/pages/goal_edit_page.dart';
+import 'package:focusplanner/pages/goal_split_page.dart';
 
 class GoalCheckBoxListTile extends StatefulWidget {
   final Widget secondary;
@@ -37,7 +38,6 @@ class _GoalCheckBoxListTileState extends State<GoalCheckBoxListTile> {
 
   @override
   Widget build(BuildContext context) {
-    PopupMenu.context = context;
     return GestureDetector(
       key: tileKey,
       onTapDown: _storePosition,
@@ -48,22 +48,28 @@ class _GoalCheckBoxListTileState extends State<GoalCheckBoxListTile> {
             position: position,
             items: <PopupMenuItem>[
               const PopupMenuItem<String>(
-                child: Text('test1'),
-                value: 'test1',
+                child: Text('작업 수정'),
+                value: 'modify',
               ),
               const PopupMenuItem<String>(
-                child: Text('test2'),
-                value: 'test2',
+                child: Text('작업 나누기'),
+                value: 'split',
               ),
             ]);
-        print(result);
-//        menu.show(widgetKey: tileKey);
-//        Navigator.push(
-//            context,
-//            MaterialPageRoute(
-//                builder: (context) => GoalSplitPage(
-//                      goal: widget.goal,
-//                    )));
+        if (result == 'modify')
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => GoalEditPage(
+                        goal: widget.goal,
+                      )));
+        else if (result == 'split')
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => GoalSplitPage(
+                        goal: widget.goal,
+                      )));
       },
       child: CheckboxListTile(
         secondary: widget.secondary,
