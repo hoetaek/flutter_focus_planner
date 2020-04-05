@@ -27,6 +27,8 @@ class Goal extends HiveObject {
   HiveList<Work> _workList;
   @HiveField(7)
   bool _inProgress;
+  @HiveField(8)
+  List<String> _specificGoals;
 
   Goal({
     @required this.name,
@@ -50,6 +52,17 @@ class Goal extends HiveObject {
   Category get category => _categoryList?.elementAt(0);
   Work get work => _workList?.elementAt(0);
   bool get inProgress => _inProgress;
+  List<String> get specificGoals => _specificGoals;
+
+  setSpecificGoals(List<String> goalList) {
+    _specificGoals = goalList;
+    save();
+  }
+
+  setDifficulty(int difficultyData) {
+    difficulty = difficultyData;
+    save();
+  }
 
   toggleInProgress() {
     _inProgress = !(_inProgress ?? true);

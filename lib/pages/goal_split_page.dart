@@ -3,7 +3,7 @@ import 'package:focusplanner/constants.dart';
 import 'package:focusplanner/models/goal.dart';
 import 'package:focusplanner/screens/difficulty_selector.dart';
 import 'package:focusplanner/widgets/custom_button.dart';
-import 'package:focusplanner/widgets/custom_text_field.dart';
+import 'package:focusplanner/widgets/multiple_text_field_column.dart';
 
 class GoalSplitPage extends StatefulWidget {
   final Goal goal;
@@ -15,10 +15,16 @@ class GoalSplitPage extends StatefulWidget {
 }
 
 class _GoalSplitPageState extends State<GoalSplitPage> {
-  int goalNum = 1;
+  int goalNum;
   List<String> goalNameList = [];
-  GlobalKey<GoalTextFieldColumnState> goalTextFieldColumnKey =
-      GlobalKey<GoalTextFieldColumnState>();
+  GlobalKey<MultipleTextFieldColumnState> multipleTextFieldColumnKey =
+      GlobalKey<MultipleTextFieldColumnState>();
+
+  @override
+  void initState() {
+    goalNum = widget.goal.specificGoals?.length ?? 1;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,19 +44,21 @@ class _GoalSplitPageState extends State<GoalSplitPage> {
               setState(() {
                 if (goalNum > 0) {
                   goalNum--;
-                  goalTextFieldColumnKey.currentState.removeTextField();
+                  multipleTextFieldColumnKey.currentState.removeTextField();
                 }
               });
             },
             countUp: () {
               setState(() {
                 goalNum++;
-                goalTextFieldColumnKey.currentState.addTextField();
+                multipleTextFieldColumnKey.currentState.addTextField();
               });
             },
           ),
-          GoalTextFieldColumn(
-            key: goalTextFieldColumnKey,
+          MultipleTextFieldColumn(
+            key: multipleTextFieldColumnKey,
+            initFieldNum: widget.goal.specificGoals == null ? 1 : 0,
+            initFieldStringList: widget.goal.specificGoals,
             onTextChanged: (textList) {
               goalNameList = textList;
             },
@@ -71,59 +79,6 @@ class _GoalSplitPageState extends State<GoalSplitPage> {
         ],
       ),
     );
-  }
-}
-
-class GoalTextFieldColumn extends StatefulWidget {
-  final Function onTextChanged;
-
-  const GoalTextFieldColumn({Key key, @required this.onTextChanged})
-      : super(key: key);
-  @override
-  GoalTextFieldColumnState createState() => GoalTextFieldColumnState();
-}
-
-class GoalTextFieldColumnState extends State<GoalTextFieldColumn> {
-  List<CustomTextField> children = [];
-  List<TextEditingController> _controllerToDispose = [];
-
-  @override
-  void initState() {
-    addTextField();
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: children,
-    );
-  }
-
-  addTextField() {
-    TextEditingController _controller = TextEditingController();
-    _controller.addListener(() {
-      widget.onTextChanged(
-          children.map((textField) => textField.textController.text).toList());
-    });
-    CustomTextField customTextField = CustomTextField(
-      padding: EdgeInsets.symmetric(vertical: 10),
-      iconData: Icons.add,
-      textController: _controller,
-    );
-    children.add(customTextField);
-  }
-
-  removeTextField() {
-    CustomTextField customTextField = children.last;
-    children.removeLast();
-    _controllerToDispose.add(customTextField.textController);
-  }
-
-  @override
-  void dispose() {
-    _controllerToDispose.forEach((controller) => controller.dispose());
-    super.dispose();
   }
 }
 
