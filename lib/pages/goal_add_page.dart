@@ -40,13 +40,13 @@ class _GoalAddPageState extends State<GoalAddPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('할 일 추가'),
+        title: Text('작업 추가'),
       ),
       body: Column(
         children: <Widget>[
           CustomTextField(
             padding: EdgeInsets.all(20),
-            title: "할 일",
+            title: "작업",
             textController: _textController,
             iconData: Icons.add,
             errorText: _validate ? null : "칸이 비어있습니다.",

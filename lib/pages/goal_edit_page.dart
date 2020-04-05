@@ -28,13 +28,13 @@ class _GoalEditPageState extends State<GoalEditPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('할 일 수정'),
+        title: Text('작업 수정'),
       ),
       body: Column(
         children: <Widget>[
           CustomTextField(
             padding: EdgeInsets.all(20),
-            title: "할 일",
+            title: "작업",
             textController: _textController,
             iconData: Icons.add,
             hintText: widget.goal.name,

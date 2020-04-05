@@ -25,7 +25,7 @@ class _GoalSplitPageState extends State<GoalSplitPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          '할 일 나누기',
+          '작업 나누기',
           style: TextFont.titleFont(),
         ),
       ),
