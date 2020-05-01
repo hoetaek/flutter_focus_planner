@@ -107,12 +107,16 @@ class Goal extends HiveObject {
   _changeWork() {
     print("change work");
     print("from: $work");
-    work.removeGoal(this);
-    work.save();
-    if (work.goals.isEmpty) work.delete();
+    _removeFromWork();
     _workList.clear();
     _setWork();
     print("to: $work");
+  }
+
+  _removeFromWork() {
+    work.removeGoal(this);
+    work.save();
+    if (work.goals.isEmpty) work.delete();
   }
 
   bool _workExists() {
@@ -172,15 +176,23 @@ class Goal extends HiveObject {
   }
 
   void levelUp() {
-    difficulty += 1;
-    _changeWork();
-    save();
+    if (difficulty != 5) {
+      difficulty += 1;
+      _changeWork();
+      save();
+    }
   }
 
   void levelDown() {
-    difficulty -= 1;
-    _changeWork();
-    save();
+    if (difficulty != 1) {
+      difficulty -= 1;
+      _changeWork();
+      save();
+    } else {
+      difficulty -= 1;
+      _removeFromWork();
+      save();
+    }
   }
 
   void setDate(DateTime today) {

@@ -30,28 +30,26 @@ class _FocusContentState extends State<FocusContent> {
                 actionPane: SlidableDrawerActionPane(),
                 actionExtentRatio: 0.15,
                 actions: <Widget>[
-                  if (goal.difficulty != 5)
-                    IconSlideAction(
-                      caption: 'Level',
-                      color: Colors.blue,
-                      icon: Icons.arrow_upward,
-                      onTap: () {
-                        setState(() {
-                          goal.levelUp();
-                        });
-                      },
-                    ),
-                  if (goal.difficulty != 1)
-                    IconSlideAction(
-                      caption: 'Level',
-                      color: Colors.redAccent,
-                      icon: Icons.arrow_downward,
-                      onTap: () {
-                        setState(() {
-                          goal.levelDown();
-                        });
-                      },
-                    ),
+                  IconSlideAction(
+                    caption: 'Level',
+                    color: Colors.blue,
+                    icon: Icons.arrow_upward,
+                    onTap: () {
+                      setState(() {
+                        goal.levelUp();
+                      });
+                    },
+                  ),
+                  IconSlideAction(
+                    caption: 'Level',
+                    color: Colors.redAccent,
+                    icon: Icons.arrow_downward,
+                    onTap: () {
+                      setState(() {
+                        goal.levelDown();
+                      });
+                    },
+                  ),
                 ],
                 secondaryActions: <Widget>[
                   IconSlideAction(
