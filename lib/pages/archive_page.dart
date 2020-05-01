@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:focusplanner/constants.dart';
 import 'package:focusplanner/models/category.dart';
+import 'package:focusplanner/models/goal.dart';
 import 'package:focusplanner/models/work.dart';
 import 'package:focusplanner/pages/category_add_page.dart';
 import 'package:focusplanner/screens/category_card.dart';
@@ -157,7 +159,7 @@ class _ArchivePageState extends State<ArchivePage> {
                   case Mode.Category:
                     return _buildCategoryView(categoryBox, workList);
                   case Mode.WorkList:
-                    return Container();
+                    return WorkListView(workList: workList);
                   case Mode.Daily:
                     return DailyGoalView();
                   default:
@@ -195,6 +197,95 @@ class _ArchivePageState extends State<ArchivePage> {
               );
             },
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class WorkListView extends StatelessWidget {
+  final List<Work> workList;
+  WorkListView({this.workList});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+        shrinkWrap: true,
+        itemCount: workList.length,
+        itemBuilder: (context, index) {
+          return WorkCard(workList[index]);
+        });
+  }
+}
+
+class WorkCard extends StatelessWidget {
+  final Work work;
+  WorkCard(this.work);
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(top: 20.0),
+      decoration: kCardDecoration.copyWith(
+        border: Border.all(
+          width: 1.0,
+          color: work.category.getColor(),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: work.category.getColor(),
+              borderRadius: BorderRadius.only(
+                  topLeft: kCardRadius, topRight: kCardRadius),
+            ),
+            child: Row(
+              children: <Widget>[
+                Text(
+                  '${work.category.name} - Lv.${work.difficulty}',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: work.category.getTextColor(),
+                      fontSize: 20.0,
+                      letterSpacing: 1.2),
+                ),
+              ],
+            ),
+          ),
+          ListView.separated(
+              shrinkWrap: true,
+              separatorBuilder: (context, index) {
+                return Divider();
+              },
+              physics: ClampingScrollPhysics(),
+              itemCount: work.goals.length,
+              itemBuilder: (context, index) {
+                Goal goal = work.goals[index];
+                return Slidable(
+                    actionPane: SlidableDrawerActionPane(),
+                    actionExtentRatio: 0.15,
+                    actions: <Widget>[
+                      IconSlideAction(
+                        caption: 'Level',
+                        color: Colors.blue,
+                        icon: Icons.arrow_upward,
+                        onTap: () {
+                          goal.levelUp();
+                        },
+                      ),
+                      IconSlideAction(
+                        caption: 'Level',
+                        color: Colors.redAccent,
+                        icon: Icons.arrow_downward,
+                        onTap: () {
+                          goal.levelDown();
+                        },
+                      ),
+                    ],
+                    child: ListTile(title: Text(goal.name)));
+              })
         ],
       ),
     );

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:focusplanner/constants.dart';
 import 'package:focusplanner/models/goal.dart';
-import 'package:focusplanner/pages/goal_edit_page.dart';
+import 'package:focusplanner/widgets/goal_checkbox_list_tile.dart';
 
 import 'focus_view.dart';
 
@@ -30,28 +30,26 @@ class _FocusContentState extends State<FocusContent> {
                 actionPane: SlidableDrawerActionPane(),
                 actionExtentRatio: 0.15,
                 actions: <Widget>[
-                  if (goal.difficulty != 5)
-                    IconSlideAction(
-                      caption: 'Level',
-                      color: Colors.blue,
-                      icon: Icons.arrow_upward,
-                      onTap: () {
-                        setState(() {
-                          goal.levelUp();
-                        });
-                      },
-                    ),
-                  if (goal.difficulty != 1)
-                    IconSlideAction(
-                      caption: 'Level',
-                      color: Colors.redAccent,
-                      icon: Icons.arrow_downward,
-                      onTap: () {
-                        setState(() {
-                          goal.levelDown();
-                        });
-                      },
-                    ),
+                  IconSlideAction(
+                    caption: 'Level',
+                    color: Colors.blue,
+                    icon: Icons.arrow_upward,
+                    onTap: () {
+                      setState(() {
+                        goal.levelUp();
+                      });
+                    },
+                  ),
+                  IconSlideAction(
+                    caption: 'Level',
+                    color: Colors.redAccent,
+                    icon: Icons.arrow_downward,
+                    onTap: () {
+                      setState(() {
+                        goal.levelDown();
+                      });
+                    },
+                  ),
                 ],
                 secondaryActions: <Widget>[
                   IconSlideAction(
@@ -59,7 +57,7 @@ class _FocusContentState extends State<FocusContent> {
                         widget.focusMode == FocusMode.Work ? '대기작업' : '몰입작업',
                     color: widget.focusMode == FocusMode.Work
                         ? Colors.indigo
-                        : kPrimaryColor.withGreen(150),
+                        : kPrimaryColor,
                     foregroundColor: Colors.white,
                     icon: widget.focusMode == FocusMode.Work
                         ? Icons.watch_later
@@ -90,26 +88,16 @@ class _FocusContentState extends State<FocusContent> {
                     SlideActionType.primary: 1.0
                   },
                 ),
-                child: GestureDetector(
-                  onLongPress: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => GoalEditPage(
-                                  goal: goal,
-                                )));
+                child: GoalCheckBoxListTile(
+                  goal: goal,
+                  value: goal.checked,
+                  onChanged: (change) {
+                    setState(() {
+                      goal.checked = change;
+                      goal.save();
+                    });
+                    widget.onChecked();
                   },
-                  child: CheckboxListTile(
-                    title: Text('${goal.name}'),
-                    value: goal.checked,
-                    onChanged: (change) {
-                      setState(() {
-                        goal.checked = change;
-                        goal.save();
-                      });
-                      widget.onChecked();
-                    },
-                  ),
                 ),
               );
             },

@@ -44,7 +44,7 @@ class Category extends HiveObject {
     if (colorIndex != null)
       return kColors[colorIndex];
     else
-      return kPrimaryColor.withGreen(150);
+      return kPrimaryColor;
   }
 
   Color getTextColor() {

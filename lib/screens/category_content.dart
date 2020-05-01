@@ -3,7 +3,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:focusplanner/models/category.dart';
 import 'package:focusplanner/models/goal.dart';
 import 'package:focusplanner/models/work.dart';
-import 'package:focusplanner/pages/goal_edit_page.dart';
+import 'package:focusplanner/widgets/goal_checkbox_list_tile.dart';
 
 import '../constants.dart';
 
@@ -39,7 +39,7 @@ class _CategoryContentState extends State<CategoryContent> {
                 actionExtentRatio: 0.15,
                 actionPane: SlidableDrawerActionPane(),
                 actions: <Widget>[
-                  if (goal.difficulty != 5)
+                  if (goal.difficulty < 5)
                     IconSlideAction(
                       caption: 'Level',
                       color: Colors.blue,
@@ -50,7 +50,7 @@ class _CategoryContentState extends State<CategoryContent> {
                         });
                       },
                     ),
-                  if (goal.difficulty != 1)
+                  if (goal.difficulty > 1)
                     IconSlideAction(
                       caption: 'Level',
                       color: Colors.redAccent,
@@ -62,42 +62,32 @@ class _CategoryContentState extends State<CategoryContent> {
                       },
                     ),
                 ],
-                child: GestureDetector(
-                  onLongPress: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => GoalEditPage(
-                                  goal: goal,
-                                )));
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: widget.focusWork?.isWorkGoal(goal) ?? false
-                          ? Colors.grey[300]
-                          : null,
-                      borderRadius: index + 1 == onWorkGoals.length
-                          ? BorderRadius.only(
-                              bottomLeft: kCardRadius,
-                              bottomRight: kCardRadius,
-                            )
-                          : null,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: widget.focusWork?.isWorkGoal(goal) ?? false
+                        ? Colors.grey[300]
+                        : null,
+                    borderRadius: index + 1 == onWorkGoals.length
+                        ? BorderRadius.only(
+                            bottomLeft: kCardRadius,
+                            bottomRight: kCardRadius,
+                          )
+                        : null,
+                  ),
+                  child: GoalCheckBoxListTile(
+                    goal: goal,
+                    secondary: Icon(
+                      Goal.getIconData(goal.difficulty),
+                      color: goal.getColor(),
                     ),
-                    child: CheckboxListTile(
-                      secondary: Icon(
-                        Goal.getIconData(goal.difficulty),
-                        color: goal.getColor(),
-                      ),
-                      title: Text('${goal.name}'),
-                      value: goal.checked,
-                      onChanged: (checkChanged) {
-                        setState(() {
-                          goal.checked = checkChanged;
-                          goal.save();
-                        });
-                        widget.onChecked();
-                      },
-                    ),
+                    value: goal.checked,
+                    onChanged: (checkChanged) {
+                      setState(() {
+                        goal.checked = checkChanged;
+                        goal.save();
+                      });
+                      widget.onChecked();
+                    },
                   ),
                 ),
               );

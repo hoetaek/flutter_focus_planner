@@ -43,7 +43,7 @@ final List<Color> kColors = <Color>[
   Color(0xFF795548),
   Color(0xFF607D8B),
 ];
-const kPrimaryColor = Colors.tealAccent;
+const kPrimaryColor = Color(0xff6496da);
 
 class TextFont {
   static var titleFont = GoogleFonts.doHyeon;

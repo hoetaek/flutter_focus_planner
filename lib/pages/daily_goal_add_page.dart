@@ -53,7 +53,7 @@ class _DailyGoalAddPageState extends State<DailyGoalAddPage> {
               children: <Widget>[
                 Text(
                   '카테고리 선택',
-                  style: TextStyle(color: kPrimaryColor.withGreen(150)),
+                  style: TextStyle(color: kPrimaryColor),
                 ),
                 DropdownButton(
                   underline: Container(),
@@ -80,10 +80,11 @@ class _DailyGoalAddPageState extends State<DailyGoalAddPage> {
             ),
           ),
           CustomTextField(
+            padding: EdgeInsets.all(20),
             title: "반복작업",
             textController: _textController,
             iconData: Icons.add,
-            borderColor: kPrimaryColor.withGreen(150),
+            borderColor: kPrimaryColor,
             errorText: _validate ? null : "칸이 비어있습니다.",
           ),
           DifficultySelector(

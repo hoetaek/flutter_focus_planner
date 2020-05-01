@@ -27,6 +27,8 @@ class Goal extends HiveObject {
   HiveList<Work> _workList;
   @HiveField(7)
   bool _inProgress;
+  @HiveField(8)
+  List<String> _specificGoals;
 
   Goal({
     @required this.name,
@@ -50,6 +52,18 @@ class Goal extends HiveObject {
   Category get category => _categoryList?.elementAt(0);
   Work get work => _workList?.elementAt(0);
   bool get inProgress => _inProgress;
+  List<String> get specificGoals => _specificGoals;
+  int get level => difficulty;
+
+  setSpecificGoals(List<String> goalList) {
+    _specificGoals = goalList;
+    save();
+  }
+
+  setDifficulty(int difficultyData) {
+    difficulty = difficultyData;
+    save();
+  }
 
   toggleInProgress() {
     _inProgress = !(_inProgress ?? true);
@@ -94,12 +108,16 @@ class Goal extends HiveObject {
   _changeWork() {
     print("change work");
     print("from: $work");
-    work.removeGoal(this);
-    work.save();
-    if (work.goals.isEmpty) work.delete();
+    _removeFromWork();
     _workList.clear();
     _setWork();
     print("to: $work");
+  }
+
+  _removeFromWork() {
+    work.removeGoal(this);
+    work.save();
+    if (work.goals.isEmpty) work.delete();
   }
 
   bool _workExists() {
@@ -155,19 +173,23 @@ class Goal extends HiveObject {
   }
 
   Color getColor() {
-    return kPrimaryColor.withGreen(difficulty * 50);
+    return kPrimaryColor.withRed(difficulty * 40);
   }
 
   void levelUp() {
-    difficulty += 1;
-    _changeWork();
-    save();
+    if (difficulty != 5) {
+      difficulty += 1;
+      _changeWork();
+      save();
+    }
   }
 
   void levelDown() {
-    difficulty -= 1;
-    _changeWork();
-    save();
+    if (difficulty != 1) {
+      difficulty -= 1;
+      _changeWork();
+      save();
+    }
   }
 
   void setDate(DateTime today) {
