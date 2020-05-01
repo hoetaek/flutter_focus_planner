@@ -53,6 +53,7 @@ class Goal extends HiveObject {
   Work get work => _workList?.elementAt(0);
   bool get inProgress => _inProgress;
   List<String> get specificGoals => _specificGoals;
+  int get level => difficulty;
 
   setSpecificGoals(List<String> goalList) {
     _specificGoals = goalList;
@@ -187,10 +188,6 @@ class Goal extends HiveObject {
     if (difficulty != 1) {
       difficulty -= 1;
       _changeWork();
-      save();
-    } else {
-      difficulty -= 1;
-      _removeFromWork();
       save();
     }
   }

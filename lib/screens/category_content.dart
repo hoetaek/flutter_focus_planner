@@ -39,26 +39,28 @@ class _CategoryContentState extends State<CategoryContent> {
                 actionExtentRatio: 0.15,
                 actionPane: SlidableDrawerActionPane(),
                 actions: <Widget>[
-                  IconSlideAction(
-                    caption: 'Level',
-                    color: Colors.blue,
-                    icon: Icons.arrow_upward,
-                    onTap: () {
-                      setState(() {
-                        goal.levelUp();
-                      });
-                    },
-                  ),
-                  IconSlideAction(
-                    caption: 'Level',
-                    color: Colors.redAccent,
-                    icon: Icons.arrow_downward,
-                    onTap: () {
-                      setState(() {
-                        goal.levelDown();
-                      });
-                    },
-                  ),
+                  if (goal.difficulty < 5)
+                    IconSlideAction(
+                      caption: 'Level',
+                      color: Colors.blue,
+                      icon: Icons.arrow_upward,
+                      onTap: () {
+                        setState(() {
+                          goal.levelUp();
+                        });
+                      },
+                    ),
+                  if (goal.difficulty > 1)
+                    IconSlideAction(
+                      caption: 'Level',
+                      color: Colors.redAccent,
+                      icon: Icons.arrow_downward,
+                      onTap: () {
+                        setState(() {
+                          goal.levelDown();
+                        });
+                      },
+                    ),
                 ],
                 child: Container(
                   decoration: BoxDecoration(
