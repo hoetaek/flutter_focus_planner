@@ -40,7 +40,9 @@ class _CompletePageState extends State<CompletePage> {
               );
           }),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.swap_horiz),
+        child: _completeMode == CompleteMode.List
+            ? Icon(Icons.calendar_today)
+            : Icon(Icons.check),
         onPressed: () {
           setState(() {
             _completeMode = _completeMode == CompleteMode.List
