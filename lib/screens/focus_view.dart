@@ -95,7 +95,9 @@ class _FocusViewState extends State<FocusView> {
                   );
           }),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.swap_horiz),
+        child: _focusMode == FocusMode.Waiting
+            ? Icon(Icons.center_focus_strong)
+            : Icon(Icons.watch_later),
         onPressed: () {
           setState(() {
             _focusMode = _focusMode == FocusMode.Waiting
