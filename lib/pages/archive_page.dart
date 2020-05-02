@@ -122,6 +122,7 @@ class _ArchivePageState extends State<ArchivePage> {
                     });
                     selectedCategories.clear();
                     actionDone();
+                    sortCategoryList(Hive.box(Boxes.categoryBox));
                   },
                 ),
               ],
