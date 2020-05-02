@@ -243,13 +243,39 @@ class WorkCard extends StatelessWidget {
             ),
             child: Row(
               children: <Widget>[
-                Text(
-                  '${work.category.name} - Lv.${work.difficulty}',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: work.category.getTextColor(),
-                      fontSize: 20.0,
-                      letterSpacing: 1.2),
+                Row(
+                  children: <Widget>[
+                    Text(
+                      '${work.category.name}',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: work.category.getTextColor(),
+                          fontSize: 20.0,
+                          letterSpacing: 1.2),
+                    ),
+                    SizedBox(width: 10),
+                    if (work.category.priority <
+                        Hive.box(Boxes.categoryBox).length - 1)
+                      GestureDetector(
+                        child: Icon(
+                          Icons.keyboard_arrow_down,
+                          color: work.category.getTextColor(),
+                        ),
+                        onTap: () {
+                          work.category.priorityDown();
+                        },
+                      ),
+                    if (work.category.priority > 0)
+                      GestureDetector(
+                        child: Icon(
+                          Icons.keyboard_arrow_up,
+                          color: work.category.getTextColor(),
+                        ),
+                        onTap: () {
+                          work.category.priorityUp();
+                        },
+                      ),
+                  ],
                 ),
               ],
             ),
@@ -267,24 +293,31 @@ class WorkCard extends StatelessWidget {
                     actionPane: SlidableDrawerActionPane(),
                     actionExtentRatio: 0.15,
                     actions: <Widget>[
-                      IconSlideAction(
-                        caption: 'Level',
-                        color: Colors.blue,
-                        icon: Icons.arrow_upward,
-                        onTap: () {
-                          goal.levelUp();
-                        },
-                      ),
-                      IconSlideAction(
-                        caption: 'Level',
-                        color: Colors.redAccent,
-                        icon: Icons.arrow_downward,
-                        onTap: () {
-                          goal.levelDown();
-                        },
-                      ),
+                      if (goal.difficulty < 5)
+                        IconSlideAction(
+                          caption: 'Level',
+                          color: Colors.blue,
+                          icon: Icons.arrow_upward,
+                          onTap: () {
+                            goal.levelUp();
+                          },
+                        ),
+                      if (goal.difficulty > 1)
+                        IconSlideAction(
+                          caption: 'Level',
+                          color: Colors.redAccent,
+                          icon: Icons.arrow_downward,
+                          onTap: () {
+                            goal.levelDown();
+                          },
+                        ),
                     ],
-                    child: ListTile(title: Text(goal.name)));
+                    child: ListTile(
+                        leading: Icon(
+                          Goal.getIconData(work.difficulty),
+                          color: Goal.getDifficultyColor(work.difficulty),
+                        ),
+                        title: Text(goal.name)));
               })
         ],
       ),

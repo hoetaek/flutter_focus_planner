@@ -176,6 +176,10 @@ class Goal extends HiveObject {
     return kPrimaryColor.withRed(difficulty * 40);
   }
 
+  static Color getDifficultyColor(difficulty) {
+    return kPrimaryColor.withRed(difficulty * 40);
+  }
+
   void levelUp() {
     if (difficulty != 5) {
       difficulty += 1;

@@ -35,6 +35,40 @@ class Category extends HiveObject {
     priority = index;
   }
 
+  void priorityUp() {
+    if (priority > 0) {
+      Category category = Hive.box(Boxes.categoryBox)
+          .values
+          .cast<Category>()
+          .where((category) => category.priority == priority - 1)
+          ?.elementAt(0);
+      print(category);
+      priority--;
+      if (category != null) {
+        category.priority++;
+        category.save();
+      }
+      save();
+    }
+  }
+
+  void priorityDown() {
+    if (priority < Hive.box(Boxes.categoryBox).length - 1) {
+      Category category = Hive.box(Boxes.categoryBox)
+          .values
+          .cast<Category>()
+          .where((category) => category.priority == priority + 1)
+          ?.elementAt(0);
+      print(category);
+      priority++;
+      if (category != null) {
+        category.priority--;
+        category.save();
+      }
+      save();
+    }
+  }
+
   void addGoal(Goal goal) {
     _goals.add(goal);
     save();

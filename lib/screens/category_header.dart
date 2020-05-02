@@ -4,6 +4,7 @@ import 'package:focusplanner/models/goal.dart';
 import 'package:focusplanner/pages/category_edit_page.dart';
 import 'package:focusplanner/pages/goal_add_page.dart';
 import 'package:focusplanner/widgets/actions_icon_button.dart';
+import 'package:hive/hive.dart';
 
 import '../constants.dart';
 
@@ -39,13 +40,38 @@ class CategoryHeader extends StatelessWidget {
         child: Row(
           children: <Widget>[
             SizedBox(width: 10.0),
-            Text(
-              '${category.name}',
-              style: TextStyle(
-                  color: category.getTextColor(),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20.0,
-                  letterSpacing: 1.2),
+            Row(
+              children: <Widget>[
+                Text(
+                  '${category.name}',
+                  style: TextStyle(
+                      color: category.getTextColor(),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20.0,
+                      letterSpacing: 1.2),
+                ),
+                SizedBox(width: 10),
+                if (category.priority < Hive.box(Boxes.categoryBox).length - 1)
+                  GestureDetector(
+                    child: Icon(
+                      Icons.keyboard_arrow_down,
+                      color: category.getTextColor(),
+                    ),
+                    onTap: () {
+                      category.priorityDown();
+                    },
+                  ),
+                if (category.priority > 0)
+                  GestureDetector(
+                    child: Icon(
+                      Icons.keyboard_arrow_up,
+                      color: category.getTextColor(),
+                    ),
+                    onTap: () {
+                      category.priorityUp();
+                    },
+                  ),
+              ],
             ),
             Expanded(
               child: Container(),

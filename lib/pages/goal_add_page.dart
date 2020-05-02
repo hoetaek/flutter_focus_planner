@@ -24,7 +24,7 @@ class GoalAddPage extends StatefulWidget {
 class _GoalAddPageState extends State<GoalAddPage> {
   int _difficulty;
   bool _validate = true;
-  int goalNum = 1;
+  int specGoalNum = 0;
   List<String> goalNameList = [];
   GlobalKey<MultipleTextFieldColumnState> multipleTextFieldColumnKey =
       GlobalKey<MultipleTextFieldColumnState>();
@@ -95,7 +95,7 @@ class _GoalAddPageState extends State<GoalAddPage> {
                           onPressed: countDown,
                         ),
                         Text(
-                          '$goalNum',
+                          '$specGoalNum',
                           style: TextStyle(fontSize: 16),
                         ),
                         IconButton(
@@ -116,7 +116,7 @@ class _GoalAddPageState extends State<GoalAddPage> {
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: MultipleTextFieldColumn(
                 key: multipleTextFieldColumnKey,
-                initFieldNum: goalNum,
+                initFieldNum: specGoalNum,
                 onTextChanged: (textList) {
                   goalNameList = textList;
                 },
@@ -151,8 +151,8 @@ class _GoalAddPageState extends State<GoalAddPage> {
 
   void countDown() {
     setState(() {
-      if (goalNum > 0) {
-        goalNum--;
+      if (specGoalNum > 0) {
+        specGoalNum--;
         multipleTextFieldColumnKey.currentState.removeTextField();
       }
     });
@@ -160,7 +160,7 @@ class _GoalAddPageState extends State<GoalAddPage> {
 
   void countUp() {
     setState(() {
-      goalNum++;
+      specGoalNum++;
       multipleTextFieldColumnKey.currentState.addTextField();
     });
   }
