@@ -40,6 +40,7 @@ class _CompletePageState extends State<CompletePage> {
               );
           }),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: kPrimaryColor,
         child: _completeMode == CompleteMode.List
             ? Icon(Icons.calendar_today)
             : Icon(Icons.check),
