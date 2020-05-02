@@ -29,7 +29,10 @@ class _CategoryAddPageState extends State<CategoryAddPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Category 추가'),
+        title: Text(
+          'Category 추가',
+          style: TextFont.titleFont(),
+        ),
       ),
       body: Column(
         children: <Widget>[

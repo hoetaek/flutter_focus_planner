@@ -30,7 +30,10 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Category 수정'),
+        title: Text(
+          'Category 수정',
+          style: TextFont.titleFont(),
+        ),
       ),
       body: Column(
         children: <Widget>[
