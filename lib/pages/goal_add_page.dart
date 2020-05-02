@@ -6,6 +6,8 @@ import 'package:focusplanner/widgets/custom_button.dart';
 import 'package:focusplanner/widgets/custom_text_field.dart';
 import 'package:focusplanner/widgets/multiple_text_field_column.dart';
 
+import '../constants.dart';
+
 class GoalAddPage extends StatefulWidget {
   final Category category;
   final String goalStatus;
@@ -45,7 +47,10 @@ class _GoalAddPageState extends State<GoalAddPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('작업 추가'),
+        title: Text(
+          '작업 추가',
+          style: TextFont.titleFont(),
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
