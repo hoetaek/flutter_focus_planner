@@ -4,7 +4,6 @@ import 'package:focusplanner/constants.dart';
 import 'package:focusplanner/models/category.dart';
 import 'package:focusplanner/models/goal.dart';
 import 'package:focusplanner/models/work.dart';
-import 'package:focusplanner/pages/category_add_page.dart';
 import 'package:focusplanner/screens/category_card.dart';
 import 'package:focusplanner/screens/category_name_list.dart';
 import 'package:focusplanner/screens/daily_goal_view.dart';
@@ -13,6 +12,7 @@ import 'package:focusplanner/widgets/column_builder.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'category_add_page.dart';
 import 'daily_goal_add_page.dart';
 
 part 'archive_page.g.dart';
@@ -113,14 +113,6 @@ class _ArchivePageState extends State<ArchivePage> {
           if (_currentMode == Mode.Category)
             ActionsIconButton(
               buttonState: _buttonState,
-              addWidget: IconButton(
-                  icon: Icon(Icons.add),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => CategoryAddPage()));
-                  }),
               modifyWidgets: <Widget>[
                 IconButton(
                   icon: Icon(Icons.delete),
@@ -134,17 +126,29 @@ class _ArchivePageState extends State<ArchivePage> {
                 ),
               ],
             ),
-          if (_currentMode == Mode.Daily)
-            IconButton(
-                icon: Icon(Icons.add),
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => DailyGoalAddPage()));
-                }),
         ],
       ),
+      floatingActionButton: _currentMode == Mode.Category
+          ? FloatingActionButton(
+              child: Icon(Icons.add),
+              backgroundColor: kPrimaryColor,
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => CategoryAddPage()));
+              },
+            )
+          : _currentMode == Mode.Daily
+              ? FloatingActionButton(
+                  child: Icon(Icons.add),
+                  backgroundColor: kPrimaryColor,
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => DailyGoalAddPage()));
+                  },
+                )
+              : null,
       body: ValueListenableBuilder(
         valueListenable: Hive.box(Boxes.categoryBox).listenable(),
         builder: (context, Box categoryBox, widget) {

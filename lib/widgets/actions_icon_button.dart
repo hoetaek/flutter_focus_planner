@@ -12,13 +12,13 @@ class ActionsIconButton extends StatelessWidget {
 
   ActionsIconButton(
       {@required this.buttonState,
-      @required this.addWidget,
+      this.addWidget,
       @required this.modifyWidgets});
 
   @override
   Widget build(BuildContext context) {
     return buttonState == ButtonState.add
-        ? addWidget
+        ? (addWidget ?? Container())
         : Row(
             children: modifyWidgets,
           );

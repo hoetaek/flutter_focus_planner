@@ -37,7 +37,7 @@ void main() async {
       home: FocusPlanner(),
       theme: ThemeData(
         textTheme: GoogleFonts.sunflowerTextTheme(),
-        primaryColor: Color(0xff6496da),
+        primaryColor: kPrimaryColor,
         scaffoldBackgroundColor: Colors.grey[50],
       ),
     ),
