@@ -15,14 +15,14 @@ class GoalSplitPage extends StatefulWidget {
 }
 
 class _GoalSplitPageState extends State<GoalSplitPage> {
-  int goalNum;
-  List<String> goalNameList = [];
+  int specGoalNum;
+  List<String> specGoalList = [];
   GlobalKey<MultipleTextFieldColumnState> multipleTextFieldColumnKey =
       GlobalKey<MultipleTextFieldColumnState>();
 
   @override
   void initState() {
-    goalNum = widget.goal.specificGoals?.length ?? 1;
+    specGoalNum = widget.goal.specificGoals?.length ?? 1;
     super.initState();
   }
 
@@ -39,18 +39,18 @@ class _GoalSplitPageState extends State<GoalSplitPage> {
         children: <Widget>[
           GoalInfoCard(
             goal: widget.goal,
-            goalNum: goalNum,
+            goalNum: specGoalNum,
             countDown: () {
               setState(() {
-                if (goalNum > 0) {
-                  goalNum--;
+                if (specGoalNum > 0) {
+                  specGoalNum--;
                   multipleTextFieldColumnKey.currentState.removeTextField();
                 }
               });
             },
             countUp: () {
               setState(() {
-                goalNum++;
+                specGoalNum++;
                 multipleTextFieldColumnKey.currentState.addTextField();
               });
             },
@@ -60,12 +60,12 @@ class _GoalSplitPageState extends State<GoalSplitPage> {
             initFieldNum: widget.goal.specificGoals == null ? 1 : 0,
             initFieldStringList: widget.goal.specificGoals,
             onTextChanged: (textList) {
-              goalNameList = textList;
+              specGoalList = textList;
             },
           ),
           CustomButton(
             onPressed: () {
-              goalNameList.forEach((name) {
+              specGoalList.forEach((name) {
                 Goal goal = Goal(
                     name: name,
                     difficulty: widget.goal.difficulty,
@@ -73,6 +73,7 @@ class _GoalSplitPageState extends State<GoalSplitPage> {
                 goal.init(categoryToBeAdded: widget.goal.category);
                 widget.goal.category.addGoal(goal);
               });
+              widget.goal.emptySpecGoals();
               Navigator.pop(context);
             },
           ),

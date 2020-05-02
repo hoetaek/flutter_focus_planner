@@ -56,6 +56,11 @@ class Goal extends HiveObject {
   int get level => difficulty;
   int get specGoalNum => _specificGoals?.length;
 
+  emptySpecGoals() {
+    _specificGoals = List();
+    save();
+  }
+
   setSpecificGoals(List<String> goalList) {
     _specificGoals = goalList;
     save();
