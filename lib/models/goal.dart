@@ -173,8 +173,16 @@ class Goal extends HiveObject {
     }
   }
 
-  check(bool value) {
-    checked = value;
+  uncheck() {
+    bool categoryExists = Hive.box(Boxes.categoryBox)
+        .values
+        .cast<Category>()
+        .any((categoryFromBox) => categoryFromBox == category);
+    if (categoryExists) {
+      checked = false;
+      status = GoalStatus.onWork;
+      _setWork();
+    }
     save();
   }
 

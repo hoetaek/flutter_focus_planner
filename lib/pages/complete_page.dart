@@ -62,7 +62,7 @@ class _CompletePageState extends State<CompletePage> {
     List<DateTime> uniqueGoalDateList;
     uniqueGoalDateList = goalBox.values
         .cast<Goal>()
-        .where((goal) => goal.date != null)
+        .where((goal) => goal.status == GoalStatus.complete)
         .map((goal) => goal.getDay())
         .toSet()
         .toList();
@@ -70,7 +70,8 @@ class _CompletePageState extends State<CompletePage> {
     uniqueGoalDateList.forEach((date) {
       List<Goal> goalsOnDate = goalBox.values
           .cast<Goal>()
-          .where((goal) => goal.isOnDate(date))
+          .where((goal) =>
+              goal.status == GoalStatus.complete && goal.isOnDate(date))
           .toList();
 
       _events.putIfAbsent(date, () => goalsOnDate);
@@ -82,17 +83,65 @@ class _CompletePageState extends State<CompletePage> {
           Goal goal = goalsOnDate[idx];
 
           // the tile widgets
-          return CheckboxListTile(
-            title: Text(goal.name),
-            value: true,
-            onChanged: null,
-          );
+          return ContextMenuCheckboxTile(goal: goal);
         },
       ));
     });
     return SingleChildScrollView(
       child: Column(
         children: _children,
+      ),
+    );
+  }
+}
+
+class ContextMenuCheckboxTile extends StatefulWidget {
+  final Goal goal;
+
+  const ContextMenuCheckboxTile({Key key, this.goal}) : super(key: key);
+
+  @override
+  _ContextMenuCheckboxTileState createState() =>
+      _ContextMenuCheckboxTileState();
+}
+
+class _ContextMenuCheckboxTileState extends State<ContextMenuCheckboxTile> {
+  final tileKey = GlobalKey();
+  var _tapPosition;
+
+  RelativeRect tileMenuPosition(BuildContext context) {
+    final RenderBox overlay = Overlay.of(context).context.findRenderObject();
+    final RelativeRect position = RelativeRect.fromRect(
+        _tapPosition & Size(40, 40), Offset.zero & overlay.size);
+    return position;
+  }
+
+  void _storePosition(TapDownDetails details) {
+    _tapPosition = details.globalPosition;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      key: tileKey,
+      onTapDown: _storePosition,
+      onLongPress: () async {
+        final position = tileMenuPosition(tileKey.currentContext);
+        var result = await showMenu(
+            context: context,
+            position: position,
+            items: <PopupMenuItem>[
+              const PopupMenuItem<String>(
+                child: Text('작업 취소'),
+                value: 'uncheck',
+              ),
+            ]);
+        if (result == 'uncheck') widget.goal.uncheck();
+      },
+      child: CheckboxListTile(
+        title: Text(widget.goal.name),
+        value: true,
+        onChanged: null,
       ),
     );
   }
