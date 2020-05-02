@@ -74,7 +74,10 @@ class _GoalCheckBoxListTileState extends State<GoalCheckBoxListTile> {
       child: CheckboxListTile(
         secondary: widget.secondary,
         title: Text(
-          widget.goal.name,
+          "${widget.goal.name} " +
+              ((widget.goal.specGoalNum ?? 0) > 0
+                  ? "(${widget.goal.specGoalNum}개)"
+                  : ""),
         ),
         value: widget.value,
         onChanged: widget.onChanged,
