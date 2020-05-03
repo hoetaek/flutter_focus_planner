@@ -9,6 +9,7 @@ import 'package:focusplanner/screens/category_name_list.dart';
 import 'package:focusplanner/screens/daily_goal_view.dart';
 import 'package:focusplanner/widgets/actions_icon_button.dart';
 import 'package:focusplanner/widgets/column_builder.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -250,6 +251,15 @@ class WorkCard extends StatelessWidget {
               children: <Widget>[
                 Row(
                   children: <Widget>[
+                    Text(
+                      '${work.category.priority + 1} ',
+                      style: TextStyle(
+                          fontFamily: GoogleFonts.doHyeon().fontFamily,
+                          fontWeight: FontWeight.bold,
+                          color: work.category.getTextColor(),
+                          fontSize: 20.0,
+                          letterSpacing: 1.2),
+                    ),
                     Text(
                       '${work.category.name}',
                       style: TextStyle(
