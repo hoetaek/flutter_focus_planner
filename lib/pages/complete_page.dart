@@ -26,6 +26,7 @@ class _CompletePageState extends State<CompletePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('완료', style: TextFont.titleFont()),
+        centerTitle: true,
       ),
       body: ValueListenableBuilder(
           valueListenable: Hive.box(Boxes.goalBox).listenable(),

@@ -27,10 +27,6 @@ void main() async {
   Hive.box(Boxes.dailyGoalBox).values.cast<DailyGoal>().forEach((dailyGoal) {
     dailyGoal.makeGoal();
   });
-  // for compatibility
-  bool initiated = Hive.box(Boxes.settingBox)
-      .get('compatibility initiated', defaultValue: false);
-  if (!initiated) initiate();
 
   runApp(
     MaterialApp(
@@ -86,7 +82,7 @@ class _FocusPlannerState extends State<FocusPlanner> {
         currentIndex: _currentPage,
         onTap: (index) {
           this._pageController.animateToPage(index,
-              duration: const Duration(milliseconds: 500),
+              duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOut);
         },
         items: <BottomNavigationBarItem>[
@@ -103,22 +99,4 @@ class _FocusPlannerState extends State<FocusPlanner> {
     Hive.close();
     super.dispose();
   }
-}
-
-initiate() {
-  Box categoryBox = Hive.box(Boxes.categoryBox);
-  Hive.box(Boxes.goalBox).values.cast<Goal>().forEach((goal) {
-    bool isInsideCategory;
-    for (Category category in categoryBox.values.cast<Category>()) {
-      isInsideCategory =
-          category.goals.any((categoryGoal) => goal == categoryGoal);
-      if (isInsideCategory) break;
-    }
-    if (!isInsideCategory) goal.delete();
-  });
-  Hive.box(Boxes.goalBox).values.cast<Goal>().forEach((goal) {
-    if (goal.category == null && goal.status != GoalStatus.complete)
-      goal.init();
-  });
-  Hive.box(Boxes.settingBox).put('compatibility initiated', true);
 }

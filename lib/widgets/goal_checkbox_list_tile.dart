@@ -44,18 +44,19 @@ class _GoalCheckBoxListTileState extends State<GoalCheckBoxListTile> {
       onLongPress: () async {
         final position = tileMenuPosition(tileKey.currentContext);
         var result = await showMenu(
-            context: context,
-            position: position,
-            items: <PopupMenuItem>[
-              const PopupMenuItem<String>(
-                child: Text('작업 수정'),
-                value: 'modify',
-              ),
-              const PopupMenuItem<String>(
-                child: Text('작업 나누기'),
-                value: 'split',
-              ),
-            ]);
+          context: context,
+          position: position,
+          items: <PopupMenuItem>[
+            const PopupMenuItem<String>(
+              child: Text('작업 수정'),
+              value: 'modify',
+            ),
+            const PopupMenuItem<String>(
+              child: Text('작업 나누기'),
+              value: 'split',
+            ),
+          ],
+        );
         if (result == 'modify')
           Navigator.push(
               context,
