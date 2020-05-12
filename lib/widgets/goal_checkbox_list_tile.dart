@@ -4,17 +4,19 @@ import 'package:focusplanner/pages/goal_edit_page.dart';
 import 'package:focusplanner/pages/goal_split_page.dart';
 
 class GoalCheckBoxListTile extends StatefulWidget {
-  final Widget secondary;
-  final bool value;
+  final bool secondary;
   final Function onChanged;
   final Goal goal;
+  final List<PopupMenuItem<String>> popupMenuItemList;
+  final Function onResultSelected;
 
   const GoalCheckBoxListTile(
       {Key key,
-      this.secondary,
-      @required this.value,
+      this.secondary = true,
       @required this.onChanged,
-      @required this.goal})
+      @required this.goal,
+      this.popupMenuItemList,
+      this.onResultSelected})
       : super(key: key);
 
   @override
@@ -55,6 +57,7 @@ class _GoalCheckBoxListTileState extends State<GoalCheckBoxListTile> {
               child: Text('작업 나누기'),
               value: 'split',
             ),
+            ...?widget.popupMenuItemList
           ],
         );
         if (result == 'modify')
@@ -71,16 +74,23 @@ class _GoalCheckBoxListTileState extends State<GoalCheckBoxListTile> {
                   builder: (context) => GoalSplitPage(
                         goal: widget.goal,
                       )));
+        else
+          widget.onResultSelected?.call(result);
       },
       child: CheckboxListTile(
-        secondary: widget.secondary,
+        secondary: widget.secondary
+            ? Icon(
+                Goal.getIconData(widget.goal.difficulty),
+                color: widget.goal.getColor(),
+              )
+            : null,
         title: Text(
           "${widget.goal.name} " +
               ((widget.goal.specGoalNum ?? 0) > 0
                   ? "(${widget.goal.specGoalNum}개)"
                   : ""),
         ),
-        value: widget.value,
+        value: widget.goal.checked,
         onChanged: widget.onChanged,
       ),
     );

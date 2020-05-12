@@ -76,15 +76,9 @@ class _CategoryContentState extends State<CategoryContent> {
                   ),
                   child: GoalCheckBoxListTile(
                     goal: goal,
-                    secondary: Icon(
-                      Goal.getIconData(goal.difficulty),
-                      color: goal.getColor(),
-                    ),
-                    value: goal.checked,
                     onChanged: (checkChanged) {
                       setState(() {
-                        goal.checked = checkChanged;
-                        goal.save();
+                        goal.check(checkChanged);
                       });
                       widget.onChecked();
                     },

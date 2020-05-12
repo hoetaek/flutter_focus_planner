@@ -5,6 +5,7 @@ import 'package:focusplanner/screens/difficulty_selector.dart';
 import 'package:focusplanner/widgets/custom_button.dart';
 import 'package:focusplanner/widgets/custom_text_field.dart';
 import 'package:focusplanner/widgets/multiple_text_field_column.dart';
+import 'package:hive/hive.dart';
 
 import '../constants.dart';
 
@@ -24,6 +25,8 @@ class GoalAddPage extends StatefulWidget {
 }
 
 class _GoalAddPageState extends State<GoalAddPage> {
+  Category _currentCategory;
+  final Box categoryBox = Hive.box(Boxes.categoryBox);
   int _difficulty;
   bool _validate = true;
   int specGoalNum = 0;
@@ -34,6 +37,9 @@ class _GoalAddPageState extends State<GoalAddPage> {
 
   @override
   void initState() {
+    _currentCategory = categoryBox.isNotEmpty
+        ? (widget.category == null ? categoryBox.getAt(0) : widget.category)
+        : null;
     _difficulty = widget.difficulty;
     _textController.addListener(() {
       setState(() {
@@ -55,6 +61,47 @@ class _GoalAddPageState extends State<GoalAddPage> {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+              margin: EdgeInsets.only(left: 20.0, right: 20.0, top: 20.0),
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15.0),
+                  border: Border.all(
+                    width: 1.0,
+                    color: Theme.of(context).primaryColor.withGreen(150),
+                  )),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    '카테고리 선택',
+                    style: TextStyle(color: kPrimaryColor),
+                  ),
+                  DropdownButton(
+                    underline: Container(),
+                    hint: _currentCategory == null
+                        ? Text("카테고리를 먼저 만들어주세요.")
+                        : null,
+                    value: _currentCategory,
+                    isExpanded: true,
+                    items: categoryBox.values.cast<Category>().map(
+                      (category) {
+                        return DropdownMenuItem<Category>(
+                          value: category,
+                          child: Text(category.name),
+                        );
+                      },
+                    ).toList(),
+                    onChanged: (Category category) {
+                      setState(() {
+                        _currentCategory = category;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
             CustomTextField(
               padding: EdgeInsets.all(20),
               title: "작업",
@@ -142,9 +189,9 @@ class _GoalAddPageState extends State<GoalAddPage> {
                   difficulty: _difficulty,
                   status: widget.goalStatus,
                 );
-                goal.init(categoryToBeAdded: widget.category);
+                goal.init(categoryToBeAdded: _currentCategory);
                 goal.setSpecificGoals(goalNameList);
-                widget.category.addGoal(goal);
+                _currentCategory.addGoal(goal);
                 Navigator.pop(context);
               },
             )

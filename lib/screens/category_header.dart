@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:focusplanner/models/category.dart';
 import 'package:focusplanner/models/goal.dart';
@@ -79,18 +80,22 @@ class CategoryHeader extends StatelessWidget {
             FittedBox(
               child: ActionsIconButton(
                 buttonState: buttonState,
-                addWidget: IconButton(
-                  icon: Icon(Icons.add),
-                  color: category.getTextColor(),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => GoalAddPage(
-                                  category: category,
-                                  goalStatus: GoalStatus.onWork,
-                                )));
-                  },
+                addWidgetList: Row(
+                  children: <Widget>[
+                    IconButton(
+                      icon: Icon(Icons.add),
+                      color: category.getTextColor(),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => GoalAddPage(
+                                      category: category,
+                                      goalStatus: GoalStatus.onWork,
+                                    )));
+                      },
+                    )
+                  ],
                 ),
                 modifyWidgets: <Widget>[
                   IconButton(

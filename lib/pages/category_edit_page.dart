@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:focusplanner/models/category.dart';
 import 'package:focusplanner/widgets/color_picker.dart';
@@ -53,14 +56,73 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
               });
             },
           ),
-          CustomButton(
-            onPressed: () {
-              if (_textController.text.isNotEmpty)
-                widget.category.name = _textController.text;
-              widget.category.colorIndex = _currentColorIndex;
-              widget.category.save();
-              Navigator.pop(context);
-            },
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              CustomButton(
+                title: "삭제",
+                color: Colors.red[800],
+                onPressed: () {
+                  if (Platform.isAndroid)
+                    showDialog(
+                        context: context,
+                        builder: (dialogContext) {
+                          return AlertDialog(
+                            title: Text('카테고리 삭제 확인'),
+                            content:
+                                Text('${widget.category.name}을/를 정말 삭제하시겠습니까?'),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: Text('취소'),
+                                onPressed: () => Navigator.pop(dialogContext),
+                              ),
+                              FlatButton(
+                                child: Text('확인'),
+                                onPressed: () {
+                                  widget.category.delete();
+                                  Navigator.pop(dialogContext);
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ],
+                          );
+                        });
+                  else
+                    showCupertinoDialog(
+                        context: context,
+                        builder: (dialogContext) {
+                          return CupertinoAlertDialog(
+                            title: Text('카테고리 삭제 확인'),
+                            content:
+                                Text('${widget.category.name}을/를 정말 삭제하시겠습니까?'),
+                            actions: <Widget>[
+                              CupertinoDialogAction(
+                                child: Text('취소'),
+                                onPressed: () => Navigator.pop(dialogContext),
+                              ),
+                              CupertinoDialogAction(
+                                child: Text('확인'),
+                                onPressed: () {
+                                  widget.category.delete();
+                                  Navigator.pop(dialogContext);
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ],
+                          );
+                        });
+                },
+              ),
+              CustomButton(
+                onPressed: () {
+                  if (_textController.text.isNotEmpty)
+                    widget.category.name = _textController.text;
+                  widget.category.colorIndex = _currentColorIndex;
+                  widget.category.save();
+                  Navigator.pop(context);
+                },
+              )
+            ],
           ),
         ],
       ),

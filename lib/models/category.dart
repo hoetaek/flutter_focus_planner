@@ -101,6 +101,18 @@ class Category extends HiveObject {
         .forEach((work) {
       work.delete();
     });
+
+    List<Category> categoryList =
+        Hive.box(Boxes.categoryBox).values.cast<Category>().toList();
+    categoryList.sort((a, b) => a.priority.compareTo(b.priority));
+
+    int index = 0;
+    categoryList.where((category) => category != this).forEach((category) {
+      category.changePriority(index);
+      category.save();
+      index++;
+    });
+
     return super.delete();
   }
 

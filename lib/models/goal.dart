@@ -173,6 +173,11 @@ class Goal extends HiveObject {
     }
   }
 
+  check(bool checked) {
+    this.checked = checked;
+    save();
+  }
+
   uncheck() {
     bool categoryExists = Hive.box(Boxes.categoryBox)
         .values

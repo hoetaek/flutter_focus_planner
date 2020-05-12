@@ -5,16 +5,17 @@ import 'package:focusplanner/models/category.dart';
 import 'package:focusplanner/models/goal.dart';
 import 'package:focusplanner/models/work.dart';
 import 'package:focusplanner/screens/category_card.dart';
-import 'package:focusplanner/screens/category_name_list.dart';
 import 'package:focusplanner/screens/daily_goal_view.dart';
 import 'package:focusplanner/widgets/actions_icon_button.dart';
 import 'package:focusplanner/widgets/column_builder.dart';
+import 'package:focusplanner/widgets/goal_checkbox_list_tile.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'category_add_page.dart';
 import 'daily_goal_add_page.dart';
+import 'goal_add_page.dart';
 
 part 'archive_page.g.dart';
 
@@ -51,7 +52,9 @@ class ArchivePage extends StatefulWidget {
 class _ArchivePageState extends State<ArchivePage> {
   List<Category> categoryReorderedList;
   List<Category> selectedCategories = List();
-  ButtonState _buttonState = ButtonState.add;
+  ButtonState _categoryModeButtonState = ButtonState.add;
+  ButtonState _workListModeButtonState = ButtonState.add;
+  Box goalBox = Hive.box(Boxes.goalBox);
   Mode _currentMode;
 
   sortCategoryList(Box categoryBox) {
@@ -59,9 +62,15 @@ class _ArchivePageState extends State<ArchivePage> {
     categoryReorderedList.sort((a, b) => a.priority.compareTo(b.priority));
   }
 
-  void actionDone() {
+  void onCategoryActionDone() {
     setState(() {
-      _buttonState = ButtonState.add;
+      _categoryModeButtonState = ButtonState.add;
+    });
+  }
+
+  onWorklistActionDone() {
+    setState(() {
+      _workListModeButtonState = ButtonState.add;
     });
   }
 
@@ -113,7 +122,7 @@ class _ArchivePageState extends State<ArchivePage> {
         actions: <Widget>[
           if (_currentMode == Mode.Category)
             ActionsIconButton(
-              buttonState: _buttonState,
+              buttonState: _categoryModeButtonState,
               modifyWidgets: <Widget>[
                 IconButton(
                   icon: Icon(Icons.delete),
@@ -122,8 +131,59 @@ class _ArchivePageState extends State<ArchivePage> {
                       category.delete();
                     });
                     selectedCategories.clear();
-                    actionDone();
+                    onCategoryActionDone();
                     sortCategoryList(Hive.box(Boxes.categoryBox));
+                  },
+                ),
+              ],
+            ),
+          if (_currentMode == Mode.WorkList)
+            ActionsIconButton(
+              buttonState: _workListModeButtonState,
+              addWidget: IconButton(
+                icon: Icon(Icons.add),
+                color: Colors.white,
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => GoalAddPage(
+                                category: null,
+                                goalStatus: GoalStatus.onWork,
+                              )));
+                },
+              ),
+              modifyWidgets: <Widget>[
+                IconButton(
+                  icon: Icon(
+                    Icons.delete,
+//                    color: category.getTextColor(),
+                  ),
+                  onPressed: () {
+                    List<Goal> goalCheckedList =
+                        goalBox.values.cast<Goal>().where((goal) {
+                      return goal.status == GoalStatus.onWork && goal.checked;
+                    }).toList();
+                    goalCheckedList.forEach((Goal goal) {
+                      goal.delete();
+                    });
+                    onWorklistActionDone();
+                  },
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.done,
+//                    color: category.getTextColor(),
+                  ),
+                  onPressed: () {
+                    List<Goal> goalCheckedList =
+                        goalBox.values.cast<Goal>().where((goal) {
+                      return goal.status == GoalStatus.onWork && goal.checked;
+                    }).toList();
+                    goalCheckedList.forEach((Goal goal) {
+                      goal.complete();
+                    });
+                    onWorklistActionDone();
                   },
                 ),
               ],
@@ -161,11 +221,26 @@ class _ArchivePageState extends State<ArchivePage> {
               builder: (context, Box workBox, widget) {
                 List<Work> workList = workBox.values.cast<Work>().toList();
                 workList.sort((a, b) => a.compareId.compareTo(b.compareId));
+                List<Goal> goalList = [];
+                workList.forEach((work) {
+                  goalList.addAll(work.goals);
+                });
+
                 switch (_currentMode) {
                   case Mode.Category:
                     return _buildCategoryView(categoryBox, workList);
                   case Mode.WorkList:
-                    return WorkListView(workList: workList);
+                    return WorkListView(
+                        focusWork: workList.isNotEmpty ? workList.first : null,
+                        goalList: goalList,
+                        onCheckChanged: (bool anyChecked) {
+                          setState(() {
+                            if (anyChecked == true)
+                              _workListModeButtonState = ButtonState.modify;
+                            else
+                              _workListModeButtonState = ButtonState.add;
+                          });
+                        });
                   case Mode.Daily:
                     return DailyGoalView();
                   default:
@@ -182,17 +257,9 @@ class _ArchivePageState extends State<ArchivePage> {
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
-          CategoryNameList(
-              categoryList: categoryReorderedList,
-              selectedCategories: selectedCategories,
-              onSelectChanged: () {
-                setState(() {
-                  _buttonState = selectedCategories.isNotEmpty
-                      ? ButtonState.modify
-                      : ButtonState.add;
-                });
-              }),
-          SizedBox(height: 10),
+          SizedBox(
+            height: 10.0,
+          ),
           ColumnBuilder(
             itemCount: categoryBox.length,
             itemBuilder: (context, index) {
@@ -209,17 +276,85 @@ class _ArchivePageState extends State<ArchivePage> {
   }
 }
 
-class WorkListView extends StatelessWidget {
-  final List<Work> workList;
-  WorkListView({this.workList});
+class WorkListView extends StatefulWidget {
+  final List<Goal> goalList;
+  final Work focusWork;
+  final Function onCheckChanged;
 
+  WorkListView({this.goalList, this.onCheckChanged, this.focusWork});
+
+  @override
+  _WorkListViewState createState() => _WorkListViewState();
+}
+
+class _WorkListViewState extends State<WorkListView> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
         shrinkWrap: true,
-        itemCount: workList.length,
+        itemCount: widget.goalList.length,
         itemBuilder: (context, index) {
-          return WorkCard(workList[index]);
+          Goal goal = widget.goalList[index];
+          return Slidable(
+              actionPane: SlidableDrawerActionPane(),
+              actionExtentRatio: 0.15,
+              actions: <Widget>[
+                if (goal.difficulty < 5)
+                  IconSlideAction(
+                    caption: 'Level',
+                    color: Colors.blue,
+                    icon: Icons.arrow_upward,
+                    onTap: () {
+                      goal.levelUp();
+                    },
+                  ),
+                if (goal.difficulty > 1)
+                  IconSlideAction(
+                    caption: 'Level',
+                    color: Colors.redAccent,
+                    icon: Icons.arrow_downward,
+                    onTap: () {
+                      goal.levelDown();
+                    },
+                  ),
+              ],
+              child: Container(
+                decoration: BoxDecoration(
+                  color: widget.focusWork?.isWorkGoal(goal) ?? false
+                      ? Colors.grey[300]
+                      : null,
+                ),
+                child: GoalCheckBoxListTile(
+                  popupMenuItemList: <PopupMenuItem<String>>[
+                    if (goal.category.priority > 0)
+                      const PopupMenuItem<String>(
+                        child: Text('우선순위 올리기'),
+                        value: 'priority up',
+                      ),
+                    if (goal.category.priority <
+                        Hive.box(Boxes.categoryBox).length - 1)
+                      const PopupMenuItem<String>(
+                        child: Text('우선순위 내리기'),
+                        value: 'priority down',
+                      ),
+                  ],
+                  onResultSelected: (result) {
+                    if (result == 'priority up') {
+                      goal.category.priorityUp();
+                    } else if (result == 'priority down') {
+                      goal.category.priorityDown();
+                    }
+                  },
+                  goal: goal,
+                  onChanged: (checked) {
+                    setState(() {
+                      goal.check(checked);
+                    });
+                    widget.onCheckChanged(
+                        widget.goalList.any((goal) => goal.checked));
+                  },
+                ),
+              ));
         });
   }
 }
@@ -304,35 +439,7 @@ class WorkCard extends StatelessWidget {
               itemCount: work.goals.length,
               itemBuilder: (context, index) {
                 Goal goal = work.goals[index];
-                return Slidable(
-                    actionPane: SlidableDrawerActionPane(),
-                    actionExtentRatio: 0.15,
-                    actions: <Widget>[
-                      if (goal.difficulty < 5)
-                        IconSlideAction(
-                          caption: 'Level',
-                          color: Colors.blue,
-                          icon: Icons.arrow_upward,
-                          onTap: () {
-                            goal.levelUp();
-                          },
-                        ),
-                      if (goal.difficulty > 1)
-                        IconSlideAction(
-                          caption: 'Level',
-                          color: Colors.redAccent,
-                          icon: Icons.arrow_downward,
-                          onTap: () {
-                            goal.levelDown();
-                          },
-                        ),
-                    ],
-                    child: ListTile(
-                        leading: Icon(
-                          Goal.getIconData(work.difficulty),
-                          color: Goal.getDifficultyColor(work.difficulty),
-                        ),
-                        title: Text(goal.name)));
+                return Container();
               })
         ],
       ),

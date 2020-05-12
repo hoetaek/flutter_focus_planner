@@ -22,6 +22,7 @@ class _FocusContentState extends State<FocusContent> {
   Widget build(BuildContext context) {
     return widget.goals != null
         ? ListView.builder(
+            shrinkWrap: true,
             itemCount: widget.goals.length,
             itemBuilder: (context, index) {
               Goal goal = widget.goals[index];
@@ -56,7 +57,7 @@ class _FocusContentState extends State<FocusContent> {
                     caption:
                         widget.focusMode == FocusMode.Work ? '대기작업' : '몰입작업',
                     color: widget.focusMode == FocusMode.Work
-                        ? Colors.indigo
+                        ? Colors.teal[600]
                         : kPrimaryColor,
                     foregroundColor: Colors.white,
                     icon: widget.focusMode == FocusMode.Work
@@ -90,11 +91,10 @@ class _FocusContentState extends State<FocusContent> {
                 ),
                 child: GoalCheckBoxListTile(
                   goal: goal,
-                  value: goal.checked,
+                  secondary: false,
                   onChanged: (change) {
                     setState(() {
-                      goal.checked = change;
-                      goal.save();
+                      goal.check(change);
                     });
                     widget.onChecked();
                   },

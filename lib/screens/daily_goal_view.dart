@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:focusplanner/constants.dart';
 import 'package:focusplanner/models/daily_goal.dart';
@@ -64,6 +67,57 @@ class DailyGoalCard extends StatelessWidget {
                       child: Container(),
                     ),
                     IconButton(
+                      icon: Icon(Icons.delete),
+                      color: dailyGoal.category.getTextColor(),
+                      onPressed: () async {
+                        if (Platform.isAndroid)
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: Text('삭제 확인'),
+                                  content: Text('정말 삭제하시겠습니까?'),
+                                  actions: <Widget>[
+                                    FlatButton(
+                                      child: Text('취소'),
+                                      onPressed: () => Navigator.pop(context),
+                                    ),
+                                    FlatButton(
+                                      child: Text('확인'),
+                                      onPressed: () {
+                                        dailyGoal.delete();
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                  ],
+                                );
+                              });
+                        else
+                          showCupertinoDialog(
+                              context: context,
+                              builder: (context) {
+                                return CupertinoAlertDialog(
+                                  title: Text('삭제 확인'),
+                                  content: Text('정말 삭제하시겠습니까?'),
+                                  actions: <Widget>[
+                                    CupertinoDialogAction(
+                                      child: Text('취소'),
+                                      onPressed: () => Navigator.pop(context),
+                                    ),
+                                    CupertinoDialogAction(
+                                      child: Text('확인'),
+                                      onPressed: () {
+                                        dailyGoal.delete();
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                  ],
+                                );
+                              });
+//                        dailyGoal.delete();
+                      },
+                    ),
+                    IconButton(
                       icon: Icon(Icons.edit),
                       color: dailyGoal.category.getTextColor(),
                       onPressed: () {
@@ -72,14 +126,6 @@ class DailyGoalCard extends StatelessWidget {
                             MaterialPageRoute(
                                 builder: (context) =>
                                     DailyGoalEditPage(dailyGoal)));
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.delete),
-                      color: dailyGoal.category.getTextColor(),
-                      onPressed: () {
-                        //todo message alert to check if really want to delete
-                        dailyGoal.delete();
                       },
                     ),
                   ],

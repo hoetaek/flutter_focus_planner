@@ -57,42 +57,22 @@ class _FocusViewState extends State<FocusView> {
       body: ValueListenableBuilder(
           valueListenable: Hive.box(Boxes.goalBox).listenable(),
           builder: (context, Box box, child) {
-            return _focusMode == FocusMode.Work
-                ? FocusContent(
-                    focusMode: _focusMode,
-                    goals: widget.focusWork.goals
-                        .where((goal) => goal.inProgress != false)
-                        .toList(),
-                    onChecked: () {
-                      setState(() {
-                        if (goalIsChecked(widget.focusWork.goals)) {
-                          _buttonState = ButtonState.modify;
-                        } else {
-                          _buttonState = ButtonState.add;
-                        }
-                      });
-                    },
-                    toggleAll: () {
-                      setState(() {
-                        widget.focusWork.goals
-                            .forEach((goal) => goal.toggleInProgress());
-                      });
-                    })
-                : FocusContent(
-                    focusMode: _focusMode,
-                    goals: widget.focusWork.goals
-                        .where((goal) => goal.inProgress == false)
-                        .toList(),
-                    onChecked: () {
-                      setState(() {
-                        if (goalIsChecked(widget.focusWork.difficultyGoals)) {
-                          _buttonState = ButtonState.modify;
-                        } else {
-                          _buttonState = ButtonState.add;
-                        }
-                      });
-                    },
-                  );
+            return Column(
+              children: <Widget>[
+                focusContent(),
+//                if (_focusMode == FocusMode.Work)
+//                  CustomButton(
+//                    title: '시작',
+//                    onPressed: () {
+//                      Navigator.of(context).push(MaterialPageRoute(
+//                          builder: (_) => FocusStopWatchPage(
+//                              focusWorkOnProgress: widget.focusWork.goals
+//                                  .where((goal) => goal.inProgress != false)
+//                                  .toList())));
+//                    },
+//                  )
+              ],
+            );
           }),
       floatingActionButton: FloatingActionButton(
         child: _focusMode == FocusMode.Waiting
@@ -107,5 +87,44 @@ class _FocusViewState extends State<FocusView> {
         },
       ),
     );
+  }
+
+  FocusContent focusContent() {
+    return _focusMode == FocusMode.Work
+        ? FocusContent(
+            focusMode: _focusMode,
+            goals: widget.focusWork.goals
+                .where((goal) => goal.inProgress != false)
+                .toList(),
+            onChecked: () {
+              setState(() {
+                if (goalIsChecked(widget.focusWork.goals)) {
+                  _buttonState = ButtonState.modify;
+                } else {
+                  _buttonState = ButtonState.add;
+                }
+              });
+            },
+            toggleAll: () {
+              setState(() {
+                widget.focusWork.goals
+                    .forEach((goal) => goal.toggleInProgress());
+              });
+            })
+        : FocusContent(
+            focusMode: _focusMode,
+            goals: widget.focusWork.goals
+                .where((goal) => goal.inProgress == false)
+                .toList(),
+            onChecked: () {
+              setState(() {
+                if (goalIsChecked(widget.focusWork.difficultyGoals)) {
+                  _buttonState = ButtonState.modify;
+                } else {
+                  _buttonState = ButtonState.add;
+                }
+              });
+            },
+          );
   }
 }
