@@ -21,7 +21,7 @@ class DefaultFocusView extends StatelessWidget {
                 curve: Curves.easeInOut,
               );
         },
-        child: Text('목록을 추가해주세요.'),
+        child: Text('작업을 추가해주세요.'),
       )),
     );
   }

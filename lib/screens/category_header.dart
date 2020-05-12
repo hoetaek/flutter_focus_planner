@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:focusplanner/models/category.dart';
 import 'package:focusplanner/models/goal.dart';
 import 'package:focusplanner/pages/category_edit_page.dart';
-import 'package:focusplanner/pages/goal_add_page.dart';
 import 'package:focusplanner/widgets/actions_icon_button.dart';
 import 'package:hive/hive.dart';
 
@@ -77,60 +76,44 @@ class CategoryHeader extends StatelessWidget {
             Expanded(
               child: Container(),
             ),
-            FittedBox(
-              child: ActionsIconButton(
-                buttonState: buttonState,
-                addWidgetList: Row(
-                  children: <Widget>[
-                    IconButton(
-                      icon: Icon(Icons.add),
-                      color: category.getTextColor(),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => GoalAddPage(
-                                      category: category,
-                                      goalStatus: GoalStatus.onWork,
-                                    )));
-                      },
-                    )
-                  ],
-                ),
-                modifyWidgets: <Widget>[
-                  IconButton(
-                    icon: Icon(
-                      Icons.delete,
-                      color: category.getTextColor(),
-                    ),
-                    onPressed: () {
-                      List<Goal> goalCheckedList = category.goals.where((goal) {
-                        return goal.checked;
-                      }).toList();
-                      goalCheckedList.forEach((Goal goal) {
-                        goal.delete();
-                      });
-                      onActionDone();
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.done,
-                      color: category.getTextColor(),
-                    ),
-                    onPressed: () {
-                      List<Goal> goalCheckedList = category.goals.where((goal) {
-                        //checked가 된 골만 return 한다.
-                        return goal.checked;
-                      }).toList();
-                      goalCheckedList.forEach((Goal goal) {
-                        goal.complete();
-                      });
-                      onActionDone();
-                    },
-                  ),
-                ],
+            ActionsIconButton(
+              buttonState: buttonState,
+              addWidget: Container(
+                height: 40.0,
               ),
+              modifyWidgets: <Widget>[
+                IconButton(
+                  icon: Icon(
+                    Icons.delete,
+                    color: category.getTextColor(),
+                  ),
+                  onPressed: () {
+                    List<Goal> goalCheckedList = category.goals.where((goal) {
+                      return goal.checked;
+                    }).toList();
+                    goalCheckedList.forEach((Goal goal) {
+                      goal.delete();
+                    });
+                    onActionDone();
+                  },
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.done,
+                    color: category.getTextColor(),
+                  ),
+                  onPressed: () {
+                    List<Goal> goalCheckedList = category.goals.where((goal) {
+                      //checked가 된 골만 return 한다.
+                      return goal.checked;
+                    }).toList();
+                    goalCheckedList.forEach((Goal goal) {
+                      goal.complete();
+                    });
+                    onActionDone();
+                  },
+                ),
+              ],
             ),
           ],
         ),

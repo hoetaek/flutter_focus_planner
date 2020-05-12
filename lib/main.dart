@@ -5,6 +5,8 @@ import 'package:focusplanner/models/work.dart';
 import 'package:focusplanner/pages/archive_page.dart';
 import 'package:focusplanner/pages/complete_page.dart';
 import 'package:focusplanner/pages/focus_page.dart';
+import 'package:focusplanner/pages/work_list_page.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -74,11 +76,13 @@ class _FocusPlannerState extends State<FocusPlanner> {
         },
         children: <Widget>[
           ArchivePage(),
+          WorkListPage(),
           FocusPage(),
           CompletePage(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         currentIndex: _currentPage,
         onTap: (index) {
           this._pageController.animateToPage(index,
@@ -86,7 +90,12 @@ class _FocusPlannerState extends State<FocusPlanner> {
               curve: Curves.easeInOut);
         },
         items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.list), title: Text("목록")),
+          BottomNavigationBarItem(
+              backgroundColor: Colors.orange,
+              icon: Icon(Icons.list),
+              title: Text("목록")),
+          BottomNavigationBarItem(
+              icon: Icon(FontAwesomeIcons.sortNumericDown), title: Text("순서")),
           BottomNavigationBarItem(
               icon: Icon(Icons.center_focus_strong), title: Text("몰입")),
           BottomNavigationBarItem(icon: Icon(Icons.check), title: Text("완료")),

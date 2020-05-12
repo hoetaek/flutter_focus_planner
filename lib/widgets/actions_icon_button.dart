@@ -8,19 +8,18 @@ enum ButtonState {
 class ActionsIconButton extends StatelessWidget {
   final buttonState;
   final Widget addWidget;
-  final Row addWidgetList;
   final List<Widget> modifyWidgets;
 
-  ActionsIconButton(
-      {@required this.buttonState,
-      this.addWidget,
-      @required this.modifyWidgets,
-      this.addWidgetList});
+  ActionsIconButton({
+    @required this.buttonState,
+    this.addWidget,
+    @required this.modifyWidgets,
+  });
 
   @override
   Widget build(BuildContext context) {
     return buttonState == ButtonState.add
-        ? (addWidget ?? addWidgetList ?? Container())
+        ? (addWidget ?? Container())
         : Row(
             children: modifyWidgets,
           );
