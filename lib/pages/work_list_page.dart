@@ -181,6 +181,21 @@ class _WorkListViewState extends State<WorkListView> {
           return Slidable(
               actionPane: SlidableDrawerActionPane(),
               actionExtentRatio: 0.15,
+              secondaryActions: <Widget>[
+                IconSlideAction(
+                  caption: goal.isImportant ? '중요 취소' : '중요 표시',
+                  icon: goal.isImportant ? Icons.star : Icons.star_border,
+                  color: goal.isImportant
+                      ? kPrimaryColor.withRed(200)
+                      : kPrimaryColor,
+                  foregroundColor: goal.isImportant ? null : Colors.white,
+                  onTap: () {
+                    setState(() {
+                      goal.setImportance(goal.isImportant ? false : true);
+                    });
+                  },
+                )
+              ],
               actions: <Widget>[
                 if (goal.difficulty < 5)
                   IconSlideAction(

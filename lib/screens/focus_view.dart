@@ -93,9 +93,7 @@ class _FocusViewState extends State<FocusView> {
     return _focusMode == FocusMode.Work
         ? FocusContent(
             focusMode: _focusMode,
-            goals: widget.focusWork.goals
-                .where((goal) => goal.inProgress != false)
-                .toList(),
+            goals: progressGoals(true),
             onChecked: () {
               setState(() {
                 if (goalIsChecked(widget.focusWork.goals)) {
@@ -113,9 +111,7 @@ class _FocusViewState extends State<FocusView> {
             })
         : FocusContent(
             focusMode: _focusMode,
-            goals: widget.focusWork.goals
-                .where((goal) => goal.inProgress == false)
-                .toList(),
+            goals: progressGoals(false),
             onChecked: () {
               setState(() {
                 if (goalIsChecked(widget.focusWork.difficultyGoals)) {
@@ -126,5 +122,24 @@ class _FocusViewState extends State<FocusView> {
               });
             },
           );
+  }
+
+  List<Goal> progressGoals(bool isInProgress) {
+    List<Goal> goalsOnWork = [];
+    List<Goal> importantGoals = Hive.box(Boxes.goalBox)
+        .values
+        .cast<Goal>()
+        .where((goal) => goal.isImportant && goal.inProgress == isInProgress)
+        .toList();
+
+    goalsOnWork.addAll(widget.focusWork.goals
+        .where((goal) => goal.inProgress == isInProgress));
+    importantGoals.reversed
+        .where((goal) => !goalsOnWork.contains(goal))
+        .forEach((goal) {
+      goalsOnWork.insert(0, goal);
+    });
+
+    return goalsOnWork;
   }
 }

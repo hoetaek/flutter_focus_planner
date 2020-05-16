@@ -25,7 +25,7 @@ class GoalAdapter extends TypeAdapter<Goal> {
       ..date = fields[4] as DateTime
       .._categoryList = (fields[5] as HiveList)?.castHiveList()
       .._workList = (fields[6] as HiveList)?.castHiveList()
-      .._inProgress = fields[7] as bool
+      .._inProgress = (fields[7] as bool) ?? true
       .._specificGoals = (fields[8] as List)?.cast<String>()
       .._important = (fields[9] as bool) ?? false;
   }
