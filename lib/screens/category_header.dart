@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:focusplanner/models/category.dart';
 import 'package:focusplanner/models/goal.dart';
 import 'package:focusplanner/pages/category_edit_page.dart';
+import 'package:focusplanner/pages/goal_add_page.dart';
 import 'package:focusplanner/widgets/actions_icon_button.dart';
 import 'package:hive/hive.dart';
 
 import '../constants.dart';
 
-class CategoryHeader extends StatelessWidget {
+class CategoryHeader extends StatefulWidget {
   final Category category;
   final ButtonState buttonState;
   final Function onActionDone;
@@ -17,17 +18,63 @@ class CategoryHeader extends StatelessWidget {
       {@required this.category, @required this.buttonState, this.onActionDone});
 
   @override
+  _CategoryHeaderState createState() => _CategoryHeaderState();
+}
+
+class _CategoryHeaderState extends State<CategoryHeader> {
+  final tileKey = GlobalKey();
+  var _tapPosition;
+
+  RelativeRect tileMenuPosition(BuildContext context) {
+    final RenderBox overlay = Overlay.of(context).context.findRenderObject();
+    final RelativeRect position = RelativeRect.fromRect(
+        _tapPosition & Size(40, 40), Offset.zero & overlay.size);
+    return position;
+  }
+
+  void _storePosition(TapDownDetails details) {
+    _tapPosition = details.globalPosition;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onLongPress: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => CategoryEditPage(category: category)));
+      key: tileKey,
+      onTapDown: _storePosition,
+      onLongPress: () async {
+        final position = tileMenuPosition(tileKey.currentContext);
+        var result = await showMenu(
+          context: context,
+          position: position,
+          items: <PopupMenuItem>[
+            const PopupMenuItem<String>(
+              child: Text('카테고리 수정'),
+              value: 'modify',
+            ),
+            const PopupMenuItem<String>(
+              child: Text('작업 추가'),
+              value: 'add',
+            ),
+          ],
+        );
+        if (result == 'modify')
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      CategoryEditPage(category: widget.category)));
+        else if (result == 'add')
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => GoalAddPage(
+                        category: widget.category,
+                        goalStatus: GoalStatus.onWork,
+                      )));
       },
       child: Container(
         decoration: BoxDecoration(
-            borderRadius: category.goals
+            borderRadius: widget.category.goals
                     .where((goal) => goal.status == GoalStatus.onWork)
                     .isNotEmpty
                 ? BorderRadius.only(topLeft: kCardRadius, topRight: kCardRadius)
@@ -36,39 +83,40 @@ class CategoryHeader extends StatelessWidget {
                     topRight: kCardRadius,
                     bottomLeft: kCardRadius,
                     bottomRight: kCardRadius),
-            color: category.getColor()),
+            color: widget.category.getColor()),
         child: Row(
           children: <Widget>[
             SizedBox(width: 10.0),
             Row(
               children: <Widget>[
                 Text(
-                  '${category.name}',
+                  '${widget.category.name}',
                   style: TextStyle(
-                      color: category.getTextColor(),
+                      color: widget.category.getTextColor(),
                       fontWeight: FontWeight.bold,
                       fontSize: 20.0,
                       letterSpacing: 1.2),
                 ),
                 SizedBox(width: 10),
-                if (category.priority < Hive.box(Boxes.categoryBox).length - 1)
+                if (widget.category.priority <
+                    Hive.box(Boxes.categoryBox).length - 1)
                   GestureDetector(
                     child: Icon(
                       Icons.keyboard_arrow_down,
-                      color: category.getTextColor(),
+                      color: widget.category.getTextColor(),
                     ),
                     onTap: () {
-                      category.priorityDown();
+                      widget.category.priorityDown();
                     },
                   ),
-                if (category.priority > 0)
+                if (widget.category.priority > 0)
                   GestureDetector(
                     child: Icon(
                       Icons.keyboard_arrow_up,
-                      color: category.getTextColor(),
+                      color: widget.category.getTextColor(),
                     ),
                     onTap: () {
-                      category.priorityUp();
+                      widget.category.priorityUp();
                     },
                   ),
               ],
@@ -77,40 +125,42 @@ class CategoryHeader extends StatelessWidget {
               child: Container(),
             ),
             ActionsIconButton(
-              buttonState: buttonState,
+              buttonState: widget.buttonState,
               addWidget: Container(
-                height: 40.0,
+                height: 48.0,
               ),
               modifyWidgets: <Widget>[
                 IconButton(
                   icon: Icon(
                     Icons.delete,
-                    color: category.getTextColor(),
+                    color: widget.category.getTextColor(),
                   ),
                   onPressed: () {
-                    List<Goal> goalCheckedList = category.goals.where((goal) {
+                    List<Goal> goalCheckedList =
+                        widget.category.goals.where((goal) {
                       return goal.checked;
                     }).toList();
                     goalCheckedList.forEach((Goal goal) {
                       goal.delete();
                     });
-                    onActionDone();
+                    widget.onActionDone();
                   },
                 ),
                 IconButton(
                   icon: Icon(
                     Icons.done,
-                    color: category.getTextColor(),
+                    color: widget.category.getTextColor(),
                   ),
                   onPressed: () {
-                    List<Goal> goalCheckedList = category.goals.where((goal) {
+                    List<Goal> goalCheckedList =
+                        widget.category.goals.where((goal) {
                       //checked가 된 골만 return 한다.
                       return goal.checked;
                     }).toList();
                     goalCheckedList.forEach((Goal goal) {
                       goal.complete();
                     });
-                    onActionDone();
+                    widget.onActionDone();
                   },
                 ),
               ],

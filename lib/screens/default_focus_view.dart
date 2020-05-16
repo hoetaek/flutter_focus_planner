@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:focusplanner/constants.dart';
-import 'package:focusplanner/utils/page_controller_provider.dart';
 
 class DefaultFocusView extends StatelessWidget {
   @override
@@ -12,17 +11,7 @@ class DefaultFocusView extends StatelessWidget {
           style: TextFont.titleFont(),
         ),
       ),
-      body: Center(
-          child: GestureDetector(
-        onTap: () {
-          PageControllerProvider.of(context).pageController.animateToPage(
-                0,
-                duration: Duration(milliseconds: 500),
-                curve: Curves.easeInOut,
-              );
-        },
-        child: Text('작업을 추가해주세요.'),
-      )),
+      body: Center(child: Text('작업을 추가해주세요.')),
     );
   }
 }

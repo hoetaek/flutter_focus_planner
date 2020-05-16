@@ -132,7 +132,8 @@ class _ArchivePageState extends State<ArchivePage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('카테고리', style: TextFont.titleFont()),
+        title: Text('카테고리',
+            style: TextFont.titleFont(fontWeight: FontWeight.bold)),
 
 //        DropdownButton(
 //          value: _currentMode,

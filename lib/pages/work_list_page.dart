@@ -32,8 +32,9 @@ class _WorkListPageState extends State<WorkListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('작업순서',
+        title: Text('작업 순서',
             style: TextFont.titleFont(fontWeight: FontWeight.bold)),
+        centerTitle: true,
         actions: <Widget>[
           ActionsIconButton(
             buttonState: _workListModeButtonState,
