@@ -76,6 +76,10 @@ class Goal extends HiveObject {
 
   setImportance(bool important) {
     _important = important;
+    if (important)
+      name += ' ★';
+    else
+      name = name.substring(0, name.length - 2);
     save();
   }
 

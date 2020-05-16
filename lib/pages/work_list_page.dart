@@ -124,9 +124,10 @@ class _WorkListPageState extends State<WorkListPage> {
         valueListenable: Hive.box(Boxes.categoryBox).listenable(),
         builder: (context, Box categoryBox, widget) {
           return ValueListenableBuilder(
-            valueListenable: Hive.box(Boxes.workBox).listenable(),
-            builder: (context, Box workBox, widget) {
-              List<Work> workList = workBox.values.cast<Work>().toList();
+            valueListenable: Hive.box(Boxes.goalBox).listenable(),
+            builder: (context, Box goalBox, widget) {
+              List<Work> workList =
+                  Hive.box(Boxes.workBox).values.cast<Work>().toList();
               workList.sort((a, b) => a.compareId.compareTo(b.compareId));
               List<Goal> goalList = [];
               workList.forEach((work) {
@@ -169,7 +170,14 @@ class _WorkListViewState extends State<WorkListView> {
         shrinkWrap: true,
         itemCount: widget.goalList.length,
         itemBuilder: (context, index) {
-          Goal goal = widget.goalList[index];
+          List<Goal> _children = [];
+          widget.goalList
+              .where((goal) => goal.isImportant)
+              .forEach((goal) => _children.add(goal));
+          widget.goalList
+              .where((goal) => !goal.isImportant)
+              .forEach((goal) => _children.add(goal));
+          Goal goal = _children[index];
           return Slidable(
               actionPane: SlidableDrawerActionPane(),
               actionExtentRatio: 0.15,
