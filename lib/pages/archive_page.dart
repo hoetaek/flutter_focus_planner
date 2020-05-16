@@ -6,6 +6,7 @@ import 'package:focusplanner/constants.dart';
 import 'package:focusplanner/models/category.dart';
 import 'package:focusplanner/models/work.dart';
 import 'package:focusplanner/screens/category_card.dart';
+import 'package:focusplanner/screens/important_category_card.dart';
 import 'package:focusplanner/widgets/column_builder.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -236,9 +237,10 @@ class _ArchivePageState extends State<ArchivePage> {
           sortCategoryList(categoryBox);
 
           return ValueListenableBuilder(
-              valueListenable: Hive.box(Boxes.workBox).listenable(),
-              builder: (context, Box workBox, widget) {
-                List<Work> workList = workBox.values.cast<Work>().toList();
+              valueListenable: Hive.box(Boxes.goalBox).listenable(),
+              builder: (context, Box goalBox, widget) {
+                List<Work> workList =
+                    Hive.box(Boxes.workBox).values.cast<Work>().toList();
                 workList.sort((a, b) => a.compareId.compareTo(b.compareId));
 //                List<Goal> goalList = [];
 //                workList.forEach((work) {
@@ -281,6 +283,10 @@ class _ArchivePageState extends State<ArchivePage> {
           SizedBox(
             height: 10.0,
           ),
+          _buildImportantCategory(workList: workList),
+          SizedBox(
+            height: 10.0,
+          ),
           ColumnBuilder(
             itemCount: categoryBox.length,
             itemBuilder: (context, index) {
@@ -294,6 +300,25 @@ class _ArchivePageState extends State<ArchivePage> {
         ],
       ),
     );
+  }
+
+  _buildImportantCategory({@required List<Work> workList}) {
+    Box settingBox = Hive.box(Boxes.settingBox);
+    var name = settingBox.get('impCategoryName', defaultValue: '중요');
+    Category category = Category(name: name);
+    category.init(0, isSpecialCategory: true);
+    workList.forEach((work) {
+      work.goals.where((goal) => goal.isImportant).forEach((goal) {
+        category.addGoalToImpCategory(goal);
+      });
+    });
+
+    return category.goals.isNotEmpty
+        ? ImportantCategoryCard(
+            category: category,
+            workList: workList,
+          )
+        : Container();
   }
 }
 

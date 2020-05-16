@@ -26,13 +26,14 @@ class GoalAdapter extends TypeAdapter<Goal> {
       .._categoryList = (fields[5] as HiveList)?.castHiveList()
       .._workList = (fields[6] as HiveList)?.castHiveList()
       .._inProgress = fields[7] as bool
-      .._specificGoals = (fields[8] as List)?.cast<String>();
+      .._specificGoals = (fields[8] as List)?.cast<String>()
+      .._important = (fields[9] as bool) ?? false;
   }
 
   @override
   void write(BinaryWriter writer, Goal obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -50,6 +51,8 @@ class GoalAdapter extends TypeAdapter<Goal> {
       ..writeByte(7)
       ..write(obj._inProgress)
       ..writeByte(8)
-      ..write(obj._specificGoals);
+      ..write(obj._specificGoals)
+      ..writeByte(9)
+      ..write(obj._important);
   }
 }

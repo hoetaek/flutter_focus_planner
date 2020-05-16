@@ -24,11 +24,14 @@ class Category extends HiveObject {
 
   List<Goal> get goals => List.unmodifiable(_goals);
 
-  init(int selectedColorIndex) {
-    _goals = HiveList(Hive.box(Boxes.goalBox));
-    priority = Hive.box(Boxes.categoryBox).length;
+  init(int selectedColorIndex, {isSpecialCategory = false}) {
     colorIndex = selectedColorIndex;
-    Hive.box(Boxes.categoryBox).add(this);
+    _goals = HiveList(Hive.box(Boxes.goalBox));
+
+    if (!isSpecialCategory) {
+      priority = Hive.box(Boxes.categoryBox).length;
+      Hive.box(Boxes.categoryBox).add(this);
+    }
   }
 
   void changePriority(int index) {
@@ -72,6 +75,10 @@ class Category extends HiveObject {
   void addGoal(Goal goal) {
     _goals.add(goal);
     save();
+  }
+
+  void addGoalToImpCategory(Goal goal) {
+    _goals.add(goal);
   }
 
   Color getColor() {

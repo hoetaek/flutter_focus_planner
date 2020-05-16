@@ -29,6 +29,8 @@ class Goal extends HiveObject {
   bool _inProgress;
   @HiveField(8)
   List<String> _specificGoals;
+  @HiveField(9)
+  bool _important;
 
   Goal({
     @required this.name,
@@ -55,6 +57,7 @@ class Goal extends HiveObject {
   List<String> get specificGoals => _specificGoals;
   int get level => difficulty;
   int get specGoalNum => _specificGoals?.length;
+  bool get isImportant => _important ?? false;
 
   emptySpecGoals() {
     _specificGoals = List();
@@ -68,6 +71,11 @@ class Goal extends HiveObject {
 
   setDifficulty(int difficultyData) {
     difficulty = difficultyData;
+    save();
+  }
+
+  setImportance(bool important) {
+    _important = important;
     save();
   }
 

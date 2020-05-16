@@ -23,7 +23,7 @@ class _CategoryContentState extends State<CategoryContent> {
   @override
   Widget build(BuildContext context) {
     List<Goal> onWorkGoals = widget.category.goals.where((Goal goal) {
-      return goal.status == GoalStatus.onWork;
+      return goal.status == GoalStatus.onWork && !goal.isImportant;
     }).toList();
 
     onWorkGoals.sort((a, b) => a.difficulty.compareTo(b.difficulty));
@@ -38,6 +38,18 @@ class _CategoryContentState extends State<CategoryContent> {
               return Slidable(
                 actionExtentRatio: 0.15,
                 actionPane: SlidableDrawerActionPane(),
+                secondaryActions: <Widget>[
+                  IconSlideAction(
+                    caption: '중요 표시',
+                    icon: Icons.star_border,
+                    color: kPrimaryColor,
+                    onTap: () {
+                      setState(() {
+                        goal.setImportance(true);
+                      });
+                    },
+                  ),
+                ],
                 actions: <Widget>[
                   if (goal.difficulty < 5)
                     IconSlideAction(

@@ -75,7 +75,8 @@ class _CategoryHeaderState extends State<CategoryHeader> {
       child: Container(
         decoration: BoxDecoration(
             borderRadius: widget.category.goals
-                    .where((goal) => goal.status == GoalStatus.onWork)
+                    .where((goal) =>
+                        goal.status == GoalStatus.onWork && !goal.isImportant)
                     .isNotEmpty
                 ? BorderRadius.only(topLeft: kCardRadius, topRight: kCardRadius)
                 : BorderRadius.only(
@@ -98,6 +99,16 @@ class _CategoryHeaderState extends State<CategoryHeader> {
                       letterSpacing: 1.2),
                 ),
                 SizedBox(width: 10),
+                if (widget.category.priority > 0)
+                  GestureDetector(
+                    child: Icon(
+                      Icons.keyboard_arrow_up,
+                      color: widget.category.getTextColor(),
+                    ),
+                    onTap: () {
+                      widget.category.priorityUp();
+                    },
+                  ),
                 if (widget.category.priority <
                     Hive.box(Boxes.categoryBox).length - 1)
                   GestureDetector(
@@ -107,16 +118,6 @@ class _CategoryHeaderState extends State<CategoryHeader> {
                     ),
                     onTap: () {
                       widget.category.priorityDown();
-                    },
-                  ),
-                if (widget.category.priority > 0)
-                  GestureDetector(
-                    child: Icon(
-                      Icons.keyboard_arrow_up,
-                      color: widget.category.getTextColor(),
-                    ),
-                    onTap: () {
-                      widget.category.priorityUp();
                     },
                   ),
               ],
