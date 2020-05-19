@@ -46,6 +46,8 @@ class _FocusViewState extends State<FocusView> {
       appBar: FocusAppBar(
         focusMode: _focusMode,
         focusWork: widget.focusWork,
+        progressGoals: progressGoals(true),
+        waitingGoals: progressGoals(false),
         buttonState: _buttonState,
         actionDone: () {
           setState(() {
@@ -83,6 +85,21 @@ class _FocusViewState extends State<FocusView> {
             _focusMode = _focusMode == FocusMode.Waiting
                 ? FocusMode.Work
                 : FocusMode.Waiting;
+            if (_focusMode == FocusMode.Work) {
+              bool isProgressGoalsChecked =
+                  progressGoals(true).any((goal) => goal.checked == true);
+              if (isProgressGoalsChecked)
+                _buttonState = ButtonState.modify;
+              else
+                _buttonState = ButtonState.add;
+            } else {
+              bool isProgressGoalsChecked =
+                  progressGoals(false).any((goal) => goal.checked == true);
+              if (isProgressGoalsChecked)
+                _buttonState = ButtonState.modify;
+              else
+                _buttonState = ButtonState.add;
+            }
           });
         },
       ),
@@ -96,7 +113,7 @@ class _FocusViewState extends State<FocusView> {
             goals: progressGoals(true),
             onChecked: () {
               setState(() {
-                if (goalIsChecked(widget.focusWork.goals)) {
+                if (goalIsChecked(progressGoals(true))) {
                   _buttonState = ButtonState.modify;
                 } else {
                   _buttonState = ButtonState.add;
@@ -113,7 +130,7 @@ class _FocusViewState extends State<FocusView> {
             goals: progressGoals(false),
             onChecked: () {
               setState(() {
-                if (goalIsChecked(widget.focusWork.difficultyGoals)) {
+                if (goalIsChecked(progressGoals(false))) {
                   _buttonState = ButtonState.modify;
                 } else {
                   _buttonState = ButtonState.add;
@@ -128,12 +145,15 @@ class _FocusViewState extends State<FocusView> {
     List<Goal> importantGoals =
         Hive.box(Boxes.goalBox).values.cast<Goal>().where((goal) {
       if (goal.inProgress == null) goal.setProgress = true;
-      return goal.isImportant && (goal.inProgress == isInProgress);
+      return goal.status == GoalStatus.onWork &&
+          goal.isImportant &&
+          (goal.inProgress == isInProgress);
     }).toList();
 
     goalsOnWork.addAll(widget.focusWork.goals.where((goal) {
       if (goal.inProgress == null) goal.setProgress = true;
-      return goal.inProgress == isInProgress;
+      return goal.status == GoalStatus.onWork &&
+          goal.inProgress == isInProgress;
     }));
     importantGoals.reversed
         .where((goal) => !goalsOnWork.contains(goal))

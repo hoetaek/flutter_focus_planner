@@ -12,6 +12,8 @@ class FocusAppBar extends StatelessWidget implements PreferredSize {
   final Function actionDone;
   final Work focusWork;
   final FocusMode focusMode;
+  final List<Goal> progressGoals;
+  final List<Goal> waitingGoals;
 
   FocusAppBar({
     Key key,
@@ -19,6 +21,8 @@ class FocusAppBar extends StatelessWidget implements PreferredSize {
     @required this.buttonState,
     @required this.actionDone,
     @required this.focusMode,
+    this.progressGoals,
+    this.waitingGoals,
   })  : preferredSize = Size.fromHeight(kToolbarHeight),
         super(key: key);
 
@@ -64,39 +68,74 @@ class FocusAppBar extends StatelessWidget implements PreferredSize {
             IconButton(
               icon: Icon(Icons.delete),
               onPressed: () {
-                List<Goal> goalCheckedList;
+//                List<Goal> goalCheckedList;
+                if (focusMode == FocusMode.Work) {
+                  List<Goal> clonedProgressGoals = []..addAll(progressGoals);
 
-                goalCheckedList = focusWork.goals.where((goal) {
-                  //checked가 된 골만 return 한다.
-                  return goal.checked;
-                }).toList();
+                  clonedProgressGoals
+                      .where((goal) => goal.checked == true)
+                      .forEach((goal) {
+                    goal.delete();
+                    progressGoals.remove(goal);
+                  });
+                } else {
+                  waitingGoals
+                      .where((goal) => goal.checked == true)
+                      .forEach((goal) {
+                    goal.delete();
+                  });
+                }
 
-                goalCheckedList.forEach((Goal goal) {
-                  goal.delete();
-                });
+//                goalCheckedList = focusWork.goals.where((goal) {
+                //checked가 된 골만 return 한다.
+//                  return goal.checked;
+//                }).toList();
+//
+//                goalCheckedList.forEach((Goal goal) {
+//                  goal.delete();
+//                });
+//                importantProgressCheckedGoals().forEach((goal) {
+//                  goal.delete();
+//                });
+
+                toggleWaitingGoals();
                 actionDone();
               },
             ),
             IconButton(
               icon: Icon(Icons.done),
               onPressed: () {
-                List<Goal> goalCheckedList;
+//                List<Goal> goalCheckedList;
 
-                goalCheckedList = focusWork.goals.where((goal) {
-                  //checked가 된 골만 return 한다.
-                  return goal.checked;
-                }).toList();
+//                goalCheckedList = focusWork.goals.where((goal) {
+                //checked가 된 골만 return 한다.
+//                  return goal.checked;
+//                }).toList();
 
-                goalCheckedList.forEach((Goal goal) {
-                  goal.complete();
-                });
+//                goalCheckedList.forEach((Goal goal) {
+//                  goal.complete();
+//                });
 
-                bool progressExists =
-                    focusWork.goals.any((goal) => goal.inProgress != false);
-                if (!progressExists)
-                  focusWork.goals.forEach((goal) {
-                    goal.toggleInProgress();
+                if (focusMode == FocusMode.Work) {
+//                  progressGoals
+                  List<Goal> clonedProgressGoals = []..addAll(progressGoals);
+
+                  clonedProgressGoals
+                      .where((goal) => goal.checked == true)
+                      .forEach((goal) {
+                    print(goal.status);
+                    goal.complete();
+                    progressGoals.remove(goal);
                   });
+                } else {
+                  waitingGoals
+                      .where((goal) => goal.checked == true)
+                      .forEach((goal) {
+                    goal.complete();
+                  });
+                }
+
+                toggleWaitingGoals();
                 actionDone();
               },
             ),
@@ -104,6 +143,14 @@ class FocusAppBar extends StatelessWidget implements PreferredSize {
         )
       ],
     );
+  }
+
+  void toggleWaitingGoals() {
+    print("progress exists? $progressGoals");
+    if (progressGoals.isEmpty)
+      waitingGoals.forEach((goal) {
+        goal.toggleInProgress();
+      });
   }
 
   @override

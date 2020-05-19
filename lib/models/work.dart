@@ -52,6 +52,11 @@ class Work extends HiveObject {
     save();
   }
 
+  removeCompleteGoals() {
+    _goals.removeWhere((goal) => goal.status == GoalStatus.complete);
+    save();
+  }
+
   @override
   String toString() {
     return "work: categoryInfo $category difficultyInfo $difficulty goalListInfo ${_goals.toString()}";

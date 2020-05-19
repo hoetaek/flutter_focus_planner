@@ -116,7 +116,8 @@ class Goal extends HiveObject {
     checked = false;
     setDate(DateTime.now());
     work.removeGoal(this);
-    if (work != null && work.goals.every((goal) => goal == this)) work.delete();
+    work.removeCompleteGoals();
+    if (work != null && work.goals.isEmpty) work.delete();
     save();
   }
 

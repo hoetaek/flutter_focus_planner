@@ -242,6 +242,7 @@ class _ArchivePageState extends State<ArchivePage> {
                 List<Work> workList =
                     Hive.box(Boxes.workBox).values.cast<Work>().toList();
                 workList.sort((a, b) => a.compareId.compareTo(b.compareId));
+
 //                List<Goal> goalList = [];
 //                workList.forEach((work) {
 //                  goalList.addAll(work.goals);
