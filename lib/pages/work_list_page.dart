@@ -22,13 +22,23 @@ class WorkListPage extends StatefulWidget {
 }
 
 class _WorkListPageState extends State<WorkListPage> {
-  ButtonState _workListModeButtonState = ButtonState.add;
+  ButtonState _workListModeButtonState;
   Box goalBox = Hive.box(Boxes.goalBox);
 
   onWorklistActionDone() {
     setState(() {
       _workListModeButtonState = ButtonState.add;
     });
+  }
+
+  @override
+  void initState() {
+    _workListModeButtonState = goalBox.values
+            .cast<Goal>()
+            .any((goal) => goal.status == GoalStatus.onWork && goal.checked)
+        ? ButtonState.modify
+        : ButtonState.add;
+    super.initState();
   }
 
   @override

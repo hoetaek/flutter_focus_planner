@@ -58,7 +58,6 @@ class _CompletePageState extends State<CompletePage> {
 
   Widget _buildDateGoalsColumn(Box goalBox) {
     List<Widget> _children = [];
-    //todo 완료 취소할 수 있도록
 
     List<DateTime> uniqueGoalDateList;
     uniqueGoalDateList = goalBox.values
