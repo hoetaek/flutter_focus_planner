@@ -105,8 +105,7 @@ class _FocusViewState extends State<FocusView> {
             },
             toggleAll: () {
               setState(() {
-                widget.focusWork.goals
-                    .forEach((goal) => goal.toggleInProgress());
+                progressGoals(false).forEach((goal) => goal.toggleInProgress());
               });
             })
         : FocusContent(
@@ -126,14 +125,16 @@ class _FocusViewState extends State<FocusView> {
 
   List<Goal> progressGoals(bool isInProgress) {
     List<Goal> goalsOnWork = [];
-    List<Goal> importantGoals = Hive.box(Boxes.goalBox)
-        .values
-        .cast<Goal>()
-        .where((goal) => goal.isImportant && goal.inProgress == isInProgress)
-        .toList();
+    List<Goal> importantGoals =
+        Hive.box(Boxes.goalBox).values.cast<Goal>().where((goal) {
+      if (goal.inProgress == null) goal.setProgress = true;
+      return goal.isImportant && (goal.inProgress == isInProgress);
+    }).toList();
 
-    goalsOnWork.addAll(widget.focusWork.goals
-        .where((goal) => goal.inProgress == isInProgress));
+    goalsOnWork.addAll(widget.focusWork.goals.where((goal) {
+      if (goal.inProgress == null) goal.setProgress = true;
+      return goal.inProgress == isInProgress;
+    }));
     importantGoals.reversed
         .where((goal) => !goalsOnWork.contains(goal))
         .forEach((goal) {

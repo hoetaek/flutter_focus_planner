@@ -59,6 +59,23 @@ class Goal extends HiveObject {
   int get specGoalNum => _specificGoals?.length;
   bool get isImportant => _important ?? false;
 
+  static combineGoals(
+    String goalTitle,
+    int goalDifficulty,
+    String goalStatus,
+    Category category,
+    List<String> goalNameList,
+  ) {
+    Goal goal = Goal(
+      name: goalTitle,
+      difficulty: goalDifficulty,
+      status: goalStatus,
+    );
+    goal.init(categoryToBeAdded: category);
+    goal.setSpecificGoals(goalNameList);
+    category.addGoal(goal);
+  }
+
   emptySpecGoals() {
     _specificGoals = List();
     save();
@@ -85,6 +102,11 @@ class Goal extends HiveObject {
 
   toggleInProgress() {
     _inProgress = !(_inProgress ?? true);
+    save();
+  }
+
+  set setProgress(bool progress) {
+    _inProgress = progress;
     save();
   }
 
@@ -190,7 +212,7 @@ class Goal extends HiveObject {
     save();
   }
 
-  uncheck() {
+  void cancelComplete() {
     bool categoryExists = Hive.box(Boxes.categoryBox)
         .values
         .cast<Category>()

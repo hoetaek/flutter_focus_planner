@@ -5,6 +5,8 @@ import 'package:focusplanner/models/goal.dart';
 import 'package:focusplanner/pages/category_edit_page.dart';
 import 'package:focusplanner/pages/goal_add_page.dart';
 import 'package:focusplanner/widgets/actions_icon_button.dart';
+import 'package:focusplanner/widgets/combine_goals_bottomsheet.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hive/hive.dart';
 
 import '../constants.dart';
@@ -136,17 +138,68 @@ class _CategoryHeaderState extends State<CategoryHeader> {
                     Icons.delete,
                     color: widget.category.getTextColor(),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     List<Goal> goalCheckedList =
                         widget.category.goals.where((goal) {
                       return goal.checked;
                     }).toList();
-                    goalCheckedList.forEach((Goal goal) {
-                      goal.delete();
+                    await alertReallyDelete(
+                        context: context,
+                        name: '작업',
+                        onAction: () {
+                          goalCheckedList.forEach((Goal goal) {
+                            goal.delete();
+                          });
+                        });
+                    // uncheck not deleted and checked goals
+                    widget.category.goals.where((goal) {
+                      return goal.checked;
+                    }).forEach((Goal goal) {
+                      goal.check(false);
                     });
                     widget.onActionDone();
                   },
                 ),
+                if (widget.category.goals.where((goal) {
+                      //checked가 된 골만 return 한다.
+                      return goal.checked;
+                    }).length >
+                    1)
+                  IconButton(
+                    icon: Icon(
+                      FontAwesomeIcons.layerGroup,
+                      color: widget.category.getTextColor(),
+                    ),
+                    onPressed: () async {
+                      List<Goal> goalCheckedList =
+                          widget.category.goals.where((goal) {
+                        //checked가 된 골만 return 한다.
+                        return goal.checked;
+                      }).toList();
+//                      goalCheckedList.forEach((Goal goal) {
+//                        goal.complete();
+//                      });
+                      int initialDifficulty =
+                          goalCheckedList.elementAt(0).difficulty;
+                      await showModalBottomSheet(
+                        isScrollControlled: true,
+                        context: context,
+                        builder: (BuildContext _) => CombineGoalsBottomSheet(
+                          category: widget.category,
+                          difficulty: initialDifficulty,
+                          goalCheckedList: goalCheckedList,
+                        ),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0)),
+                      );
+                      widget.category.goals
+                          .where((goal) => goal.checked)
+                          .forEach((goal) {
+                        goal.check(false);
+                      });
+                      widget.onActionDone();
+                    },
+                  ),
                 IconButton(
                   icon: Icon(
                     Icons.done,

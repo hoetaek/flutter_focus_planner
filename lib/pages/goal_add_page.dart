@@ -33,10 +33,11 @@ class _GoalAddPageState extends State<GoalAddPage> {
   List<String> goalNameList = [];
   GlobalKey<MultipleTextFieldColumnState> multipleTextFieldColumnKey =
       GlobalKey<MultipleTextFieldColumnState>();
-  final TextEditingController _textController = TextEditingController();
+  TextEditingController _textController;
 
   @override
   void initState() {
+    _textController = TextEditingController();
     _currentCategory = categoryBox.isNotEmpty
         ? (widget.category == null ? categoryBox.getAt(0) : widget.category)
         : null;
@@ -215,5 +216,11 @@ class _GoalAddPageState extends State<GoalAddPage> {
       specGoalNum++;
       multipleTextFieldColumnKey.currentState.addTextField();
     });
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    super.dispose();
   }
 }

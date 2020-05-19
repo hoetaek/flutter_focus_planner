@@ -62,55 +62,15 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
               CustomButton(
                 title: "삭제",
                 color: Colors.red[800],
-                onPressed: () {
-                  if (Platform.isAndroid)
-                    showDialog(
-                        context: context,
-                        builder: (dialogContext) {
-                          return AlertDialog(
-                            title: Text('카테고리 삭제 확인'),
-                            content:
-                                Text('${widget.category.name}을/를 정말 삭제하시겠습니까?'),
-                            actions: <Widget>[
-                              FlatButton(
-                                child: Text('취소'),
-                                onPressed: () => Navigator.pop(dialogContext),
-                              ),
-                              FlatButton(
-                                child: Text('확인'),
-                                onPressed: () {
-                                  widget.category.delete();
-                                  Navigator.pop(dialogContext);
-                                  Navigator.pop(context);
-                                },
-                              ),
-                            ],
-                          );
-                        });
-                  else
-                    showCupertinoDialog(
-                        context: context,
-                        builder: (dialogContext) {
-                          return CupertinoAlertDialog(
-                            title: Text('카테고리 삭제 확인'),
-                            content:
-                                Text('${widget.category.name}을/를 정말 삭제하시겠습니까?'),
-                            actions: <Widget>[
-                              CupertinoDialogAction(
-                                child: Text('취소'),
-                                onPressed: () => Navigator.pop(dialogContext),
-                              ),
-                              CupertinoDialogAction(
-                                child: Text('확인'),
-                                onPressed: () {
-                                  widget.category.delete();
-                                  Navigator.pop(dialogContext);
-                                  Navigator.pop(context);
-                                },
-                              ),
-                            ],
-                          );
-                        });
+                onPressed: () async {
+                  await alertReallyDelete(
+                    context: context,
+                    name: widget.category.name,
+                    onAction: () {
+                      widget.category.delete();
+                      Navigator.pop(context);
+                    },
+                  );
                 },
               ),
               CustomButton(
@@ -128,4 +88,62 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
       ),
     );
   }
+}
+
+Future alertReallyDelete({
+  @required BuildContext context,
+  @required String name,
+  @required Function onAction,
+  Function onCancel,
+}) {
+  if (Platform.isAndroid)
+    return showDialog(
+        context: context,
+        builder: (dialogContext) {
+          return AlertDialog(
+            title: Text('$name 삭제 확인'),
+            content: Text('$name을/를 정말 삭제하시겠습니까?'),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('취소'),
+                onPressed: () {
+                  onCancel?.call();
+                  Navigator.pop(dialogContext);
+                },
+              ),
+              FlatButton(
+                child: Text('확인'),
+                onPressed: () {
+                  onAction();
+                  Navigator.pop(dialogContext);
+                },
+              ),
+            ],
+          );
+        });
+  else
+    return showCupertinoDialog(
+        context: context,
+        builder: (dialogContext) {
+          return CupertinoAlertDialog(
+            title: Text('$name 삭제 확인'),
+            content: Text('$name을/를 정말 삭제하시겠습니까?'),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                child: Text('취소'),
+                onPressed: () {
+                  onCancel?.call();
+                  Navigator.pop(dialogContext);
+                },
+              ),
+              CupertinoDialogAction(
+                child: Text('확인'),
+                onPressed: () {
+                  onAction();
+                  Navigator.pop(dialogContext);
+                },
+              ),
+            ],
+          );
+        });
 }

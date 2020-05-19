@@ -26,26 +26,50 @@ class DifficultySelector extends StatelessWidget {
                 width: 1.0,
                 color: Theme.of(context).primaryColor,
               )),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: List<Widget>.generate(
-                    5,
-                    (int index) => DifficultyLevel(
-                        level: index + 1,
-                        isActive: currentDifficulty == index + 1,
-                        onTap: () {
-                          onDifficultyChanged(index + 1);
-                        })),
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 20.0, top: 5.0, bottom: 10.0),
-                child: Text('${diffSentences[currentDifficulty - 1]}'),
-              )
-            ],
+          child: DifficultyLevelList(
+            currentDifficulty: currentDifficulty,
+            onDifficultyChanged: onDifficultyChanged,
           )),
+    );
+  }
+}
+
+class DifficultyLevelList extends StatelessWidget {
+  final int currentDifficulty;
+  final ValueChanged<int> onDifficultyChanged;
+
+  static const diffSentences = [
+    '하루 안에 할 계획입니다.',
+    '2~3일 안에 할 계획니다.',
+    '2~3주 안에 할 계획니다.',
+    '2~3달 안에 할 계획니다.',
+    '장기적으로 생각하고 있습니다.',
+  ];
+
+  const DifficultyLevelList(
+      {Key key, this.currentDifficulty, this.onDifficultyChanged})
+      : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: List<Widget>.generate(
+              5,
+              (int index) => DifficultyLevel(
+                  level: index + 1,
+                  isActive: currentDifficulty == index + 1,
+                  onTap: () {
+                    onDifficultyChanged(index + 1);
+                  })),
+        ),
+        Padding(
+          padding: EdgeInsets.only(left: 20.0, top: 5.0, bottom: 10.0),
+          child: Text('${diffSentences[currentDifficulty - 1]}'),
+        )
+      ],
     );
   }
 }

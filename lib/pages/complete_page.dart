@@ -137,7 +137,7 @@ class _ContextMenuCheckboxTileState extends State<ContextMenuCheckboxTile> {
                 value: 'uncheck',
               ),
             ]);
-        if (result == 'uncheck') widget.goal.uncheck();
+        if (result == 'uncheck') widget.goal.cancelComplete();
       },
       child: CheckboxListTile(
         title: Text(widget.goal.name),

@@ -6,11 +6,14 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:focusplanner/models/goal.dart';
 import 'package:focusplanner/models/work.dart';
 import 'package:focusplanner/widgets/actions_icon_button.dart';
+import 'package:focusplanner/widgets/combine_goals_bottomsheet.dart';
 import 'package:focusplanner/widgets/goal_checkbox_list_tile.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../constants.dart';
+import 'category_edit_page.dart';
 import 'goal_add_page.dart';
 
 class WorkListPage extends StatefulWidget {
@@ -31,6 +34,7 @@ class _WorkListPageState extends State<WorkListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomPadding: false,
       appBar: AppBar(
         title: Text('작업 순서',
             style: TextFont.titleFont(fontWeight: FontWeight.bold)),
@@ -89,17 +93,65 @@ class _WorkListPageState extends State<WorkListPage> {
                   Icons.delete,
 //                    color: category.getTextColor(),
                 ),
-                onPressed: () {
+                onPressed: () async {
                   List<Goal> goalCheckedList =
                       goalBox.values.cast<Goal>().where((goal) {
                     return goal.status == GoalStatus.onWork && goal.checked;
                   }).toList();
-                  goalCheckedList.forEach((Goal goal) {
-                    goal.delete();
+                  await alertReallyDelete(
+                      context: context,
+                      name: '작업',
+                      onAction: () {
+                        goalCheckedList.forEach((Goal goal) {
+                          goal.delete();
+                        });
+                      });
+                  goalBox.values.cast<Goal>().where((goal) {
+                    return goal.status == GoalStatus.onWork && goal.checked;
+                  }).forEach((goal) {
+                    goal.check(false);
                   });
                   onWorklistActionDone();
                 },
               ),
+              if (goalBox.values.cast<Goal>().where((goal) {
+                    //checked가 된 골만 return 한다.
+                    return goal.status == GoalStatus.onWork && goal.checked;
+                  }).length >
+                  1)
+                IconButton(
+                  icon: Icon(
+                    FontAwesomeIcons.layerGroup,
+                  ),
+                  onPressed: () async {
+                    List<Goal> goalCheckedList =
+                        goalBox.values.cast<Goal>().where((goal) {
+                      //checked가 된 골만 return 한다.
+                      return goal.status == GoalStatus.onWork && goal.checked;
+                    }).toList();
+//                      goalCheckedList.forEach((Goal goal) {
+//                        goal.complete();
+//                      });
+                    int initialDifficulty =
+                        goalCheckedList.elementAt(0).difficulty;
+                    await showModalBottomSheet(
+                      isScrollControlled: true,
+                      context: context,
+                      builder: (BuildContext _) => CombineGoalsBottomSheet(
+                        difficulty: initialDifficulty,
+                        goalCheckedList: goalCheckedList,
+                      ),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0)),
+                    );
+                    goalBox.values.cast<Goal>().where((goal) {
+                      return goal.status == GoalStatus.onWork && goal.checked;
+                    }).forEach((goal) {
+                      goal.check(false);
+                    });
+                    onWorklistActionDone();
+                  },
+                ),
               IconButton(
                 icon: Icon(
                   Icons.done,
