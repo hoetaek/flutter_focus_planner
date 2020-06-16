@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:focusplanner/constants.dart';
 import 'package:focusplanner/models/category.dart';
 import 'package:focusplanner/models/work.dart';
+import 'package:focusplanner/pages/daily_goal_add_page.dart';
 import 'package:focusplanner/screens/category_card.dart';
+import 'package:focusplanner/screens/daily_goal_view.dart';
 import 'package:focusplanner/screens/important_category_card.dart';
 import 'package:focusplanner/widgets/column_builder.dart';
 import 'package:hive/hive.dart';
@@ -20,8 +22,8 @@ part 'archive_page.g.dart';
 enum Mode {
   @HiveField(0)
   Category,
-  @HiveField(1)
-  WorkList,
+//  @HiveField(1)
+//  WorkList,
   @HiveField(2)
   Daily,
 }
@@ -31,10 +33,10 @@ extension ModeExtension on Mode {
     switch (this) {
       case Mode.Category:
         return '카테고리';
-      case Mode.WorkList:
-        return '작업순서';
+//      case Mode.WorkList:
+//        return '작업순서';
       case Mode.Daily:
-        return '반복작업';
+        return '매일';
       default:
         return null;
     }
@@ -50,6 +52,7 @@ class _ArchivePageState extends State<ArchivePage> {
   List<Category> categoryReorderedList;
   List<Category> selectedCategories = List();
   Box goalBox = Hive.box(Boxes.goalBox);
+  Mode _currentMode;
 
   sortCategoryList(Box categoryBox) {
     categoryReorderedList = categoryBox.values.cast<Category>().toList();
@@ -68,19 +71,20 @@ class _ArchivePageState extends State<ArchivePage> {
 //    });
 //  }
 
-//  void changeDropDownItem(Mode selectedMode) {
-//    setState(() {
-//      _currentMode = selectedMode;
-//      Hive.box(Boxes.settingBox).put(Settings.archiveMode, selectedMode);
-//    });
-//  }
+  void changeDropDownItem(Mode selectedMode) {
+    setState(() {
+      _currentMode = selectedMode;
+      Hive.box(Boxes.settingBox).put(Settings.archiveMode, selectedMode);
+    });
+  }
 
-//  @override
-//  void initState() {
-//    _currentMode =
-//        Hive.box(Boxes.settingBox).get(Settings.archiveMode) ?? Mode.Category;
-//    super.initState();
-//  }
+  @override
+  void initState() {
+    _currentMode =
+        Hive.box(Boxes.settingBox).get(Settings.archiveMode) ?? Mode.Category;
+    super.initState();
+  }
+
   choiceAction(String choice) {
     if (choice == 'Category') {
       Navigator.push(
@@ -133,52 +137,62 @@ class _ArchivePageState extends State<ArchivePage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('카테고리',
-            style: TextFont.titleFont(fontWeight: FontWeight.bold)),
+        title:
 
-//        DropdownButton(
-//          value: _currentMode,
-//          items: Mode.values.map((Mode mode) {
-//            return DropdownMenuItem<Mode>(value: mode, child: Text(mode.name));
-//          }).toList(),
-//          style: TextFont.titleFont(
-//              fontSize: 18.0, letterSpacing: 1.2, color: Colors.black),
-//          selectedItemBuilder: (context) {
-//            return Mode.values.map((mode) {
-//              return Container(
-//                margin: EdgeInsets.only(top: 12.0),
-//                child: Text(
-//                  _currentMode.name,
-//                  style: TextStyle(
-//                      fontSize: 18.0,
-//                      fontWeight: FontWeight.w800,
-//                      letterSpacing: 1.2,
-//                      color: Colors.white),
-//                ),
-//              );
-//            }).toList();
-//          },
-//          onChanged: changeDropDownItem,
-//          iconEnabledColor: Colors.white,
-//          icon: null,
-//        ),
+//        Text('카테고리',
+//            style: TextFont.titleFont(fontWeight: FontWeight.bold)),
+
+            DropdownButton(
+          value: _currentMode,
+          items: Mode.values.map((Mode mode) {
+            return DropdownMenuItem<Mode>(value: mode, child: Text(mode.name));
+          }).toList(),
+          style: TextFont.titleFont(
+              fontSize: 18.0, letterSpacing: 1.2, color: Colors.black),
+          selectedItemBuilder: (context) {
+            return Mode.values.map((mode) {
+              return Container(
+                margin: EdgeInsets.only(top: 12.0),
+                child: Text(
+                  _currentMode.name,
+                  style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.2,
+                      color: Colors.white),
+                ),
+              );
+            }).toList();
+          },
+          onChanged: changeDropDownItem,
+          iconEnabledColor: Colors.white,
+          icon: null,
+        ),
         actions: <Widget>[
-          PopupMenuButton<String>(
-            icon: Icon(Icons.add),
-            onSelected: choiceAction,
-            itemBuilder: (context) {
-              return <PopupMenuEntry<String>>[
-                PopupMenuItem<String>(
-                  value: "Category",
-                  child: Text('카테고리 추가'),
-                ),
-                PopupMenuItem<String>(
-                  value: "Goal",
-                  child: Text('작업 추가'),
-                ),
-              ];
-            },
-          ),
+          if (_currentMode == Mode.Category)
+            PopupMenuButton<String>(
+              icon: Icon(Icons.add),
+              onSelected: choiceAction,
+              itemBuilder: (context) {
+                return <PopupMenuEntry<String>>[
+                  PopupMenuItem<String>(
+                    value: "Goal",
+                    child: Text('작업 추가'),
+                  ),
+                  PopupMenuItem<String>(
+                    value: "Category",
+                    child: Text('카테고리 추가'),
+                  ),
+                ];
+              },
+            ),
+          if (_currentMode == Mode.Daily)
+            IconButton(
+              onPressed: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => DailyGoalAddPage())),
+              icon: Icon(Icons.add),
+              color: Colors.white,
+            )
 //          IconButton(
 //            icon: Icon(Icons.add),
 //            onPressed: () {
@@ -247,7 +261,14 @@ class _ArchivePageState extends State<ArchivePage> {
 //                workList.forEach((work) {
 //                  goalList.addAll(work.goals);
 //                });
-
+                switch (_currentMode) {
+                  case Mode.Category:
+                    return _buildCategoryView(categoryBox, workList);
+                  case Mode.Daily:
+                    return DailyGoalView();
+                  default:
+                    return null;
+                }
                 return _buildCategoryView(categoryBox, workList);
 
 //                switch (_currentMode) {

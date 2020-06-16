@@ -65,7 +65,9 @@ class DailyGoal extends HiveObject {
   }
 
   bool _checkTodayDate() {
-    return generatedDates.contains(DateTimeExtension.getTodayDay());
+    return _goals
+        .where((goal) => goal.date == DateTimeExtension.getTodayDay())
+        .isNotEmpty;
   }
 
   _generateTodayDate() {

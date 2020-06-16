@@ -15,8 +15,8 @@ class ModeAdapter extends TypeAdapter<Mode> {
     switch (reader.readByte()) {
       case 0:
         return Mode.Category;
-      case 1:
-        return Mode.WorkList;
+//      case 1:
+//        return Mode.WorkList;
       case 2:
         return Mode.Daily;
       default:
@@ -30,9 +30,9 @@ class ModeAdapter extends TypeAdapter<Mode> {
       case Mode.Category:
         writer.writeByte(0);
         break;
-      case Mode.WorkList:
-        writer.writeByte(1);
-        break;
+//      case Mode.WorkList:
+//        writer.writeByte(1);
+//        break;
       case Mode.Daily:
         writer.writeByte(2);
         break;
